@@ -1,0 +1,19 @@
+.nav-item {
+    margin: 0 4rem;
+    list-style: none;
+}
+
+.nav-item-link {
+    display: inline-block;
+    text-transform: capitalize;
+    color: var(--white-color);
+    font-size: 1.6rem;
+    &.nav-item-link-active {
+        -webkit-text-fill-color: transparent;
+        background: linear-gradient(107deg, #7054d1 16%, #ab56c9 60%, #b275dc 102%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: #b275dc;
+        transition: all 0.3s;
+    }
+}
