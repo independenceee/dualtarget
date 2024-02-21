@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import Link from "next/link";
 import classNames from "classnames/bind";
 import styles from "./HeaderOption.module.scss";
-import Link from "next/link";
 
 const cx = classNames.bind(styles);
 
@@ -10,16 +10,21 @@ type Props = {
     name: string;
     isActive: boolean;
     setSelected: React.Dispatch<React.SetStateAction<string>>;
+    className?: string;
 };
 
-const HeaderOption = function ({ redirect, name, isActive, setSelected }: Props) {
+const HeaderOption = function ({ redirect, name, isActive, setSelected, className }: Props) {
     const handleClickNavItem = function (redirect: string) {
         setSelected(redirect);
     };
 
     return (
         <li className={cx("nav-item")}>
-            <Link onClick={() => handleClickNavItem(redirect)} href={redirect} className={cx("nav-item-link", { "nav-item-link-active": isActive })}>
+            <Link
+                onClick={() => handleClickNavItem(redirect)}
+                href={redirect}
+                className={cx("nav-item-link", { "nav-item-link-active": isActive }, className)}
+            >
                 {name}
             </Link>
         </li>

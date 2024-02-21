@@ -1,41 +1,16 @@
-.header {
+.wrapper {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
-    background-color: var(--background-header);
+    right: 0;
+    height: 100vh;
+    min-width: 30rem;
+    padding: 100px 10px 0;
+    background: var(--background-header);
     z-index: 10;
-}
-
-.wrapper-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.6rem 2.6rem;
-
-    width: 100%;
-}
-
-.nav-list {
-    display: flex;
-    padding: 0 3vw;
-}
-
-.nav-left-wrapper,
-.nav-right-wrapper {
-    width: 25%;
-}
-
-.nav-left-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 2.6rem;
-}
-
-.nav-right-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    display: none;
+    &.open {
+        display: block;
+    }
 }
 
 .connect-wallet-button {
@@ -47,34 +22,43 @@
     box-shadow: 0 8px 12px 0 rgba(177, 109, 215, 0.28);
     color: #fff;
     cursor: pointer;
-    display: flex;
+    display: none;
     font-size: 16px;
     height: 56px;
     justify-content: center;
     line-height: 1;
     margin: 0;
-    min-width: 185px;
+    width: 100%;
     outline: 0;
     padding: 24px 32px;
     transition: all 0.2s ease-out;
     font-family: Poppins, sans-serif;
     white-space: nowrap;
+    margin-bottom: 1.6rem;
     &:hover {
         background-position: 100% 100%;
         box-shadow: 0 4px 16px 0 rgba(177, 109, 215, 0.48);
     }
 }
 
-// Responsive
+.network-selector {
+    width: 100%;
+    margin-left: 0;
+}
 
-@media screen and (max-width: 1366px) {
-    .navbar {
-        display: none;
-    }
+.navbar {
+    padding: 2.5rem 1.8rem;
+}
+
+.nav-item-link {
+    display: block;
+    padding: 0;
+    margin-bottom: 1.5rem;
 }
 
 @media screen and (max-width: 768px) {
     .connect-wallet-button {
-        display: none;
+        display: flex;
     }
 }
+
