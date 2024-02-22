@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames/bind";
 import styles from "./Footer.module.scss";
 import Image from "next/image";
-import images from "~/assets/images";
+import icons from "~/assets/icons";
 
 const cx = classNames.bind(styles);
 
@@ -17,7 +17,7 @@ const Footer = function () {
                 <div className={cx("corporation")}>
                     <span>Powered by</span>
                     <span className={cx("corporation-logo")}>
-                        <Image src={images.corporation} alt="coti" />
+                        <Image src={icons.corporation} alt="coti" />
                     </span>
                 </div>
             </div>

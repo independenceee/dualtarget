@@ -4,7 +4,7 @@ const routes = {
     shen: "/shen",
     rewards: "/delegation-rewards",
     faq: "/faq",
-    term: "contact",
+    term: "/term",
 } as const;
 
 export default routes;

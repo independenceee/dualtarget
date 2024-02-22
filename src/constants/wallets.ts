@@ -82,6 +82,28 @@ const wallets: Array<WalletType> = [
         },
         downloadApi: configs.wallets.vespr,
     },
+    {
+        name: "Yoroi",
+        image: images.vespr,
+        api: async function () {
+            return await window.cardano.yoroi.enable();
+        },
+        checkApi: async function () {
+            return await window.cardano.yoroi;
+        },
+        downloadApi: configs.wallets.yoroi,
+    },
+    {
+        name: "Nufi",
+        image: images.vespr,
+        api: async function () {
+            return await window.cardano.nufi.enable();
+        },
+        checkApi: async function () {
+            return await window.cardano.nufi;
+        },
+        downloadApi: configs.wallets.nufi,
+    },
 ] as const;
 
 export default wallets;
