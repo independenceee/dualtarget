@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import classNames from "classnames/bind";
-
 import styles from "./Header.module.scss";
 import HeaderOption from "./HeaderOption";
 import { publicRoutes } from "~/routes/routes";
@@ -12,7 +11,7 @@ import images from "~/assets/images";
 import NetworkSelector from "~/components/NetworkSelector";
 import { networks } from "~/constants/networks";
 import Hamburger from "~/components/Hamburger";
-import ConnectWallet from "../ConnectWallet";
+import ConnectWallet from "~/layouts/components/ConnectWallet";
 
 const cx = classNames.bind(styles);
 

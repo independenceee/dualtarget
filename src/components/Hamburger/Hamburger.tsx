@@ -18,6 +18,7 @@ const Hamburger = function () {
 
         window.addEventListener("resize", handleResponsiveSidebar);
     }, []);
+
     return (
         <>
             <button

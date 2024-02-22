@@ -2,6 +2,7 @@
     align-items: center;
     background: transparent;
     background-image: linear-gradient(118deg, #7054d1 13%, #ab56c9 58%, #b275dc);
+    background-repeat: no-repeat;
     border: 1px solid #7054d1;
     border-radius: 12px;
     box-shadow: 0 8px 12px 0 rgba(177, 109, 215, 0.28);
@@ -72,6 +73,9 @@
 }
 
 .connect-wallet-input {
+    margin: 0;
+    padding-top: 3px;
+
     input {
         background-color: #fff;
         border: 1px solid #dbdbdb;
@@ -84,13 +88,18 @@
     input[type="checkbox"] {
         accent-color: #efc644;
     }
-
-    label {
-        line-height: 2.4rem;
-        padding-left: 1.2rem;
-        padding-top: 0.7rem;
-    }
 }
+
+.connect-wallet-input {
+    line-height: 2.4rem;
+    padding-left: 1.2rem;
+    padding-top: 0.7rem;
+}
+
+.connect-wallet-container {
+    overflow: auto;
+}
+
 /* connect wallet end */
 
 @media screen and (max-width: 670px) {

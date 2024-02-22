@@ -1,12 +1,15 @@
-import React from "react";
+import React, { lazy } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import classNames from "classnames/bind";
 import Modal from "~/components/Modal";
 import { useModal } from "~/hooks";
 import icons from "~/assets/icons";
-import Link from "next/link";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
+import wallets from "~/constants/wallets";
+import { WalletType } from "~/types/GenericsType";
+import WalletItem from "~/components/WalletItem";
 
 const cx = classNames.bind(styles);
 type Props = {};
@@ -29,16 +32,20 @@ const ConnectWallet = function ({}: Props) {
                     </section>
                     <section className={cx("connect-wallet-accept")}>
                         <div className={cx("connect-wallet-input")}>
-                            <input type="checkbox" />
-                            <label htmlFor="">
-                                By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
-                                <Link target="_blank" href={configs.routes.term}>
-                                    Terms and Conditions
-                                </Link>
-                            </label>
+                            <input type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
                         </div>
+                        <label className={cx("connect-wallet-input")} htmlFor="">
+                            By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
+                            <Link target="_blank" href={configs.routes.term}>
+                                Terms and Conditions
+                            </Link>
+                        </label>
                     </section>
-                    <section className={cx("connect-wallet-container")}></section>
+                    <section className={cx("connect-wallet-container")}>
+                        {wallets.map(function (wallet: WalletType, index: number) {
+                            return <WalletItem wallet={wallet} key={index} />;
+                        })}
+                    </section>
                 </div>
             </Modal>
         </div>

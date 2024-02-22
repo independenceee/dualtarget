@@ -9,10 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "cbor-x": "^1.5.8",
     "classnames": "^2.5.1",
+    "lucid-cardano": "^0.10.7",
     "next": "14.1.0",
+    "normalize.css": "^8.0.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-icons": "^5.0.1",
+    "react-spinners": "^0.13.8"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     background-color: var(--background-header);
-    z-index: 10;
+z-index: 10;
 }
 
 .wrapper-inner {
@@ -12,7 +12,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.6rem 2.6rem;
-
     width: 100%;
 }
 
@@ -38,7 +37,6 @@
     justify-content: flex-end;
 }
 
-
 // Responsive
 
 @media screen and (max-width: 1366px) {
@@ -46,4 +44,3 @@
         display: none;
     }
 }
-
