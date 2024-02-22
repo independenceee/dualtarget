@@ -4,7 +4,7 @@ const images = {
     galaxy: require("./galaxy_background.png"),
     cardanoSide: require("./cardano-side.svg"),
     djedHeaderCoins: require("./djed_header_coins.png"),
-
+    djedHeaderCoinsMobile: require("./home_coins_mobile.png"),
     /* wallet-image-begin */
     nami: require("./wallets/nami.svg"),
     eternl: require("./wallets/eternl.webp"),

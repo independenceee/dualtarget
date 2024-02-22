@@ -34,14 +34,6 @@ body {
 body {
     color: var(--white-color);
     background: var(--background-primary) center / 100% no-repeat;
-    min-height: 100vh;
-}
-
-.container {
-    max-width: var(--max-width);
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 1.8rem;
 }
 
 a {
@@ -69,12 +61,12 @@ a {
 
 @font-face {
     font-family: "Poppins";
-    src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
+    src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
     font-weight: 500;
 }
 
 @font-face {
     font-family: "Poppins";
-    src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
+    src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
     font-weight: 400;
 }
