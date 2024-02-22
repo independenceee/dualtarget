@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactNode, lazy } from "react";
 
 const WalletProvider = lazy(() => import("~/contexts/providers/WalletProvider"));

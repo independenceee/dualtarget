@@ -9,7 +9,7 @@ import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
 import wallets from "~/constants/wallets";
 import { WalletType } from "~/types/GenericsType";
-const WalletItem = lazy(() => import("~/components/WalletItem"));
+import WalletItem from "~/components/WalletItem";
 
 const cx = classNames.bind(styles);
 type Props = {};
@@ -43,8 +43,7 @@ const ConnectWallet = function ({}: Props) {
                     </section>
                     <section className={cx("connect-wallet-container")}>
                         {wallets.map(function (wallet: WalletType, index: number) {
-                            // return <WalletItem wallet={wallet} key={index} />;
-                            return null;
+                            return <WalletItem wallet={wallet} key={index} />;
                         })}
                     </section>
                 </div>

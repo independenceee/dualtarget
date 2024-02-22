@@ -2,7 +2,6 @@
 
 import React, { lazy, useState } from "react";
 import classNames from "classnames/bind";
-
 import styles from "./Header.module.scss";
 import HeaderOption from "./HeaderOption";
 import { publicRoutes } from "~/routes/routes";
@@ -12,7 +11,7 @@ import images from "~/assets/images";
 import NetworkSelector from "~/components/NetworkSelector";
 import { networks } from "~/constants/networks";
 import Hamburger from "~/components/Hamburger";
-// const ConnectWallet = lazy(() => import("~/layouts/components/ConnectWallet"));
+import ConnectWallet from "~/layouts/components/ConnectWallet";
 
 const cx = classNames.bind(styles);
 
@@ -44,7 +43,7 @@ const Header = function () {
                         </ul>
                     </nav>
                     <div className={cx("nav-right-wrapper")}>
-                        {/* <ConnectWallet /> */}
+                        <ConnectWallet />
                         <Hamburger />
                     </div>
                 </div>
