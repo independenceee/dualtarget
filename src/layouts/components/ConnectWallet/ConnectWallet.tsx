@@ -7,6 +7,7 @@ import icons from "~/assets/icons";
 import Link from "next/link";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
+import wallets from "~/constants/wallets";
 
 const cx = classNames.bind(styles);
 type Props = {};
@@ -29,16 +30,18 @@ const ConnectWallet = function ({}: Props) {
                     </section>
                     <section className={cx("connect-wallet-accept")}>
                         <div className={cx("connect-wallet-input")}>
-                            <input type="checkbox" />
-                            <label htmlFor="">
-                                By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
-                                <Link target="_blank" href={configs.routes.term}>
-                                    Terms and Conditions
-                                </Link>
-                            </label>
+                            <input type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
                         </div>
+                        <label className={cx("connect-wallet-input")} htmlFor="">
+                            By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
+                            <Link target="_blank" href={configs.routes.term}>
+                                Terms and Conditions
+                            </Link>
+                        </label>
                     </section>
-                    <section className={cx("connect-wallet-container")}></section>
+                    <section className={cx("connect-wallet-container")}>
+                        
+                    </section>
                 </div>
             </Modal>
         </div>
