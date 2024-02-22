@@ -12,6 +12,7 @@ import images from "~/assets/images";
 import NetworkSelector from "~/components/NetworkSelector";
 import { networks } from "~/constants/networks";
 import Hamburger from "~/components/Hamburger";
+import ConnectWallet from "../ConnectWallet";
 
 const cx = classNames.bind(styles);
 
@@ -43,7 +44,7 @@ const Header = function () {
                         </ul>
                     </nav>
                     <div className={cx("nav-right-wrapper")}>
-                        <button className={cx("connect-wallet-button")}>Connect Wallet</button>
+                        <ConnectWallet />
                         <Hamburger />
                     </div>
                 </div>

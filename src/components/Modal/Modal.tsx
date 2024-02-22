@@ -13,6 +13,8 @@ type Props = {
 };
 
 const Modal = function ({ toggle, children, isShowing, transparent }: Props) {
+    if (!isShowing) return;
+
     return (
         <main className={cx("wrapper")}>
             <section className={cx("modal")} onClick={toggle} />
