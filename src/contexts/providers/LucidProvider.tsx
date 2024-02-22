@@ -1,3 +1,4 @@
+"use client";
 import React, { ReactNode } from "react";
 import { Lucid } from "lucid-cardano";
 import LucidContext from "~/contexts/components/LucidContext";

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactNode } from "react";
 import { Lucid } from "lucid-cardano";
 import WalletContext from "~/contexts/components/WalletContext";

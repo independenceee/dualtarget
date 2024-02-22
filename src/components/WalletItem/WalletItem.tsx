@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./WalletItem.module.scss";
 import classNames from "classnames/bind";
-import { WalletType } from "~/types/GenericsType";
 import Image from "next/image";
 import Link from "next/link";
+import { WalletType } from "~/types/GenericsType";
 import icons from "~/assets/icons";
+import styles from "./WalletItem.module.scss";
 
 const cx = classNames.bind(styles);
 
@@ -22,6 +22,7 @@ const WalletItem = function ({ wallet }: Props) {
             setIsDownload(await wallet.checkApi());
         })();
     }, []);
+
     return (
         <div className={cx("wrapper")}>
             <div className={cx("icon-wrapper")}>
