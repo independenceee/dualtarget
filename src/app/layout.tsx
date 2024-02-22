@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react";
 import type { Metadata } from "next";
 import ContextProvider from "~/contexts";
+import { PublicLayout } from "~/layouts";
+
 import "./globals.scss";
 
 export const metadata: Metadata = {
@@ -16,7 +18,9 @@ const RootLayout = function ({ children }: Readonly<Props>) {
     return (
         <html lang="en">
             <body>
-                <ContextProvider>{children}</ContextProvider>
+                <ContextProvider>
+                    <PublicLayout>{children}</PublicLayout>
+                </ContextProvider>
             </body>
         </html>
     );
