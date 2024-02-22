@@ -1,13 +1,15 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import classNames from "classnames/bind";
 import Modal from "~/components/Modal";
 import { useModal } from "~/hooks";
 import icons from "~/assets/icons";
-import Link from "next/link";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
 import wallets from "~/constants/wallets";
+import { WalletType } from "~/types/GenericsType";
+import WalletItem from "~/components/WalletItem";
 
 const cx = classNames.bind(styles);
 type Props = {};
@@ -40,7 +42,9 @@ const ConnectWallet = function ({}: Props) {
                         </label>
                     </section>
                     <section className={cx("connect-wallet-container")}>
-                        
+                        {wallets.map(function (wallet: WalletType, index: number) {
+                            return <WalletItem wallet={wallet} key={index} />;
+                        })}
                     </section>
                 </div>
             </Modal>

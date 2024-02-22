@@ -5,6 +5,7 @@ const icons = {
     shen: require("./shen.svg"),
     reserves: require("./reserves.svg"),
     close: require("./close.png"),
+    install: require("./install.png"),
 };
 
 export default icons;
