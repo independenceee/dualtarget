@@ -1,15 +1,21 @@
-export type Network = {
-    id: number;
-    name: string;
-};
+import { Network } from "~/types/GenericsType";
 
-export const networks: Network[] = [
+const networks: Network[] = [
     {
-        id: 1,
-        name: "mainnet",
+        networkName: "Mainnet",
+        url: process.env.BLOCKFROST_RPC_URL_MAINNET!,
+        apiKey: process.env.BLOCKFROST_PROJECT_API_KEY_MAINNET!,
     },
     {
-        id: 2,
-        name: "preprod",
+        networkName: "Preview",
+        url: process.env.BLOCKFROST_RPC_URL_PREVIEW!,
+        apiKey: process.env.BLOCKFROST_PROJECT_API_KEY_PREVIEW!,
+    },
+    {
+        networkName: "Preprod",
+        url: process.env.BLOCKFROST_RPC_URL_PREPROD!,
+        apiKey: process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!,
     },
 ];
+
+export { networks };

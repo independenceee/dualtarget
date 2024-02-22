@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import Image from "next/image";
 import Link from "next/link";
 import { WalletType } from "~/types/GenericsType";
 import icons from "~/assets/icons";
 import styles from "./WalletItem.module.scss";
+import { WalletContextType } from "~/types/contexts/WalletContextType";
+import WalletContext from "~/contexts/components/WalletContext";
 
 const cx = classNames.bind(styles);
 
@@ -16,6 +18,11 @@ type Props = {
 
 const WalletItem = function ({ wallet }: Props) {
     const [isDownload, setIsDownload] = useState<boolean>(true);
+    const { connect, loading } = useContext<WalletContextType>(WalletContext);
+
+    const handleConnectWallet = async function () {
+        await connect({ api: wallet.api, name: wallet.name, image: wallet.image, checkApi: wallet.checkApi });
+    };
 
     useEffect(() => {
         (async function () {
@@ -24,7 +31,7 @@ const WalletItem = function ({ wallet }: Props) {
     }, []);
 
     return (
-        <div className={cx("wrapper")}>
+        <div className={cx("wrapper")} onClick={handleConnectWallet}>
             <div className={cx("icon-wrapper")}>
                 <Image className={cx("icon-image")} src={wallet.image} alt={wallet.name} />
             </div>
