@@ -84,7 +84,7 @@ const wallets: Array<WalletType> = [
     },
     {
         name: "Yoroi",
-        image: images.vespr,
+        image: images.yoroi,
         api: async function () {
             return await window.cardano.yoroi.enable();
         },
@@ -95,7 +95,7 @@ const wallets: Array<WalletType> = [
     },
     {
         name: "Nufi",
-        image: images.vespr,
+        image: images.nufi,
         api: async function () {
             return await window.cardano.nufi.enable();
         },

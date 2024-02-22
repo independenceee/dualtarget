@@ -13,6 +13,8 @@ const images = {
     flint: require("./wallets/flint.svg"),
     vespr: require("./wallets/unnamed.webp"),
     lace: require("./wallets/lace.png"),
+    yoroi: require("./wallets/yoroi.png"),
+    nufi: require("./wallets/nufi.png"),
     /* wallet-image-end */
 };
 

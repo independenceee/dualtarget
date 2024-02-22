@@ -73,6 +73,9 @@
 }
 
 .connect-wallet-input {
+    margin: 0;
+    padding-top: 3px;
+
     input {
         background-color: #fff;
         border: 1px solid #dbdbdb;
@@ -85,13 +88,18 @@
     input[type="checkbox"] {
         accent-color: #efc644;
     }
-
-    label {
-        line-height: 2.4rem;
-        padding-left: 1.2rem;
-        padding-top: 0.7rem;
-    }
 }
+
+.connect-wallet-input {
+    line-height: 2.4rem;
+    padding-left: 1.2rem;
+    padding-top: 0.7rem;
+}
+
+.connect-wallet-container {
+    overflow: auto;
+}
+
 /* connect wallet end */
 
 @media screen and (max-width: 670px) {

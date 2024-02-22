@@ -6,6 +6,7 @@ const icons = {
     reserves: require("./reserves.svg"),
     close: require("./close.png"),
     djed: require("./djed.svg"),
+    install: require("./install.png"),
 };
 
 export default icons;
