@@ -6,9 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { WalletType } from "~/types/GenericsType";
 import icons from "~/assets/icons";
-import styles from "./WalletItem.module.scss";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
+import styles from "./WalletItem.module.scss";
 
 const cx = classNames.bind(styles);
 
@@ -37,6 +37,7 @@ const WalletItem = function ({ wallet }: Props) {
             </div>
             <div className={cx("inner")}>
                 <div className={cx("name")}>{wallet.name}</div>
+
                 {!isDownload && (
                     <div className={cx("action")}>
                         <Link className={cx("action-link")} href={wallet.downloadApi as string} target="_blank">

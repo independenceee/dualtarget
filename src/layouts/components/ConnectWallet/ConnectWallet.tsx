@@ -1,4 +1,6 @@
-import React, { lazy } from "react";
+"use client";
+
+import React, { ChangeEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import classNames from "classnames/bind";
@@ -16,6 +18,13 @@ type Props = {};
 
 const ConnectWallet = function ({}: Props) {
     const { isShowing, toggle } = useModal();
+
+    const [isAgree, setIsAgree] = useState<boolean>(false);
+
+    const handleAgree = function (event: ChangeEvent<HTMLInputElement>) {
+        setIsAgree(event.target.checked);
+    };
+
     return (
         <div className={cx("wrapper")}>
             <button onClick={toggle} className={cx("connect-wallet-button")}>
@@ -32,13 +41,14 @@ const ConnectWallet = function ({}: Props) {
                     </section>
                     <section className={cx("connect-wallet-accept")}>
                         <div className={cx("connect-wallet-input")}>
-                            <input type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
+                            <input onChange={handleAgree} type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
                         </div>
                         <label className={cx("connect-wallet-input")} htmlFor="">
                             By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
-                            <Link target="_blank" href={configs.routes.term}>
+                            <Link className={cx("connect-wallet-input-link")} target="_blank" href={configs.routes.term}>
                                 Terms and Conditions
                             </Link>
+                            .
                         </label>
                     </section>
                     <section className={cx("connect-wallet-container")}>
