@@ -2,7 +2,6 @@ import React, { ReactNode } from "react";
 import type { Metadata } from "next";
 import ContextProvider from "~/contexts";
 import { PublicLayout } from "~/layouts";
-
 import "./globals.scss";
 
 export const metadata: Metadata = {
