@@ -3,7 +3,8 @@ import classNames from "classnames/bind";
 import styles from "./NetworkSelector.module.scss";
 import Image from "next/image";
 import icons from "~/assets/icons";
-import { Network } from "~/constants/networks";
+import { networks } from "~/constants/networks";
+import { Network } from "~/types/GenericsType";
 
 const cx = classNames.bind(styles);
 
@@ -13,7 +14,7 @@ type Props = {
 };
 
 const NetworkSelector = function ({ networks, className }: Props) {
-    const [currentNetwork, setCurrentNetwork] = useState<string>(networks[0].name);
+    const [currentNetwork, setCurrentNetwork] = useState<string>(networks[0].networkName);
     const [isShownNetworks, setIsShowNetworks] = useState<boolean>(false);
 
     const handleShowNetworks = function () {
@@ -45,10 +46,10 @@ const NetworkSelector = function ({ networks, className }: Props) {
                     })}
                 >
                     <ul className={cx("cover_list")}>
-                        {networks.map(({ id, name }) =>
-                            currentNetwork === name ? null : (
-                                <li key={id} className={cx("network")} onClick={() => handleChooseNetwork(name)}>
-                                    {name}
+                        {networks.map(({ networkName }: Network, index: number) =>
+                            networkName === currentNetwork ? null : (
+                                <li key={index} className={cx("network")} onClick={() => handleChooseNetwork(networkName)}>
+                                    {networkName}
                                 </li>
                             ),
                         )}

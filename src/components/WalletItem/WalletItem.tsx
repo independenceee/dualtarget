@@ -35,7 +35,7 @@ const WalletItem = function ({ wallet }: Props) {
             <div className={cx("icon-wrapper")}>
                 <Image className={cx("icon-image")} src={wallet.image} alt={wallet.name} />
             </div>
-            <div className={cx("container")}>
+            <div className={cx("inner")}>
                 <div className={cx("name")}>{wallet.name}</div>
                 {!isDownload && (
                     <div className={cx("action")}>
