@@ -37,6 +37,7 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                                 isActive={Boolean(selected === redirect)}
                                 setSelected={setSelected}
                                 className={cx("nav-item-link")}
+                                setOpen={setOpen}
                             />
                         );
                     })}
