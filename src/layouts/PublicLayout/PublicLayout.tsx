@@ -5,6 +5,7 @@ import classNames from "classnames/bind";
 import styles from "./PublicLayout.module.scss";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import Notification from "../components/Notification";
 type Props = {
     children: ReactNode;
 };
@@ -16,6 +17,7 @@ const PublicLayout = function ({ children }: Props) {
         <main className={cx("wrapper")}>
             <Header />
             <div>{children}</div>
+            <Notification />
             <Footer />
         </main>
     );

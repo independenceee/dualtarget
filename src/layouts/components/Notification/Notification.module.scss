@@ -1,0 +1,31 @@
+.wrapper {
+    position: fixed;
+    padding: 1.3rem 2.2rem;
+    border-radius: 999rem;
+    bottom: 17px;
+    right: 17px;
+    letter-spacing: 0.6;
+    font-size: 1.07143rem;
+    fill: var(--white-color) !important;
+    color: var(--white-color) !important;
+    background-color: #1d2345 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.label {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    font-size: 1.9rem;
+}

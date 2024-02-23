@@ -7,6 +7,7 @@ const icons = {
     close: require("./close.png"),
     djed: require("./djed.svg"),
     install: require("./install.png"),
+    arrowRight: require("./arrow-right.png"),
 };
 
 export default icons;
