@@ -8,6 +8,8 @@ const icons = {
     djed: require("./djed.svg"),
     install: require("./install.png"),
     arrowRight: require("./arrow-right.png"),
+    glass: require("./no-data.svg"),
+    separate: require("./separate.png"),
 };
 
 export default icons;

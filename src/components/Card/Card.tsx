@@ -2,9 +2,11 @@ import React from "react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import classNames from "classnames/bind";
 import styles from "./Card.module.scss";
-import Image from "next/image";
 import Button from "../Button";
 import Gutter from "./Gutter";
+import Title from "./Title";
+import { ButtonProps } from "../Button/Button";
+import { omit } from "lodash";
 
 const cx = classNames.bind(styles);
 
@@ -16,18 +18,13 @@ type Props = {
     circulatingSupply: number;
     mintableAmount: number;
     className?: string;
+    buttonOptions?: ButtonProps;
 };
 
-const Card = function ({ icon, title, buyPrice, sellPrice, circulatingSupply, mintableAmount, className }: Props) {
+const Card = function ({ icon, title, buyPrice, sellPrice, circulatingSupply, mintableAmount, className, buttonOptions }: Props) {
     return (
         <Gutter className={className}>
-            <div className={cx("header")}>
-                <div className={cx("icon-wrapper")}>
-                    <div className={cx("icon-frame")} />
-                    <Image src={icon} alt={title} className={cx("icon")} />
-                </div>
-                <span className={cx("header-title")}>{title}</span>
-            </div>
+            <Title icon={icon} title={title} />
             <div className={cx("body")}>
                 <div className={cx("buy-price")}>
                     <h2 className={cx("title")}>Buy Price</h2>
@@ -57,7 +54,9 @@ const Card = function ({ icon, title, buyPrice, sellPrice, circulatingSupply, mi
                 </div>
             </div>
             <div>
-                <Button className={cx("button")}>Mint/Burn</Button>
+                <Button {...omit(buttonOptions, ["children"])} className={cx("button")}>
+                    {buttonOptions?.children}
+                </Button>
             </div>
         </Gutter>
     );

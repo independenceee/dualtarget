@@ -5,6 +5,8 @@ import images from "~/assets/images";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Gutter from "~/components/Card/Gutter";
+import Title from "~/components/Card/Title";
+import routes from "~/configs/routes";
 
 const cx = classNames.bind(styles);
 
@@ -48,6 +50,10 @@ export default function Home() {
                             icon={icons.djed}
                             circulatingSupply={3574361.04}
                             className={cx("stat-djed-stablecoin")}
+                            buttonOptions={{
+                                href: routes.djed,
+                                children: "Mint/Burn",
+                            }}
                         />
                         <Card
                             title="Djed Stablecoin"
@@ -57,6 +63,10 @@ export default function Home() {
                             icon={icons.djed}
                             circulatingSupply={3574361.04}
                             className={cx("stat-djed-stablecoin")}
+                            buttonOptions={{
+                                href: routes.djed,
+                                children: "Mint/Burn",
+                            }}
                         />
                     </div>
                     <div className={cx("sub-stats")}>*Buy\Sell price includes base fee, and does not include operator fee</div>
@@ -66,16 +76,7 @@ export default function Home() {
                 <div className={cx("reverse-inner")}>
                     <Gutter className={cx("reverse-card")}>
                         <div>
-                            <div className={cx("reverse-header")}>
-                                <div className={cx("reverse-header-left")}>
-                                    <div className={cx("reserve-icon-wrapper")}>
-                                        <div className={cx("icon-frame")} />
-                                        <Image src={icons.reserves} alt="reserve-image" className={cx("reserve-icon")} />
-                                    </div>
-                                    <span className={cx("reverse-header-title")}>Reverse</span>
-                                </div>
-                                <div className={cx("last-updated")}>Last updated: 22 Feb, 2024 17:06 UTC</div>
-                            </div>
+                            <Title icon={icons.reserves} title="Reserve" />
 
                             <div className={cx("reserves")}>
                                 <div className={cx("reserve-ratio")}>

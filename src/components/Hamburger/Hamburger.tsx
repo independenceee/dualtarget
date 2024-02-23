@@ -13,7 +13,7 @@ const Hamburger = function () {
 
     useLayoutEffect(() => {
         const handleResponsiveSidebar = () => {
-            if (window.innerWidth > 1366) setOpen(false);
+            if (window.innerWidth > 1365) setOpen(false);
         };
 
         window.addEventListener("resize", handleResponsiveSidebar);

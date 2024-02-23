@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     background-color: var(--background-header);
-z-index: 10;
+    z-index: 10;
 }
 
 .wrapper-inner {
@@ -39,7 +39,7 @@ z-index: 10;
 
 // Responsive
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1365px) {
     .navbar {
         display: none;
     }

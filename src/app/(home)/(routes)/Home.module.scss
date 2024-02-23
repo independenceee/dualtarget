@@ -2,6 +2,7 @@
 
 .wrapper {
     position: relative;
+    width: 100%;
 }
 
 .background-gallaxy-wrapper {
@@ -26,7 +27,7 @@
     object-fit: contain;
 }
 
-.cardano-side-background-image {
+.background-cardano-side-wrapper {
     position: absolute;
     top: 0;
     left: 0;
@@ -172,6 +173,7 @@
     object-fit: contain;
     z-index: 6;
 }
+
 .reverse-header-title {
     padding-left: 2.2rem;
     font-size: 2rem;
@@ -238,6 +240,13 @@
     .content {
         padding: 14.8rem 6.4rem 12.8rem;
     }
+
+    .background-cardano-side-wrapper {
+        height: 50%;
+    }
+    .background-floating-coins-wrapper {
+        width: 100%;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -272,18 +281,19 @@
         margin-bottom: 1.4rem;
         padding-bottom: 1.4rem;
     }
-}
 
-@media (max-width: 768px) {
-    .content {
-        padding: 14.8rem 0 12.8rem;
-    }
     .background-floating-coins-wrapper {
         display: none;
     }
 
     .background-floating-coins-mobile-wrapper {
         display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 14.8rem 0 12.8rem;
     }
 
     .prefix {
