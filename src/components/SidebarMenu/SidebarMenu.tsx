@@ -25,7 +25,13 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
             })}
         >
             <button className={cx("connect-wallet-button")}>Connect Wallet</button>
-            <NetworkSelector networks={networks} className={cx("network-selector")} />
+            <NetworkSelector
+                networks={networks}
+                classNames={{
+                    classNameWrapper: cx("network-selector-wrapper"),
+                    classNameNetworkList: cx("network-selector"),
+                }}
+            />
             <nav className={cx("navbar")}>
                 <ul className={cx("nav-list")}>
                     {publicRoutes.map(function ({ name, redirect }, index: number) {

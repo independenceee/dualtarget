@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import ContextProvider from "~/contexts";
 import { PublicLayout } from "~/layouts";
 import "./globals.scss";
+import NetworkConnectionStatus from "~/components/NetworkConnectionStatus";
 
 export const metadata: Metadata = {
     title: "Dual Target",
@@ -20,6 +21,7 @@ const RootLayout = function ({ children }: Readonly<Props>) {
                 <ContextProvider>
                     <PublicLayout>{children}</PublicLayout>
                 </ContextProvider>
+                <NetworkConnectionStatus />
             </body>
         </html>
     );

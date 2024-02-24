@@ -25,7 +25,14 @@ const Header = function () {
                         <div className={cx("logo-wrapper")}>
                             <Image width={42} height={42} src={images.logo} alt="dual-target" className={cx("logo")} />
                         </div>
-                        <NetworkSelector networks={networks} />
+                        <NetworkSelector
+                            networks={networks}
+                            classNames={{
+                                classNameWrapper: cx("network-wrapper"),
+                                classNameArrow: cx("network-arrow-icon"),
+                                classNameNetworkList: cx("network-selector"),
+                            }}
+                        />
                     </div>
                     <nav className={cx("navbar")}>
                         <ul className={cx("nav-list")}>
