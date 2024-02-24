@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./NetworkSelector.module.scss";
 import Image from "next/image";
@@ -10,12 +10,27 @@ const cx = classNames.bind(styles);
 
 type Props = {
     networks: Network[];
-    className?: string;
+    classNames?: {
+        classNameWrapper?: string;
+        classNameNetworkList?: string;
+        classNameArrow?: string;
+    };
 };
 
-const NetworkSelector = function ({ networks, className }: Props) {
+const NetworkSelector = function ({ networks, classNames }: Props) {
     const [currentNetwork, setCurrentNetwork] = useState<string>(networks[0].networkName);
     const [isShownNetworks, setIsShowNetworks] = useState<boolean>(false);
+
+    useEffect(() => {
+        const handleResize = function () {
+            if (isShownNetworks && window.innerWidth <= 1024) {
+                setIsShowNetworks(false);
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [isShownNetworks]);
 
     const handleShowNetworks = function () {
         setIsShowNetworks((prev) => !prev);
@@ -25,19 +40,19 @@ const NetworkSelector = function ({ networks, className }: Props) {
         setCurrentNetwork(network);
     };
     return (
-        <div className={cx("wrapper")}>
+        <div className={cx("wrapper", classNames?.classNameWrapper)}>
             <div
                 className={cx(
                     "network-selector",
                     {
                         active: isShownNetworks,
                     },
-                    className,
+                    classNames?.classNameNetworkList,
                 )}
                 onClick={handleShowNetworks}
             >
                 <span className={cx("current-network")}>{currentNetwork}</span>
-                <span className={cx("arrow-icon")}>
+                <span className={cx("arrow-icon", classNames?.classNameArrow)}>
                     <Image src={icons.networkSelector} alt="arrow" />
                 </span>
                 <div

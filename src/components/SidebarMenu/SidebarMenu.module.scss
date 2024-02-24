@@ -62,7 +62,7 @@
 }
 
 .network-selector {
-    width: 100%;
+    width: 100% !important;
     margin-left: 0;
 }
 
@@ -75,7 +75,14 @@
     padding: 0;
     margin-bottom: 1.5rem;
 }
-
+.network-selector-wrapper {
+    display: none;
+}
+@media screen and (max-width: 1024px) {
+    .network-selector-wrapper {
+        display: block;
+    }
+}
 @media screen and (max-width: 768px) {
     .connect-wallet-button {
         display: flex;
