@@ -1,9 +1,7 @@
 import React from "react";
 
 const Shen = function () {
-    return <div>
-        
-    </div>;
+    return <div></div>;
 };
 
 export default Shen;

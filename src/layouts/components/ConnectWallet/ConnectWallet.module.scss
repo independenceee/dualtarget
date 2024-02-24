@@ -47,6 +47,15 @@
     position: absolute;
     right: 4.5rem;
     top: 3.7rem;
+    padding: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.8rem;
+
+    &:hover {
+        background: rgba(177, 109, 215, 0.48);
+    }
 }
 
 .connect-wallet-close-icon {

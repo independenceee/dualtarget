@@ -19,10 +19,10 @@ type Props = {};
 const ConnectWallet = function ({}: Props) {
     const { isShowing, toggle } = useModal();
 
-    const [isAgree, setIsAgree] = useState<boolean>(false);
+    const [accept, setAccept] = useState<boolean>(false);
 
-    const handleAgree = function (event: ChangeEvent<HTMLInputElement>) {
-        setIsAgree(event.target.checked);
+    const handleAccept = function (event: ChangeEvent<HTMLInputElement>) {
+        setAccept(event.target.checked);
     };
 
     return (
@@ -41,7 +41,7 @@ const ConnectWallet = function ({}: Props) {
                     </section>
                     <section className={cx("connect-wallet-accept")}>
                         <div className={cx("connect-wallet-input")}>
-                            <input onChange={handleAgree} type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
+                            <input onChange={handleAccept} type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
                         </div>
                         <label className={cx("connect-wallet-input")} htmlFor="">
                             By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
@@ -53,7 +53,7 @@ const ConnectWallet = function ({}: Props) {
                     </section>
                     <section className={cx("connect-wallet-container")}>
                         {wallets.map(function (wallet: WalletType, index: number) {
-                            return <WalletItem wallet={wallet} key={index} />;
+                            return <WalletItem wallet={wallet} key={index} accept={accept} />;
                         })}
                     </section>
                 </div>

@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import classNames from "classnames/bind";
+import Button from "~/components/Button";
 import styles from "./Hamburger.module.scss";
 import SidebarMenu from "../SidebarMenu";
 
