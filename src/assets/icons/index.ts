@@ -10,6 +10,7 @@ const icons = {
     arrowRight: require("./arrow-right.png"),
     glass: require("./no-data.svg"),
     separate: require("./separate.png"),
+    searchDelete: require("./search-delete.svg"),
 };
 
 export default icons;
