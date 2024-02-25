@@ -1,7 +1,7 @@
 import classNames from "classnames/bind";
 import React from "react";
-import styles from "./DelegationRewards.module.scss";
 import Link from "next/link";
+import styles from "./DelegationRewards.module.scss";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
