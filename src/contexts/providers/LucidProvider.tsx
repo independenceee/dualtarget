@@ -11,7 +11,13 @@ type Props = {
 const LucidProvider = function ({ children }: Props) {
     const [lucid, setLucid] = useState<Lucid>(null!);
 
-    const selectNetwork = function () {};
+    const selectNetwork = function () {
+        let lucid: Lucid;
+
+        
+
+
+    };
 
     return <LucidContext.Provider value={{ lucid, setLucid }}>{children}</LucidContext.Provider>;
 };

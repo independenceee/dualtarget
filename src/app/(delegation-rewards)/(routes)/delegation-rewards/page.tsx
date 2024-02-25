@@ -1,6 +1,7 @@
 import classNames from "classnames/bind";
 import React from "react";
 import styles from "./DelegationRewards.module.scss";
+import Link from "next/link";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
@@ -24,9 +25,30 @@ const DelegationRewards = function () {
                     </form>
 
                     <section className={cx("summary")}>
-                        
+                        <div className={cx("summary-item")}>
+                            <h2 className={cx("summary-title")}>Current Epoch</h2>
+                            <p className={cx("summary-description")}>
+                                <Link className={cx("summary-link")} href={""} target="_blank">
+                                    468
+                                </Link>
+                            </p>
+                        </div>
+                        <div className={cx("summary-item")}>
+                            <h2 className={cx("summary-title")}>Total Distributed Rewards</h2>
+                            <p className={cx("summary-description")}>
+                                <Link className={cx("summary-link")} href={""} target="_blank"></Link>
+                            </p>
+                        </div>
+                        <div className={cx("summary-item")}>
+                            <h2 className={cx("summary-title")}>Current Epoch</h2>
+                            <p className={cx("summary-description")}>
+                                <Link className={cx("summary-link")} href={""} target="_blank">
+                                    468
+                                </Link>
+                            </p>
+                        </div>
                     </section>
-                    
+
                     <section className={cx("status")}>
                         <div className={cx("no-data")} />
                         <span>No data for this address</span>
