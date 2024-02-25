@@ -7,6 +7,7 @@ import { networks } from "~/constants/networks";
 import { publicRoutes } from "~/routes/routes";
 import HeaderOption from "~/layouts/components/Header/HeaderOption";
 import configs from "~/configs";
+import ConnectWallet from "~/layouts/components/ConnectWallet";
 
 const cx = classNames.bind(styles);
 
@@ -24,7 +25,7 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                 open,
             })}
         >
-            <button className={cx("connect-wallet-button")}>Connect Wallet</button>
+            <ConnectWallet />
             <NetworkSelector
                 networks={networks}
                 classNames={{
