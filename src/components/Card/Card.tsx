@@ -13,46 +13,16 @@ const cx = classNames.bind(styles);
 type Props = {
     icon: string | StaticImport;
     title: string;
-    buyPrice: number;
-    sellPrice: number;
-    circulatingSupply: number;
-    mintableAmount: number;
     className?: string;
     buttonOptions?: ButtonProps;
+    children: React.ReactNode;
 };
 
-const Card = function ({ icon, title, buyPrice, sellPrice, circulatingSupply, mintableAmount, className, buttonOptions }: Props) {
+const Card = function ({ icon, title, className, buttonOptions, children }: Props) {
     return (
         <Gutter className={className}>
             <Title icon={icon} title={title} />
-            <div className={cx("body")}>
-                <div className={cx("buy-price")}>
-                    <h2 className={cx("title")}>Buy Price</h2>
-                    <div className={cx("amount")}>
-                        <span>{buyPrice}</span>
-                        <span className={cx("suffix")}>₳</span>
-                    </div>
-                </div>
-                <div className={cx("sell-price")}>
-                    <h2 className={cx("title")}>Sell Price</h2>
-                    <div className={cx("amount")}>
-                        <span>{sellPrice}</span>
-                        <span className={cx("suffix")}>₳</span>
-                    </div>
-                </div>
-                <div className={cx("circulating-supply")}>
-                    <h2 className={cx("title")}>Circulating Supply</h2>
-                    <div className={cx("amount")}>
-                        <span>{circulatingSupply}</span>
-                    </div>
-                </div>
-                <div className={cx("mintable-amount")}>
-                    <h2 className={cx("title")}>Mintable Amount</h2>
-                    <div className={cx("amount")}>
-                        <span>{mintableAmount}</span>
-                    </div>
-                </div>
-            </div>
+            {children}
             <div>
                 <Button {...omit(buttonOptions, ["children"])} className={cx("button")}>
                     {buttonOptions?.children}

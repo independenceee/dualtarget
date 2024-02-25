@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tippyjs/react": "^4.2.6",
     "@types/react-detect-offline": "^2.4.5",
     "cbor-x": "^1.5.8",
     "classnames": "^2.5.1",
