@@ -14,9 +14,10 @@ const cx = classNames.bind(styles);
 
 type Props = {
     wallet: WalletType;
+    accept: boolean;
 };
 
-const WalletItem = function ({ wallet }: Props) {
+const WalletItem = function ({ wallet, accept }: Props) {
     const [isDownload, setIsDownload] = useState<boolean>(true);
     const { connect, loading } = useContext<WalletContextType>(WalletContext);
 
@@ -31,12 +32,18 @@ const WalletItem = function ({ wallet }: Props) {
     }, []);
 
     return (
-        <div className={cx("wrapper")} onClick={handleConnectWallet}>
+        <div
+            className={cx("wrapper", {
+                accept: accept,
+                isDownload: isDownload,
+            })}
+            onClick={handleConnectWallet}
+        >
             <div className={cx("icon-wrapper")}>
-                <Image className={cx("icon-image")} src={wallet.image} alt={wallet.name} />
+                <Image className={cx("icon-image", { accept: accept })} src={wallet.image} alt={wallet.name} />
             </div>
             <div className={cx("inner")}>
-                <div className={cx("name")}>{wallet.name}</div>
+                <div className={cx("name", { accept: accept })}>{wallet.name}</div>
 
                 {!isDownload && (
                     <div className={cx("action")}>

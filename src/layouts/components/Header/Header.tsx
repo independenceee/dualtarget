@@ -39,6 +39,7 @@ const Header = function () {
                             {publicRoutes.map(function ({ name, redirect }, index: number) {
                                 return (
                                     <HeaderOption
+                                        setOpen={null!}
                                         key={index}
                                         name={name}
                                         redirect={redirect}

@@ -47,6 +47,15 @@
     position: absolute;
     right: 4.5rem;
     top: 3.7rem;
+    padding: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.8rem;
+
+    &:hover {
+        background: rgba(177, 109, 215, 0.48);
+    }
 }
 
 .connect-wallet-close-icon {
@@ -107,6 +116,66 @@
 }
 
 /* connect wallet end */
+
+/* connect wallet error begin */
+.connect-wallet-error-wrapper {
+    z-index: 10;
+    background-color: #444c7c;
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 10%);
+    max-width: 450px;
+    overflow: auto;
+    padding: 40px 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.connect-wallet-error-title {
+    margin: 5px 0;
+    color: #fff;
+    font-size: 2.4rem;
+}
+
+.connect-wallet-error-description {
+    font-size: 1.6rem;
+    line-height: 1.6rem;
+    font-weight: 400;
+    margin: 1rem 0;
+}
+
+.connect-wallet-error-button-wrapper {
+    margin: 30px auto 0;
+    max-width: 450px;
+}
+
+.connect-wallet-error-button {
+    margin: 30px auto 0;
+    max-width: 450px;
+    align-items: center;
+    background: transparent;
+    background-image: linear-gradient(118deg, #7054d1 13%, #ab56c9 58%, #b275dc);
+    border: 1px solid #7054d1;
+    border-radius: 12px;
+    box-shadow: 0 8px 12px 0 rgba(177, 109, 215, 0.28);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    font-size: 16px;
+    height: 56px;
+    justify-content: center;
+    line-height: 1;
+    margin: 0;
+    min-width: 185px;
+    outline: 0;
+    font-weight: 500;
+    padding: 24px 32px;
+    transition: all 0.2s ease-out;
+}
+
+/* connect wallet error end */
 
 @media screen and (max-width: 670px) {
     .connect-wallet-button {
