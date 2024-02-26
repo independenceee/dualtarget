@@ -30,9 +30,14 @@
     width: 100%;
 }
 
+.card-wrapper {
+    width: 50%;
+    position: relative;
+}
+
 .stat-djed-stablecoin,
 .stat-shen-reservation {
-    width: 50%;
+    width: 100%;
 }
 
 .orders {
@@ -40,6 +45,10 @@
 }
 
 @media (max-width: 1024px) {
+    .card-wrapper {
+        width: 100%;
+    }
+
     .stats {
         flex-direction: column;
     }

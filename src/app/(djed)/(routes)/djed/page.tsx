@@ -1,10 +1,12 @@
 import classNames from "classnames/bind";
 import React from "react";
-import Coin from "~/components/Card/Coin";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders";
 import styles from "./Djed.module.scss";
+import Service from "~/components/Card/Service";
+import Image from "next/image";
+import images from "~/assets/images";
 const cx = classNames.bind(styles);
 
 const Djed = function () {
@@ -17,28 +19,34 @@ const Djed = function () {
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
-                            <Card
-                                title="Djed Stablecoin"
-                                icon={icons.djed}
-                                className={cx("stat-djed-stablecoin")}
-                                buttonOptions={{
-                                    children: "Mint",
-                                    disabled: true,
-                                }}
-                            >
-                                <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
-                            </Card>
-                            <Card
-                                title="Djed Stablecoin"
-                                icon={icons.djed}
-                                className={cx("stat-djed-stablecoin")}
-                                buttonOptions={{
-                                    children: "Burn",
-                                    disabled: true,
-                                }}
-                            >
-                                <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
-                            </Card>
+                            <div className={cx("card-wrapper")}>
+                                <Card
+                                    title="Mint DJED"
+                                    icon={icons.djed}
+                                    className={cx("stat-djed-stablecoin")}
+                                    buttonOptions={{
+                                        children: "Mint",
+                                        disabled: true,
+                                    }}
+                                >
+                                    <Service type="pay" />
+                                </Card>
+                                <Image className={cx("coin-image")} src={images.coinDjedLeft} alt="coin-djed" />
+                            </div>
+                            <div className={cx("card-wrapper")}>
+                                <Card
+                                    title="Burn DJED"
+                                    icon={icons.djed}
+                                    className={cx("stat-djed-stablecoin")}
+                                    buttonOptions={{
+                                        children: "Burn",
+                                        disabled: true,
+                                    }}
+                                >
+                                    <Service type="get" />
+                                </Card>
+                                <Image className={cx("coin-image")} src={images.coinDjedRight} alt="coin-djed" />
+                            </div>
                         </div>
                     </div>
                 </div>

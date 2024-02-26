@@ -30,9 +30,19 @@
     width: 100%;
 }
 
+<<<<<<< Updated upstream
 .stat-djed-stablecoin,
 .stat-shen-reservation {
     width: 50%;
+=======
+.card-wrapper {
+    width: 50%;
+}
+
+.stat-djed-stablecoin,
+.stat-shen-reservation {
+    width: 100%;
+>>>>>>> Stashed changes
 }
 
 .orders {
@@ -40,6 +50,13 @@
 }
 
 @media (max-width: 1024px) {
+<<<<<<< Updated upstream
+=======
+    .card-wrapper {
+        width: 100%;
+    }
+
+>>>>>>> Stashed changes
     .stats {
         flex-direction: column;
     }
