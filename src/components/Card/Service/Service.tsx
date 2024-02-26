@@ -106,6 +106,7 @@ const Service = function ({ type }: Props) {
                                     <a
                                         className={cx("tippy-content-link")}
                                         href="https://docs.cardano.org/native-tokens/minimum-ada-value-requirement/"
+                                        target="_blank"
                                     >
                                         Why is it required?
                                     </a>
