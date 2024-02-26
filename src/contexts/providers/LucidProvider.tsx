@@ -1,8 +1,9 @@
 "use client";
 
 import React, { ReactNode, useState } from "react";
-import { Lucid } from "lucid-cardano";
+import { Blockfrost, Lucid } from "lucid-cardano";
 import LucidContext from "~/contexts/components/LucidContext";
+import { Network } from "~/types/GenericsType";
 
 type Props = {
     children: ReactNode;
@@ -10,14 +11,6 @@ type Props = {
 
 const LucidProvider = function ({ children }: Props) {
     const [lucid, setLucid] = useState<Lucid>(null!);
-
-    const selectNetwork = function () {
-        let lucid: Lucid;
-
-        
-
-
-    };
 
     return <LucidContext.Provider value={{ lucid, setLucid }}>{children}</LucidContext.Provider>;
 };

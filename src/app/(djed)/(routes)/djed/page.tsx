@@ -3,7 +3,7 @@ import React from "react";
 import Coin from "~/components/Card/Coin";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
-import Orders from "~/components/Orders/Orders";
+import Orders from "~/components/Orders";
 import styles from "./Djed.module.scss";
 const cx = classNames.bind(styles);
 

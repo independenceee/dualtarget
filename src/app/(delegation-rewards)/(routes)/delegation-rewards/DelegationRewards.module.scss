@@ -1,13 +1,12 @@
 .wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin-top: 150px;
+    margin: 0 auto;
+    max-width: 1024px;
+    min-height: calc(100vh - 415px);
+    padding: 172px 0 0;
+    width: 100%;
 }
 
-.inner {
+.container {
     background: linear-gradient(1turn, #373c62, #424a7b);
     border-radius: 50px;
     color: #fff;
@@ -125,4 +124,35 @@
     height: 42px;
     margin: 42px auto;
     width: 42px;
+}
+
+@media (max-width: 767px) {
+    .wrapper {
+        margin: 0 auto 72px;
+        padding: 172px 18px 0;
+    }
+
+    .container {
+        border-radius: 16px;
+        padding: 32px 16px;
+        width: 100%;
+    }
+
+    .title {
+        font-size: 20px;
+        line-height: 30px;
+    }
+}
+
+@media (max-width: 1365px) {
+    .wrapper {
+        padding: 172px 16px 0;
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        padding: 88px 60px;
+        width: 736px;
+    }
 }
