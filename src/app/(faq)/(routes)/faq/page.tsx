@@ -11,11 +11,35 @@ const FrequentlyAskedQuestion = function ({}: Props) {
     return (
         <div className={cx("wrapper")}>
             <section className={cx("background")} />
+
             <section className={cx("title-container")}>
                 <h1 className={cx("title")}>FAQ</h1>
                 <h3 className={cx("sub-title")}>Answers to frequently asked questions</h3>
             </section>
-            <section className={cx("inner")}>
+
+            <section className={cx("container")}>
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
+                <FaqItem />
                 <FaqItem />
             </section>
         </div>
