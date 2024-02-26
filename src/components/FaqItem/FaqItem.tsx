@@ -12,7 +12,7 @@ const FaqItem = function ({}: Props) {
             <div className={cx("inner")}>
                 <section className={cx("icon")} />
                 <section className={cx("title-wrapper")}>
-                    <h3 className={cx("title")}>What is DJED's stability mechanism?</h3>
+                    <h3 className={cx("title")}>What is DJED s stability mechanism?</h3>
                 </section>
             </div>
         </div>
