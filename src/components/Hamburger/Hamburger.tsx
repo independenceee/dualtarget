@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import classNames from "classnames/bind";
+import Button from "~/components/Button";
 import styles from "./Hamburger.module.scss";
 import SidebarMenu from "../SidebarMenu";
 
@@ -13,7 +14,7 @@ const Hamburger = function () {
 
     useLayoutEffect(() => {
         const handleResponsiveSidebar = () => {
-            if (window.innerWidth > 1366) setOpen(false);
+            if (window.innerWidth > 1365) setOpen(false);
         };
 
         window.addEventListener("resize", handleResponsiveSidebar);

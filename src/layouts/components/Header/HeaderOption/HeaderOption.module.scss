@@ -10,6 +10,12 @@
     color: var(--white-color);
     font-size: 1.6rem;
     padding: 0 4rem;
+    font-weight: 500;
+    transition: all 0.3s;
+
+    &:hover {
+        color: #efc644;
+    }
     &.nav-item-link-active {
         -webkit-text-fill-color: transparent;
         background: linear-gradient(107deg, #7054d1 16%, #ab56c9 60%, #b275dc 102%);

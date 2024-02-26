@@ -5,6 +5,9 @@ import images from "~/assets/images";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Gutter from "~/components/Card/Gutter";
+import Title from "~/components/Card/Title";
+import routes from "~/configs/routes";
+import Coin from "~/components/Card/Coin";
 
 const cx = classNames.bind(styles);
 
@@ -42,22 +45,26 @@ export default function Home() {
                     <div className={cx("stats")}>
                         <Card
                             title="Djed Stablecoin"
-                            buyPrice={1.7199}
-                            mintableAmount={2521208.26}
-                            sellPrice={1.669}
                             icon={icons.djed}
-                            circulatingSupply={3574361.04}
                             className={cx("stat-djed-stablecoin")}
-                        />
+                            buttonOptions={{
+                                href: routes.djed,
+                                children: "Mint/Burn",
+                            }}
+                        >
+                            <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
+                        </Card>
                         <Card
                             title="Djed Stablecoin"
-                            buyPrice={1.7199}
-                            mintableAmount={2521208.26}
-                            sellPrice={1.669}
                             icon={icons.djed}
-                            circulatingSupply={3574361.04}
                             className={cx("stat-djed-stablecoin")}
-                        />
+                            buttonOptions={{
+                                href: routes.djed,
+                                children: "Mint/Burn",
+                            }}
+                        >
+                            <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
+                        </Card>
                     </div>
                     <div className={cx("sub-stats")}>*Buy\Sell price includes base fee, and does not include operator fee</div>
                 </div>
@@ -66,16 +73,7 @@ export default function Home() {
                 <div className={cx("reverse-inner")}>
                     <Gutter className={cx("reverse-card")}>
                         <div>
-                            <div className={cx("reverse-header")}>
-                                <div className={cx("reverse-header-left")}>
-                                    <div className={cx("reserve-icon-wrapper")}>
-                                        <div className={cx("icon-frame")} />
-                                        <Image src={icons.reserves} alt="reserve-image" className={cx("reserve-icon")} />
-                                    </div>
-                                    <span className={cx("reverse-header-title")}>Reverse</span>
-                                </div>
-                                <div className={cx("last-updated")}>Last updated: 22 Feb, 2024 17:06 UTC</div>
-                            </div>
+                            <Title icon={icons.reserves} title="Reserve" />
 
                             <div className={cx("reserves")}>
                                 <div className={cx("reserve-ratio")}>

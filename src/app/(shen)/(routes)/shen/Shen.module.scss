@@ -1,0 +1,65 @@
+@import "../../../../styles/layouts.scss";
+
+.wrapper {
+    padding: 17.2rem 6.4rem 0;
+}
+
+.header {
+    margin-bottom: 6.4rem;
+}
+
+.header-order {
+    margin-top: 6rem;
+    margin-bottom: 3.2rem;
+    width: 100%;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.stats {
+    @extend .container;
+    display: flex;
+    gap: 2.8rem;
+}
+
+.stats-inner {
+    width: 100%;
+}
+
+.card-wrapper {
+    width: 50%;
+}
+
+.stat-djed-stablecoin,
+.stat-shen-reservation {
+    width: 100%;
+}
+
+.orders {
+    margin: 3.2rem auto 5.6rem;
+}
+
+@media (max-width: 1024px) {
+    .card-wrapper {
+        width: 100%;
+    }
+
+    .stats {
+        flex-direction: column;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .wrapper {
+        padding-right: 1.8rem;
+        padding-left: 1.8rem;
+    }
+
+    .stats {
+        padding: 0 !important;
+    }
+}

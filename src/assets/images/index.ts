@@ -5,6 +5,8 @@ const images = {
     cardanoSide: require("./cardano-side.svg"),
     djedHeaderCoins: require("./djed_header_coins.png"),
     djedHeaderCoinsMobile: require("./home_coins_mobile.png"),
+    coinDjedLeft: require("./coin-djed-left.png"),
+    coinDjedRight: require("./coin-djed-right.png"),
     /* wallet-image-begin */
     nami: require("./wallets/nami.svg"),
     eternl: require("./wallets/eternl.webp"),

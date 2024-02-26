@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     background-color: var(--background-header);
-z-index: 10;
+    z-index: 10;
 }
 
 .wrapper-inner {
@@ -39,8 +39,24 @@ z-index: 10;
 
 // Responsive
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1365px) {
     .navbar {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .network-wrapper {
+        user-select: none;
+        pointer-events: none;
+    }
+
+    .network-selector::before {
+        display: none;
+    }
+
+    .network-arrow-icon {
+        transition: none;
         display: none;
     }
 }

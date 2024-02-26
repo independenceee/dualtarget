@@ -1,3 +1,5 @@
+import { Network } from "lucid-cardano";
+
 export type WalletType = {
     name: string;
     image: string;
@@ -9,7 +11,7 @@ export type WalletType = {
 };
 
 export type Network = {
-    networkName: string;
+    networkName: Network;
     url: string;
     apiKey: string;
 };

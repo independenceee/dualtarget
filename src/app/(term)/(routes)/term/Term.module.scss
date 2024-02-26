@@ -1,0 +1,37 @@
+@import "../../../../styles/layouts.scss";
+
+.wrapper {
+    @extend .container;
+
+    background-color: #444c7c66;
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    line-height: 26px;
+    margin: 172px auto 56px;
+    max-width: 640px;
+    overflow: auto;
+    padding: 40px 20px;
+    width: 100%;
+}
+
+
+
+.title {
+    padding-top: 3pt;
+    text-indent: 0pt;
+    text-align: center;
+    color: #fff;
+    font-size: 12pt;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        background-color: initial;
+        margin: 125px auto 0;
+    }
+}

@@ -1,0 +1,69 @@
+.wrapper {
+    width: 100%;
+}
+
+.inner {
+    border-radius: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    background-image: linear-gradient(91.03deg, #1e2446 39.41%, #333a61 91.44%, #2c3774 108.38%);
+    border-radius: 2.60417vw;
+    box-shadow: 0 4px 84px 0 rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 56px;
+    max-width: 71.77083vw;
+    padding: 3.54167vw 5.41667vw;
+    width: 100%;
+}
+
+.icon {
+    background-image: url("../../assets/icons/arrow-bottom.svg");
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+    height: 15px;
+    position: absolute;
+    right: 16px;
+    top: 24.5px;
+    transition: all 0.1s ease-out;
+    width: 16px;
+    z-index: 100;
+}
+
+.title-wrapper {
+    cursor: pointer;
+    transition: all 0.1s ease-out;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+@media (max-width: 1024px) {
+    .title {
+        font-size: 3.12907vw;
+        margin: 0 0 2.86832vw;
+    }
+}
+
+@media (max-width: 1365px) {
+    .title {
+        font-size: 2.34432vw;
+        margin: 0 0 1.61172vw;
+    }
+}

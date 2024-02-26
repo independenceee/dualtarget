@@ -7,6 +7,7 @@ import { networks } from "~/constants/networks";
 import { publicRoutes } from "~/routes/routes";
 import HeaderOption from "~/layouts/components/Header/HeaderOption";
 import configs from "~/configs";
+import ConnectWallet from "~/layouts/components/ConnectWallet";
 
 const cx = classNames.bind(styles);
 
@@ -24,8 +25,14 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                 open,
             })}
         >
-            <button className={cx("connect-wallet-button")}>Connect Wallet</button>
-            <NetworkSelector networks={networks} className={cx("network-selector")} />
+            <ConnectWallet />
+            <NetworkSelector
+                networks={networks}
+                classNames={{
+                    classNameWrapper: cx("network-selector-wrapper"),
+                    classNameNetworkList: cx("network-selector"),
+                }}
+            />
             <nav className={cx("navbar")}>
                 <ul className={cx("nav-list")}>
                     {publicRoutes.map(function ({ name, redirect }, index: number) {
@@ -37,6 +44,7 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                                 isActive={Boolean(selected === redirect)}
                                 setSelected={setSelected}
                                 className={cx("nav-item-link")}
+                                setOpen={setOpen}
                             />
                         );
                     })}

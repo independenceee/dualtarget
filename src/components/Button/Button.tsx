@@ -7,7 +7,7 @@ import { ClipLoader } from "react-spinners";
 
 const cx = classNames.bind(styles);
 
-type Props = {
+export type ButtonProps = {
     loading?: boolean;
     to?: string;
     href?: string;
@@ -19,7 +19,7 @@ type Props = {
     small?: boolean;
     large?: boolean;
     children: ReactNode;
-    className: string;
+    className?: string;
     LeftIcon?: IconType;
     RightIcon?: IconType;
     onClick?: () => void;
@@ -36,13 +36,13 @@ function Button({
     small = false,
     large = false,
     children,
-    className,
+    className = "",
     LeftIcon,
     RightIcon,
     onClick,
     loading,
     ...passProps
-}: Props) {
+}: ButtonProps) {
     let Component: any = "button";
     const props: any = {
         onClick,

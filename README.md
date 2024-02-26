@@ -1,5 +1,0 @@
-- lay tai nguyen
-- font chu
-- xay dung lai bien css
-- 
-- xay dung layout
