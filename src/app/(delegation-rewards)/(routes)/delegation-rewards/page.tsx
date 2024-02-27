@@ -2,6 +2,9 @@ import classNames from "classnames/bind";
 import React from "react";
 import Link from "next/link";
 import styles from "./DelegationRewards.module.scss";
+import Tippy from "~/components/Tippy";
+import Image from "next/image";
+import icons from "~/assets/icons";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
@@ -12,8 +15,10 @@ const DelegationRewards = function () {
                 <h2 className={cx("sub-title")}>Check your ADA rewards</h2>
                 <form className={cx("form")}>
                     <section className={cx("label")}>
-                        <h1>Address</h1>
-                        <div className={cx("tooltip")}></div>
+                        <div className={cx("input-name")}>Address</div>
+                        <Tippy render={<div>Please enter your Cardano address eligible for deligation rewards.</div>}>
+                            <Image className={cx("icon-help-circle")} src={icons.helpCircle} width={12} height={12} alt="" />
+                        </Tippy>
                     </section>
                     <section className={cx("search")}>
                         <div className={cx("search-input")}>
@@ -35,22 +40,32 @@ const DelegationRewards = function () {
                     <div className={cx("summary-item")}>
                         <h2 className={cx("summary-title")}>Total Distributed Rewards</h2>
                         <p className={cx("summary-description")}>
-                            <Link className={cx("summary-link")} href={""} target="_blank"></Link>
+                            {false ? (
+                                <Link className={cx("summary-link")} href={""} target="_blank">
+                                    468
+                                </Link>
+                            ) : (
+                                <span className={cx("no-data-hyphen")}>-</span>
+                            )}
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>Current Epoch</h2>
+                        <h2 className={cx("summary-title")}>Total Pending Rewards</h2>
                         <p className={cx("summary-description")}>
-                            <Link className={cx("summary-link")} href={""} target="_blank">
-                                468
-                            </Link>
+                            {false ? (
+                                <Link className={cx("summary-link")} href={""} target="_blank">
+                                    468
+                                </Link>
+                            ) : (
+                                <span className={cx("no-data-hyphen")}>-</span>
+                            )}
                         </p>
                     </div>
                 </section>
 
                 <section className={cx("status")}>
                     <div className={cx("no-data")} />
-                    <span>No data for this address</span>
+                    <span>No available data</span>
                 </section>
             </div>
         </div>
