@@ -11,6 +11,9 @@ const icons = {
     glass: require("./no-data.svg"),
     separate: require("./separate.png"),
     searchDelete: require("./search-delete.svg"),
+    files: {
+        defaultFile: require("./file-default.svg"),
+    },
 };
 
 export default icons;
