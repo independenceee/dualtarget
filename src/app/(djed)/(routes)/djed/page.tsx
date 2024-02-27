@@ -29,9 +29,10 @@ const Djed = function () {
                                         disabled: true,
                                     }}
                                 >
-                                    <Service type="pay" />
+                                    <Service type="PAY" />
                                 </Card>
-                                <Image className={cx("coin-image")} src={images.coinDjedLeft} alt="coin-djed" />
+                                <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
+                                <Image className={cx("coin-image-right-mobile")} src={images.coinDjedRight} alt="coin-djed" />
                             </div>
                             <div className={cx("card-wrapper")}>
                                 <Card
@@ -43,9 +44,10 @@ const Djed = function () {
                                         disabled: true,
                                     }}
                                 >
-                                    <Service type="get" />
+                                    <Service type="GET" />
                                 </Card>
-                                <Image className={cx("coin-image")} src={images.coinDjedRight} alt="coin-djed" />
+                                <Image className={cx("coin-image-right")} src={images.coinDjedRight} alt="coin-djed" />
+                                <Image className={cx("coin-image-left-mobile")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import icons from "~/assets/icons";
 import Tippy from "~/components/Tippy";
 const cx = classNames.bind(styles);
+
 type Props = {
     balance?: number;
     cost?: number;
@@ -14,7 +15,7 @@ type Props = {
     className?: string;
     min?: number;
     max?: number;
-    type: "pay" | "get";
+    type: "PAY" | "GET";
 };
 
 const Service = function ({ type }: Props) {
@@ -93,7 +94,7 @@ const Service = function ({ type }: Props) {
                     -
                 </div>
                 <div className={cx("stats")}>
-                    <div className={cx("title-wrapper")}>{type === "pay" ? <span>You will pay</span> : <span>You will get</span>}</div>-
+                    <div className={cx("title-wrapper")}>{type === "PAY" ? <span>You will pay</span> : <span>You will get</span>}</div>-
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("title-wrapper")}>
