@@ -19,9 +19,11 @@ import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
 
 const cx = classNames.bind(styles);
-type Props = {};
+type Props = {
+    className?: string;
+};
 
-const ConnectWallet = function ({}: Props) {
+const ConnectWallet = function ({ className }: Props) {
     const { isShowing: isShowingWallet, toggle: toggleShowingWallet } = useModal();
     const { isShowing: isShowingConnectError, toggle: toggleShowingConnectError } = useModal();
     const { lucid } = useContext<LucidContextType>(LucidContext);
@@ -34,7 +36,7 @@ const ConnectWallet = function ({}: Props) {
     };
 
     return (
-        <div className={cx("wrapper")}>
+        <div className={cx("wrapper", className)}>
             <Button onClick={toggleShowingWallet} className={cx("connect-wallet-button")}>
                 {lucid ? <></> : <span>Connect Wallet</span>}
             </Button>

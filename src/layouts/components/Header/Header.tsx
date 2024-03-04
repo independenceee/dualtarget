@@ -51,7 +51,7 @@ const Header = function () {
                         </ul>
                     </nav>
                     <div className={cx("nav-right-wrapper")}>
-                        <ConnectWallet />
+                        <ConnectWallet className={cx("connect-wallet-button")} />
                         <Hamburger />
                     </div>
                 </div>

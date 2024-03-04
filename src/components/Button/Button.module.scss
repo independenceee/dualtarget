@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
+    width: 100%;
     &.disabled {
         cursor: not-allowed;
         opacity: 0.4;
