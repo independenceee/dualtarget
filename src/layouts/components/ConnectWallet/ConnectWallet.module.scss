@@ -27,6 +27,82 @@
     }
 }
 
+/* connected wallet begin */
+.connected-wallet-container {
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    justify-content: center;
+    position: relative;
+}
+
+.connected-wallet-total-ada {
+    &::after {
+        content: "|";
+        padding: 0 5px;
+    }
+}
+.connected-wallet-image-container {
+    width: 18px;
+    height: 18px;
+}
+
+.connected-wallet-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.connected-wallet-address {
+}
+
+.connected-wallet-icon-container {
+    position: absolute;
+    right: 15px;
+    top: 52%;
+    -webkit-transform: translateY(-48%);
+    transform: translateY(-48%);
+}
+
+.connected-wallet-icon {
+    margin-top: 10px;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    transition: all 0.1s ease-out;
+}
+/* connected wallet end */
+
+/* wallet-open-begin */
+.wallet-open {
+    top: 0;
+    position: absolute;
+    background: linear-gradient(180deg, #1d2345, #3a426f);
+    border-radius: 0 0 12px 12px;
+    color: #fff;
+    font-size: 14px;
+    width: 321px;
+}
+
+.top-wallet {
+    display: flex;
+    height: 86px;
+    margin: 0 18px;
+}
+
+.icon-wallet {
+    align-items: center;
+    display: flex;
+    margin-right: 16px;
+}
+
+.icon-wallet-image {
+    width: 34px;
+}
+/* wallet-open-end */
+
 /* connect wallet begin */
 
 .connect-wallet-wrapper {
@@ -104,6 +180,7 @@
     font-size: 1.4rem;
     padding-left: 1rem;
     padding-top: 0.7rem;
+    text-wrap: wrap;
 }
 
 .connect-wallet-container {
@@ -173,4 +250,20 @@
     font-weight: 500;
     padding: 24px 32px;
     transition: all 0.2s ease-out;
+}
+
+@media screen and (max-width: 670px) {
+    /* connect wallet begin */
+    .connect-wallet-wrapper {
+        position: fixed;
+        inset: 0;
+        border-radius: 0;
+        height: 100%;
+        max-height: 100vh;
+        max-width: 100%;
+        padding: 36px 20px;
+        width: 100%;
+        z-index: 1000;
+    }
+    /* connect wallet end */
 }

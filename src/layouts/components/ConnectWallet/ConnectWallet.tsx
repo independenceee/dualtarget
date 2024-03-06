@@ -17,6 +17,8 @@ import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
+import convertString from "~/helpers/convert-string";
+import Notification from "~/components/Notification";
 
 const cx = classNames.bind(styles);
 type Props = {
@@ -38,8 +40,38 @@ const ConnectWallet = function ({ className }: Props) {
     return (
         <div className={cx("wrapper", className)}>
             <Button onClick={toggleShowingWallet} className={cx("connect-wallet-button")}>
-                {lucid ? <></> : <span>Connect Wallet</span>}
+                {lucid ? (
+                    <div>
+                        <section className={cx("connected-wallet-container")}>
+                            <div className={cx("connected-wallet-total-ada")}>
+                                {wallet?.balance} {" ₳"}
+                            </div>
+
+                            <div className={cx("connected-wallet-image-container")}>
+                                <Image className={cx("connected-wallet-image")} src={wallet?.image} alt="image-connected" />
+                            </div>
+                            <div className={cx("connected-wallet-address")}>
+                                {convertString({ inputString: String(wallet?.address), numberOfFirstChar: 7, numberOfLastChar: -6 })}
+                            </div>
+                            <div className={cx("connected-wallet-icon-container")}>
+                                <Image className={cx("connected-wallet-icon")} src={icons.arrowBottom} alt="" />
+                            </div>
+                        </section>
+
+                        <section className={cx("wallet-open")}>
+                            <div className={cx("top-wallet")}>
+                                <div className={cx("icon-wallet")}>
+                                    <Image className={cx("icon-wallet-image")} src={wallet?.image} alt="" />
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                ) : (
+                    <span>Connect Wallet</span>
+                )}
             </Button>
+
+            {/* <Notification /> */}
 
             {!lucid && (
                 <Modal isShowing={isShowingWallet} toggle={toggleShowingWallet}>
