@@ -7,34 +7,30 @@
 }
 
 .table-header {
-    align-items: flex-start;
     border-bottom: 1px solid hsla(0, 0%, 100%, 0.05);
-    display: flex;
-    justify-content: space-between;
-    padding: 24px 16px;
 }
-
+.table-header-item {
+    padding-bottom: 24px;
+    padding-right: 12px;
+}
 .table-header-item {
     color: #fff;
     font-size: 18px;
     font-weight: 700;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .row {
-    padding: 12px 0;
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-
     &:not(:last-child) {
         border-bottom: 1px solid hsla(0, 0%, 100%, 0.05);
     }
 }
 
 .row-item {
-    padding-right: 16px;
+    padding: 12px 16px 12px 0;
     font-size: 1.4rem;
     white-space: nowrap;
     overflow: hidden;

@@ -14,11 +14,13 @@ type Props = {
     render: React.ReactNode;
     placement?: Placement;
     interactive?: boolean;
+    trigger?: string;
 };
 
-const Tippy = function ({ children, render, placement = "top-start", interactive = true }: Props) {
+const Tippy = function ({ children, render, trigger = "mouseenter", placement = "top-start", interactive = true }: Props) {
     return (
         <HeadlessTippy
+            trigger={trigger}
             placement={placement}
             interactive={interactive}
             render={(attrs) => (

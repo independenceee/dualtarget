@@ -39,30 +39,12 @@ const ConnectWallet = function ({ className }: Props) {
 
     return (
         <div className={cx("wrapper", className)}>
-            <Button
-                onClick={toggleShowingWallet}
-                className={cx("connect-wallet-button", {
-                    "wallet-show": isShowingWallet,
-                })}
-            >
-                {lucid ? (
-                    <div>
-                        <section className={cx("connected-wallet-container")}>
-                            <div className={cx("connected-wallet-total-ada")}>
-                                {wallet?.balance} {" ₳"}
-                            </div>
-
-                            <div className={cx("connected-wallet-image-container")}>
-                                <Image className={cx("connected-wallet-image")} src={wallet?.image} alt="image-connected" />
-                            </div>
-                            <div className={cx("connected-wallet-address")}>
-                                {convertString({ inputString: String(wallet?.address), numberOfFirstChar: 7, numberOfLastChar: -6 })}
-                            </div>
-                            <div className={cx("connected-wallet-icon-container")}>
-                                <Image className={cx("connected-wallet-icon")} src={icons.arrowBottom} alt="" />
-                            </div>
-                        </section>
-
+            <Tippy
+                trigger="click"
+                interactive
+                placement="bottom-start"
+                render={
+                    <>
                         {wallet && isShowingWallet && (
                             <section className={cx("wallet-open")}>
                                 <div className={cx("top-wallet")}>
@@ -126,12 +108,38 @@ const ConnectWallet = function ({ className }: Props) {
                                 </div>
                             </section>
                         )}
-                    </div>
-                ) : (
-                    <span>Connect Wallet</span>
-                )}
-            </Button>
+                    </>
+                }
+            >
+                <Button
+                    onClick={toggleShowingWallet}
+                    className={cx("connect-wallet-button", {
+                        "wallet-show": isShowingWallet,
+                    })}
+                >
+                    {lucid ? (
+                        <div>
+                            <section className={cx("connected-wallet-container")}>
+                                <div className={cx("connected-wallet-total-ada")}>
+                                    {wallet?.balance} {" ₳"}
+                                </div>
 
+                                <div className={cx("connected-wallet-image-container")}>
+                                    <Image className={cx("connected-wallet-image")} src={wallet?.image} alt="image-connected" />
+                                </div>
+                                <div className={cx("connected-wallet-address")}>
+                                    {convertString({ inputString: String(wallet?.address), numberOfFirstChar: 7, numberOfLastChar: -6 })}
+                                </div>
+                                <div className={cx("connected-wallet-icon-container")}>
+                                    <Image className={cx("connected-wallet-icon")} src={icons.arrowBottom} alt="" />
+                                </div>
+                            </section>
+                        </div>
+                    ) : (
+                        <span>Connect Wallet</span>
+                    )}
+                </Button>
+            </Tippy>
             {/* <Notification /> */}
 
             {!lucid && (
