@@ -4,6 +4,7 @@ import styles from "./Orders.module.scss";
 import Image from "next/image";
 import icons from "~/assets/icons";
 import Table from "~/components/Table";
+import Expand from "../Expand/Expand";
 
 const cx = classNames.bind(styles);
 
@@ -25,6 +26,7 @@ const Orders = ({ className }: Props) => {
         //     ) : (
         <div className={cx("table-wrapper")}>
             <Table className={cx("order-table")} />
+            {/* <Expand /> */}
         </div>
         //     )}
         // </div>
