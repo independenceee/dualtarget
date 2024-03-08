@@ -80,7 +80,7 @@ const ConnectWallet = function ({ className }: Props) {
                                         <div className={cx("data-wallet-address")}>
                                             {convertString({ inputString: String(wallet.address), numberOfFirstChar: 13, numberOfLastChar: -16 })}
                                             <Tippy placement={"top-end"} render={<div>Copy to clipboard.</div>}>
-                                                <Image className={cx("icon-help-circle")} src={icons.copy} width={12} height={12} alt="" />
+                                                <Image className={cx("icon-help-circle")} src={icons.copy} width={16} height={16} alt="" />
                                             </Tippy>
                                         </div>
                                     </div>
