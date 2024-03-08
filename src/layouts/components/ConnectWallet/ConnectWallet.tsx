@@ -39,7 +39,12 @@ const ConnectWallet = function ({ className }: Props) {
 
     return (
         <div className={cx("wrapper", className)}>
-            <Button onClick={toggleShowingWallet} className={cx("connect-wallet-button")}>
+            <Button
+                onClick={toggleShowingWallet}
+                className={cx("connect-wallet-button", {
+                    "wallet-show": isShowingWallet,
+                })}
+            >
                 {lucid ? (
                     <div>
                         <section className={cx("connected-wallet-container")}>
@@ -58,7 +63,7 @@ const ConnectWallet = function ({ className }: Props) {
                             </div>
                         </section>
 
-                        {wallet && (
+                        {wallet && isShowingWallet && (
                             <section className={cx("wallet-open")}>
                                 <div className={cx("top-wallet")}>
                                     <div className={cx("icon-wallet")}>
