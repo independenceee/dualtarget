@@ -22,6 +22,18 @@
     padding: 2.4rem;
 }
 
+.table-wrapper {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-image: linear-gradient(180deg, #373c62 0, #424a7b);
+    border-radius: 50px;
+    box-shadow: 0 4px 84px 0 rgba(0, 0, 0, 0.13);
+    margin: 32px auto 0;
+    max-width: 1200px;
+    overflow: hidden;
+    padding: 48px 48px 40px;
+}
+
 @media screen and (max-width: 1024px) {
     .wrapper {
         padding: 0;

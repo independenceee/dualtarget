@@ -1,0 +1,23 @@
+.wrapper {
+}
+
+.header {
+    align-items: flex-start;
+    border-bottom: 1px solid hsla(0, 0%, 100%, 0.05);
+    display: flex;
+    justify-content: space-between;
+    padding: 24px 16px;
+    padding: 0 0 12px;
+}
+
+.header-item {
+    flex: 1.6 1;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.header-item-text {
+    margin: 0;
+}
