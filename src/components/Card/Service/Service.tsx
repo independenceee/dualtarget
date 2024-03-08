@@ -47,7 +47,7 @@ const Service = function ({ type }: Props) {
                     </div>
                 </div>
                 <div className={cx("slider-input-group")}>
-                    <input className={cx("slider-input")} type="range" min={0} max={1} step="0.01" disabled defaultValue={0} />{" "}
+                    <input className={cx("slider-input")} type="range" min={0} max={1} step="0.01" defaultValue={0} />{" "}
                     <div className={cx("cover_lines")}>
                         <div className={cx("vertical-line")}>
                             <Image src={icons.separate} alt="separate" />

@@ -1,4 +1,5 @@
 const icons = {
+    copy: require("./copy.svg"),
     delete: require("./delete.png"),
     checked: require("./checked.svg"),
     networkSelector: require("./network.svg"),

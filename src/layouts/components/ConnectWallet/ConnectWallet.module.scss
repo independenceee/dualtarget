@@ -20,6 +20,7 @@
     transition: all 0.2s ease-out;
     font-family: Poppins, sans-serif;
     white-space: nowrap;
+    position: relative;
 
     &:hover {
         background-position: 100% 100%;
@@ -56,9 +57,6 @@
     object-fit: cover;
 }
 
-.connected-wallet-address {
-}
-
 .connected-wallet-icon-container {
     position: absolute;
     right: 15px;
@@ -77,13 +75,21 @@
 
 /* wallet-open-begin */
 .wallet-open {
-    top: 0;
+    top: 50px;
+    left: 0;
     position: absolute;
     background: linear-gradient(180deg, #1d2345, #3a426f);
     border-radius: 0 0 12px 12px;
     color: #fff;
     font-size: 14px;
-    width: 321px;
+    width: 100%;
+}
+
+.data-wallet {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
 }
 
 .top-wallet {
@@ -101,7 +107,110 @@
 .icon-wallet-image {
     width: 34px;
 }
+
+.data-wallet {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+
+.data-wallet-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.data-wallet-top-name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 30px;
+    text-transform: capitalize;
+}
+
+.data-wallet-top-network {
+    align-items: center;
+    background: #444c7c;
+    border-radius: 12px;
+    display: flex;
+    font-size: 12px;
+    font-weight: 400;
+    height: 22px;
+    justify-content: space-evenly;
+    margin-top: 3px;
+    text-transform: capitalize;
+    width: 93px;
+}
+
+.dot {
+    background: #86f7b3;
+    border-radius: 100px;
+    height: 12px;
+    width: 12px;
+}
+
+.data-wallet-address {
+    display: flex;
+    font-size: 12px;
+    font-weight: 400;
+    justify-content: space-between;
+    line-height: 24px;
+}
 /* wallet-open-end */
+
+/* wallet-item-begin*/
+.item-wallet {
+    align-items: center;
+    border-top: 1px solid #444c7c;
+    display: flex;
+    height: 86px;
+    margin: 0 24px;
+}
+
+.item-icon {
+    margin-right: 16px;
+}
+
+.item-icon-image {
+    width: 28px;
+    height: 28px;
+    object-fit: cover;
+}
+
+.item-data {
+    align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.item-data-name {
+}
+
+.item-data-name-symbol {
+    font-weight: 700;
+    text-align: left;
+}
+
+.item-data-name-description {
+    margin-top: 4px;
+}
+
+.data-number {
+    font-size: 600;
+}
+/* wallet-item-end*/
+
+.disconnect {
+    border-top: 1px solid #444c7c;
+    color: #d5aa68;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    font-weight: 400;
+    justify-content: center;
+    padding: 18px 0;
+}
 
 /* connect wallet begin */
 

@@ -18,6 +18,11 @@ const images = {
     yoroi: require("./wallets/yoroi.png"),
     nufi: require("./wallets/nufi.png"),
     /* wallet-image-end */
+    /* token-image-begin */
+    djed: require("./tokens/djeg.png"),
+    shen: require("./tokens/shen.png"),
+    ada: require("./tokens/cardano.png"),
+    /* token-image-end */
 };
 
 export default images;
