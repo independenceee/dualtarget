@@ -24,7 +24,7 @@ const Orders = ({ className }: Props) => {
         //         </div>
         //     ) : (
         <div className={cx("table-wrapper")}>
-            <Table />
+            <Table className={cx("order-table")} />
         </div>
         //     )}
         // </div>

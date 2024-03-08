@@ -1,23 +1,31 @@
-.wrapper {
-}
-
-.header {
-    align-items: flex-start;
-    border-bottom: 1px solid hsla(0, 0%, 100%, 0.05);
-    display: flex;
-    justify-content: space-between;
-    padding: 24px 16px;
-    padding: 0 0 12px;
+.table {
+    border: none;
+    width: 100%;
+    text-align: left;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
 
 .header-item {
-    flex: 1.6 1;
     color: #fff;
     font-size: 16px;
     font-weight: 700;
     text-align: left;
+    padding-right: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.header-item-text {
-    margin: 0;
+.row {
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+}
+
+.row-item {
+    padding-right: 16px;
+    font-size: 1.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

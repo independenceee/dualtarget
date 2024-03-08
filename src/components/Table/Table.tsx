@@ -3,59 +3,35 @@ import classNames from "classnames/bind";
 import styles from "./Table.module.scss";
 import Link from "next/link";
 
-type Props = {};
-
 const cx = classNames.bind(styles);
-
-const Table = function ({}: Props) {
+type Props = {
+    className?: string;
+};
+const Table = function ({ className }: Props) {
     return (
-        <div className={cx("wrapper")}>
-            <header className={cx("header")}>
-                <section className={cx("header-item")}>
-                    <p className={cx("header-item-text")}>Date</p>
-                </section>
-                <section className={cx("header-item")}>
-                    <p className={cx("header-item-text")}>Tx Hash</p>
-                </section>
-                <section className={cx("header-item")}>
-                    <p className={cx("header-item-text")}>Action</p>
-                </section>
-                <section className={cx("header-item")}>
-                    <p className={cx("header-item-text")}>Amount</p>
-                </section>
-                <section className={cx("header-item")}>
-                    <p className={cx("header-item-text")}>Recieved/Payed</p>
-                </section>
-                <section className={cx("header-item")}>
-                    <p className={cx("header-item-text")}>Status</p>
-                </section>
-            </header>
-            <aside className={cx("rows")}>
-                <div className={cx("row")}>
-                    <div className={cx("row-date")}>
-                        <span>07 Mar, 2024 03:24</span>
-                    </div>
-                    <div className={cx("row-txhash")}>
-                        <span>
-                            <Link href={""} target="_blanke">
-                                e59c....9b46
-                            </Link>
-                        </span>
-                    </div>
-                    <div className={cx("row-action")}>
-                        <span>Mint</span>
-                    </div>
-                    <div className={cx("row-action")}>
-                        <span>Amount</span>
-                    </div>
-                    <div className={cx("row-get-or-pay")}>
-                        <span>13,971.26 ₳</span>
-                    </div>
-                    <div className={cx("row-status")}>
-                        <span>Completed</span>
-                    </div>
-                </div>
-            </aside>
+        <div className={cx("wrapper", className)}>
+            <table className={cx("table")}>
+                <tr className={cx("table-header")}>
+                    <th className={cx("header-item")}>Date</th>
+                    <th className={cx("header-item")}>Tx Hash</th>
+                    <th className={cx("header-item")}>Action</th>
+                    <th className={cx("header-item")}>Amount</th>
+                    <th className={cx("header-item")}>Recieved/Payed</th>
+                    <th className={cx("header-item")}>Status</th>
+                </tr>
+                <tr className={cx("row")}>
+                    <td className={cx("row-item", "row-date")}>07 Mar, 2024 03:24</td>
+                    <td className={cx("row-item", "row-txhash")}>
+                        <Link href={""} target="_blanke">
+                            e59c....9b46e59c....9b46e59c....9b46
+                        </Link>
+                    </td>
+                    <td className={cx("row-item", "row-action")}>Mint</td>
+                    <td className={cx("row-item", "row-action")}>Amount</td>
+                    <td className={cx("row-item", "row-get-or-pay")}>13,971.26 ₳</td>
+                    <td className={cx("row-item", "row-status")}>Completed</td>
+                </tr>
+            </table>
         </div>
     );
 };

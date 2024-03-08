@@ -1,12 +1,12 @@
 import React from "react";
 import classNames from "classnames/bind";
-import styles from "./Notification.module.scss";
+import styles from "./Toast.module.scss";
 import Image from "next/image";
 import icons from "~/assets/icons";
 
 const cx = classNames.bind(styles);
 
-const Notification = function () {
+const Message = function () {
     return (
         <main className={cx("wrapper")}>
             <div className={cx("container")}>
@@ -22,4 +22,4 @@ const Notification = function () {
     );
 };
 
-export default Notification;
+export default Message;
