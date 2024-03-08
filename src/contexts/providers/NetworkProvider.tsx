@@ -1,6 +1,7 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import { Network } from "lucid-cardano";
+import React, { ReactNode, useEffect, useState } from "react";
 import NetworkContext from "~/contexts/components/NetworkContext";
 
 type Props = {
@@ -8,7 +9,24 @@ type Props = {
 };
 
 const NetworkProvider = function ({ children }: Props) {
-    return <NetworkContext.Provider value={{}}>{children}</NetworkContext.Provider>;
+    const [network, setNetwork] = useState<Network>("Preprod");
+
+    useEffect(() => {
+        const networkConnection = localStorage.getItem("network");
+    }, []);
+
+    useEffect(() => {}, [network]);
+
+    return (
+        <NetworkContext.Provider
+            value={{
+                network,
+                setNetwork,
+            }}
+        >
+            {children}
+        </NetworkContext.Provider>
+    );
 };
 
 export default NetworkProvider;

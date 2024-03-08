@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./NetworkSelector.module.scss";
 import Image from "next/image";
 import icons from "~/assets/icons";
 import { networks } from "~/constants/networks";
-import { Network } from "~/types/GenericsType";
+import { NetworkType } from "~/types/GenericsType";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
+import { Network } from "lucid-cardano";
 
 const cx = classNames.bind(styles);
 
 type Props = {
-    networks: Network[];
+    networks: NetworkType[];
     classNames?: {
         classNameWrapper?: string;
         classNameNetworkList?: string;
@@ -18,7 +21,7 @@ type Props = {
 };
 
 const NetworkSelector = function ({ networks, classNames }: Props) {
-    const [currentNetwork, setCurrentNetwork] = useState<string>(networks[0].networkName);
+    const { network, setNetwork } = useContext<NetworkContextType>(NetworkContext);
     const [isShownNetworks, setIsShowNetworks] = useState<boolean>(false);
 
     useEffect(() => {
@@ -36,8 +39,8 @@ const NetworkSelector = function ({ networks, classNames }: Props) {
         setIsShowNetworks((prev) => !prev);
     };
 
-    const handleChooseNetwork = function (network: string) {
-        setCurrentNetwork(network);
+    const handleChooseNetwork = function (network: Network) {
+        setNetwork(network);
     };
     return (
         <div className={cx("wrapper", classNames?.classNameWrapper)}>
@@ -51,7 +54,7 @@ const NetworkSelector = function ({ networks, classNames }: Props) {
                 )}
                 onClick={handleShowNetworks}
             >
-                <span className={cx("current-network")}>{currentNetwork}</span>
+                <span className={cx("current-network")}>{network}</span>
                 <span className={cx("arrow-icon", classNames?.classNameArrow)}>
                     <Image src={icons.networkSelector} alt="arrow" />
                 </span>
@@ -61,8 +64,8 @@ const NetworkSelector = function ({ networks, classNames }: Props) {
                     })}
                 >
                     <ul className={cx("cover_list")}>
-                        {networks.map(({ networkName }: Network, index: number) =>
-                            networkName === currentNetwork ? null : (
+                        {networks.map(({ networkName }: NetworkType, index: number) =>
+                            networkName === network ? null : (
                                 <li key={index} className={cx("network")} onClick={() => handleChooseNetwork(networkName)}>
                                     {networkName}
                                 </li>

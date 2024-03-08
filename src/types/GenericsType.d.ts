@@ -10,7 +10,7 @@ export type WalletType = {
     checkApi: () => Promise<any> | any;
 };
 
-export type Network = {
+export type NetworkType = {
     networkName: Network;
     url: string;
     apiKey: string;

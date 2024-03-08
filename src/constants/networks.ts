@@ -1,6 +1,6 @@
-import { Network } from "~/types/GenericsType";
+import { NetworkType } from "~/types/GenericsType";
 
-const networks: Network[] = [
+const networks: NetworkType[] = [
     {
         networkName: "Mainnet",
         url: process.env.BLOCKFROST_RPC_URL_MAINNET!,

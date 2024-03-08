@@ -5,8 +5,11 @@ import WalletContext from "~/contexts/components/WalletContext";
 import { WalletType } from "~/types/GenericsType";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import { Blockfrost, Lucid, UTxO } from "lucid-cardano";
+import { Blockfrost, Lucid, Network, UTxO } from "lucid-cardano";
 import wallets from "~/constants/wallets";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
+import { networks } from "~/constants/networks";
 
 type Props = {
     children: ReactNode;
@@ -16,24 +19,23 @@ const WalletProvider = function ({ children }: Props) {
     const { lucid, setLucid } = useContext<LucidContextType>(LucidContext);
     const [wallet, setWallet] = useState<WalletType>(null!);
     const [loading, setLoading] = useState<boolean>(false);
+    const { network } = useContext<NetworkContextType>(NetworkContext);
 
     useEffect(() => {
-        (async function () {
-            const walletConnecttion = localStorage.getItem("wallet");
-            if (walletConnecttion) {
-                const walletConnected = JSON.parse(walletConnecttion);
-                wallets.forEach(async function (wallet) {
-                    if (wallet.name.toLowerCase() === walletConnected.name) {
-                        await connect({
-                            name: wallet.name,
-                            api: wallet.api,
-                            checkApi: wallet.checkApi,
-                            image: wallet.image,
-                        });
-                    }
-                });
-            }
-        })();
+        const walletConnecttion = localStorage.getItem("wallet");
+        if (walletConnecttion) {
+            const walletConnected = JSON.parse(walletConnecttion);
+            wallets.forEach(async function (wallet) {
+                if (wallet.name.toLowerCase() === walletConnected.name) {
+                    await connect({
+                        name: wallet.name,
+                        api: wallet.api,
+                        checkApi: wallet.checkApi,
+                        image: wallet.image,
+                    });
+                }
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -51,17 +53,22 @@ const WalletProvider = function ({ children }: Props) {
     const connect = async function ({ name, api, image }: WalletType) {
         try {
             setLoading(true);
-            const lucid: Lucid = await Lucid.new(
-                new Blockfrost(process.env.BLOCKFROST_RPC_URL_PREPROD!, process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!),
-                "Preprod",
+            const currentNetwork = networks.find(function ({ networkName }) {
+                return networkName === network;
+            });
+
+            const lucid = await Lucid.new(
+                new Blockfrost(currentNetwork?.url as string, currentNetwork?.apiKey as string),
+                currentNetwork?.networkName as Network,
             );
-            setLucid(lucid);
+
             lucid.selectWallet(await api());
             const address: string = (await lucid.wallet.address()) as string;
             const stakeKey: string = (await lucid.wallet.rewardAddress()) as string;
             const utxos: Array<UTxO> = (await lucid.wallet.getUtxos()) as Array<UTxO>;
             const { poolId } = await lucid.delegationAt(stakeKey as string);
-            const balance: number = utxos.reduce(function (balance, utxo) {
+            const balance: number = utxos.reduce(function (balance: number, utxo: UTxO) {
+                console.log(utxo.assets);
                 return balance + Number(utxo.assets.lovelace) / 1000000;
             }, 0);
 
@@ -76,6 +83,7 @@ const WalletProvider = function ({ children }: Props) {
                     poolId: poolId,
                 };
             });
+            setLucid(lucid);
         } catch (error) {
             console.log(error);
         } finally {
