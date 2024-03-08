@@ -28,10 +28,12 @@ type Props = {
 
 const ConnectWallet = function ({ className }: Props) {
     const { isShowing: isShowingWallet, toggle: toggleShowingWallet } = useModal();
+
     const { isShowing: isShowingConnectError, toggle: toggleShowingConnectError } = useModal();
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
     const [accept, setAccept] = useState<boolean>(false);
+    const [isShowTippy, setIsShowTippy] = useState<boolean>(false);
 
     const handleAccept = function (event: ChangeEvent<HTMLInputElement>) {
         setAccept(event.target.checked);
@@ -40,12 +42,16 @@ const ConnectWallet = function ({ className }: Props) {
     return (
         <div className={cx("wrapper", className)}>
             <Tippy
+                onHide={() => setIsShowTippy(false)}
+                onShow={() => setIsShowTippy(true)}
+                offset={[0, 0]}
+                className={cx("tippy-wallet")}
                 trigger="click"
                 interactive
                 placement="bottom-start"
                 render={
                     <>
-                        {wallet && isShowingWallet && (
+                        {wallet && (
                             <section className={cx("wallet-open")}>
                                 <div className={cx("top-wallet")}>
                                     <div className={cx("icon-wallet")}>
@@ -112,9 +118,8 @@ const ConnectWallet = function ({ className }: Props) {
                 }
             >
                 <Button
-                    onClick={toggleShowingWallet}
                     className={cx("connect-wallet-button", {
-                        "wallet-show": isShowingWallet,
+                        "wallet-show": isShowTippy,
                     })}
                 >
                     {lucid ? (

@@ -21,15 +21,31 @@
     font-family: Poppins, sans-serif;
     white-space: nowrap;
     position: relative;
+    width: 340px;
 
     &:hover {
         background-position: 100% 100%;
         box-shadow: 0 4px 16px 0 rgba(177, 109, 215, 0.48);
     }
+
     &.wallet-show {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
+        .connected-wallet-icon {
+            transform: rotate(180deg);
+        }
     }
+}
+
+.connected-wallet-icon {
+    transition: all 0.5s;
+}
+.tippy-wallet {
+    border-radius: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    border: none !important;
+    background: unset !important;
 }
 
 /* connected wallet begin */
@@ -73,21 +89,17 @@
 }
 
 .connected-wallet-icon {
-    margin-top: 10px;
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
     transition: all 0.1s ease-out;
 }
 /* connected wallet end */
 
 /* wallet-open-begin */
 .wallet-open {
-    width: 100%;
+    width: 340px;
     background: linear-gradient(180deg, #1d2345, #3a426f);
     border-radius: 0 0 12px 12px;
     color: #fff;
     font-size: 14px;
-    width: 100%;
     z-index: 1;
 }
 
@@ -156,10 +168,12 @@
 
 .data-wallet-address {
     display: flex;
+    align-items: center;
     font-size: 12px;
     font-weight: 400;
     justify-content: space-between;
     line-height: 24px;
+    white-space: nowrap;
 }
 /* wallet-open-end */
 
