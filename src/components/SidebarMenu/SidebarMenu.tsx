@@ -25,7 +25,7 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                 open,
             })}
         >
-            <ConnectWallet />
+            <ConnectWallet className={cx("connect-wallet-button")} />
             <NetworkSelector
                 networks={networks}
                 classNames={{
