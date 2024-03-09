@@ -1,8 +1,8 @@
+"use client";
+
 import classNames from "classnames/bind";
 import React from "react";
 import styles from "./Orders.module.scss";
-import Image from "next/image";
-import icons from "~/assets/icons";
 import Table from "~/components/Table";
 import Expand from "~/components/Expand/Expand";
 import Pagination from "~/components/Pagination";
@@ -25,11 +25,22 @@ const Orders = ({ className }: Props) => {
         //             <p className={cx("notification")}>Connect to view your mint and burn requests</p>
         //         </div>
         //     ) : (
-        <div className={cx("table-wrapper")}>
-            {/* <Table className={cx("order-table")} /> */}
-            {/* <Expand /> */}
-            <Pagination />
-        </div>
+        <>
+            <div className={cx("table-wrapper")}>
+                <Table className={cx("order-table")} />
+                <Pagination pageSize={5} totalItems={20} />
+            </div>
+            <div>
+                <div className={cx("transaction-accordions")}>
+                    {Array(5)
+                        .fill(0)
+                        .map((_, index) => (
+                            <Expand key={index} className={cx("accordion-item")} />
+                        ))}
+                </div>
+                <Pagination pageSize={5} totalItems={20} />
+            </div>
+        </>
         //     )}
         // </div>
     );
