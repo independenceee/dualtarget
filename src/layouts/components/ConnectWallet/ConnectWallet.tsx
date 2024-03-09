@@ -3,6 +3,7 @@
 import React, { ChangeEvent, useContext, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import classNames from "classnames/bind";
 import Modal from "~/components/Modal";
 import { useModal } from "~/hooks";
@@ -35,6 +36,7 @@ const ConnectWallet = function ({ className }: Props) {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
     const [accept, setAccept] = useState<boolean>(false);
+    const [isCopied, setIsCopied] = useState<boolean>(false);
     const [isShowTippy, setIsShowTippy] = useState<boolean>(false);
 
     const handleAccept = function (event: ChangeEvent<HTMLInputElement>) {
@@ -69,8 +71,10 @@ const ConnectWallet = function ({ className }: Props) {
                                         </div>
                                         <div className={cx("data-wallet-address")}>
                                             {convertString({ inputString: String(wallet.address), numberOfFirstChar: 13, numberOfLastChar: -16 })}
-                                            <Tippy placement={"top-end"} render={<div>Copy to clipboard.</div>}>
-                                                <Image className={cx("icon-help-circle")} src={icons.copy} width={16} height={16} alt="" />
+                                            <Tippy placement={"top-end"} render={isCopied ? <div>Copied.</div> : <div>Copy to clipboard.</div>}>
+                                                <CopyToClipboard onCopy={() => setIsCopied(true)} text={wallet?.address as string}>
+                                                    <Image className={cx("icon-help-circle")} src={icons.copy} width={18} height={18} alt="" />
+                                                </CopyToClipboard>
                                             </Tippy>
                                         </div>
                                     </div>
