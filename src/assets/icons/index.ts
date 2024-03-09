@@ -15,9 +15,12 @@ const icons = {
     glass: require("./no-data.svg"),
     separate: require("./separate.png"),
     searchDelete: require("./search-delete.svg"),
+    arrowBottomYellow: require("./arrow-bottom-yellow.svg"),
     files: {
         defaultFile: require("./file-default.svg"),
     },
+    arrowRightPagination: require("./arrow-right-pagination.png"),
+    arrowLeftPagination: require("./arrow-left-pagination.png"),
 };
 
 export default icons;

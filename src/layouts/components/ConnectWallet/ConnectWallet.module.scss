@@ -21,7 +21,7 @@
     font-family: Poppins, sans-serif;
     white-space: nowrap;
     position: relative;
-    width: 340px;
+    width: 340px !important;
 
     &:hover {
         background-position: 100% 100%;
@@ -44,6 +44,7 @@
     border-radius: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    max-width: auto !important;
     border: none !important;
     background: unset !important;
 }
