@@ -129,7 +129,7 @@ const ConnectWallet = function ({ className }: Props) {
                         <div>
                             <section className={cx("connected-wallet-container")}>
                                 <div className={cx("connected-wallet-total-ada")}>
-                                    {wallet?.balance} {" ₳"}
+                                    {wallet?.balance && wallet.balance.toFixed(6)} {" ₳"}
                                 </div>
 
                                 <div className={cx("connected-wallet-image-container")}>
