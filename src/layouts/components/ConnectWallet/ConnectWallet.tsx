@@ -20,6 +20,8 @@ import WalletContext from "~/contexts/components/WalletContext";
 import convertString from "~/helpers/convert-string";
 import images from "~/assets/images";
 import Tippy from "~/components/Tippy";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
 
 const cx = classNames.bind(styles);
 type Props = {
@@ -28,8 +30,8 @@ type Props = {
 
 const ConnectWallet = function ({ className }: Props) {
     const { isShowing: isShowingWallet, toggle: toggleShowingWallet } = useModal();
-
     const { isShowing: isShowingConnectError, toggle: toggleShowingConnectError } = useModal();
+    const { network } = useContext<NetworkContextType>(NetworkContext);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
     const [accept, setAccept] = useState<boolean>(false);
@@ -43,14 +45,14 @@ const ConnectWallet = function ({ className }: Props) {
         <div className={cx("wrapper", className)}>
             <Tippy
                 onHide={() => setIsShowTippy(false)}
-                onShow={() => setIsShowTippy(true)}
+                onShow={() => setIsShowTippy(lucid ? true : false)}
                 offset={[0, 0]}
                 className={cx("tippy-wallet")}
                 trigger="click"
                 interactive
                 placement="bottom-start"
                 render={
-                    <>
+                    <div>
                         {wallet && (
                             <section className={cx("wallet-open")}>
                                 <div className={cx("top-wallet")}>
@@ -62,7 +64,7 @@ const ConnectWallet = function ({ className }: Props) {
                                             <p className={cx("data-wallet-top-name")}>{wallet.name}</p>
                                             <p className={cx("data-wallet-top-network")}>
                                                 <span className={cx("dot")}></span>
-                                                Preprod
+                                                {network}
                                             </p>
                                         </div>
                                         <div className={cx("data-wallet-address")}>
@@ -114,10 +116,11 @@ const ConnectWallet = function ({ className }: Props) {
                                 </div>
                             </section>
                         )}
-                    </>
+                    </div>
                 }
             >
                 <Button
+                    onClick={toggleShowingWallet}
                     className={cx("connect-wallet-button", {
                         "wallet-show": isShowTippy,
                     })}
