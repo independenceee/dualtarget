@@ -18,6 +18,8 @@ const icons = {
     files: {
         defaultFile: require("./file-default.svg"),
     },
+    arrowRightPagination: require("./arrow-right-pagination.png"),
+    arrowLeftPagination: require("./arrow-left-pagination.png"),
 };
 
 export default icons;

@@ -4,7 +4,8 @@ import styles from "./Orders.module.scss";
 import Image from "next/image";
 import icons from "~/assets/icons";
 import Table from "~/components/Table";
-import Expand from "../Expand/Expand";
+import Expand from "~/components/Expand/Expand";
+import Pagination from "~/components/Pagination";
 
 const cx = classNames.bind(styles);
 
@@ -25,8 +26,9 @@ const Orders = ({ className }: Props) => {
         //         </div>
         //     ) : (
         <div className={cx("table-wrapper")}>
-            <Table className={cx("order-table")} />
+            {/* <Table className={cx("order-table")} /> */}
             {/* <Expand /> */}
+            <Pagination />
         </div>
         //     )}
         // </div>

@@ -1,0 +1,58 @@
+.wrapper {
+    align-items: center;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 0;
+}
+
+.button {
+    align-items: center;
+    background-color: #dda85c;
+    border: 0;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 400;
+    height: 24px;
+    letter-spacing: normal;
+    margin: 0 8px;
+    padding: 0 11px 1px;
+    text-align: left;
+}
+
+.button-text {
+    margin: 0 3px;
+}
+
+.page-of-total {
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 300;
+    letter-spacing: normal;
+    line-height: 2;
+    min-width: 110px;
+    text-align: center;
+}
+
+@media (max-width: 1365px) {
+    .wrapper {
+        margin: 24px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .paginator {
+        flex-wrap: wrap;
+    }
+
+    .page-of-total {
+        order: 1;
+        width: 100%;
+    }
+}
