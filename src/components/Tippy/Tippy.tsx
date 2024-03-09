@@ -14,16 +14,35 @@ type Props = {
     render: React.ReactNode;
     placement?: Placement;
     interactive?: boolean;
+    trigger?: string;
+    className?: string;
+    offset?: [number, number];
+    onShow?: () => void;
+    onHide?: () => void;
 };
 
-const Tippy = function ({ children, render, placement = "top-start", interactive = true }: Props) {
+const Tippy = function ({
+    children,
+    onShow,
+    onHide,
+    offset,
+    render,
+    className,
+    trigger = "mouseenter",
+    placement = "top-start",
+    interactive = true,
+}: Props) {
     return (
         <HeadlessTippy
+            onShow={onShow}
+            onHide={onHide}
+            offset={offset}
+            trigger={trigger}
             placement={placement}
             interactive={interactive}
             render={(attrs) => (
                 <div tabIndex={-1} {...attrs}>
-                    <TippyWrapper>{render}</TippyWrapper>
+                    <TippyWrapper className={cx(className)}>{render}</TippyWrapper>
                 </div>
             )}
         >

@@ -28,10 +28,12 @@ type Props = {
 
 const ConnectWallet = function ({ className }: Props) {
     const { isShowing: isShowingWallet, toggle: toggleShowingWallet } = useModal();
+
     const { isShowing: isShowingConnectError, toggle: toggleShowingConnectError } = useModal();
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
     const [accept, setAccept] = useState<boolean>(false);
+    const [isShowTippy, setIsShowTippy] = useState<boolean>(false);
 
     const handleAccept = function (event: ChangeEvent<HTMLInputElement>) {
         setAccept(event.target.checked);
@@ -39,25 +41,16 @@ const ConnectWallet = function ({ className }: Props) {
 
     return (
         <div className={cx("wrapper", className)}>
-            <Button onClick={toggleShowingWallet} className={cx("connect-wallet-button")}>
-                {lucid ? (
-                    <div>
-                        <section className={cx("connected-wallet-container")}>
-                            <div className={cx("connected-wallet-total-ada")}>
-                                {wallet?.balance} {" ₳"}
-                            </div>
-
-                            <div className={cx("connected-wallet-image-container")}>
-                                <Image className={cx("connected-wallet-image")} src={wallet?.image} alt="image-connected" />
-                            </div>
-                            <div className={cx("connected-wallet-address")}>
-                                {convertString({ inputString: String(wallet?.address), numberOfFirstChar: 7, numberOfLastChar: -6 })}
-                            </div>
-                            <div className={cx("connected-wallet-icon-container")}>
-                                <Image className={cx("connected-wallet-icon")} src={icons.arrowBottom} alt="" />
-                            </div>
-                        </section>
-
+            <Tippy
+                onHide={() => setIsShowTippy(false)}
+                onShow={() => setIsShowTippy(true)}
+                offset={[0, 0]}
+                className={cx("tippy-wallet")}
+                trigger="click"
+                interactive
+                placement="bottom-start"
+                render={
+                    <>
                         {wallet && (
                             <section className={cx("wallet-open")}>
                                 <div className={cx("top-wallet")}>
@@ -75,7 +68,7 @@ const ConnectWallet = function ({ className }: Props) {
                                         <div className={cx("data-wallet-address")}>
                                             {convertString({ inputString: String(wallet.address), numberOfFirstChar: 13, numberOfLastChar: -16 })}
                                             <Tippy placement={"top-end"} render={<div>Copy to clipboard.</div>}>
-                                                <Image className={cx("icon-help-circle")} src={icons.copy} width={12} height={12} alt="" />
+                                                <Image className={cx("icon-help-circle")} src={icons.copy} width={16} height={16} alt="" />
                                             </Tippy>
                                         </div>
                                     </div>
@@ -121,12 +114,37 @@ const ConnectWallet = function ({ className }: Props) {
                                 </div>
                             </section>
                         )}
-                    </div>
-                ) : (
-                    <span>Connect Wallet</span>
-                )}
-            </Button>
+                    </>
+                }
+            >
+                <Button
+                    className={cx("connect-wallet-button", {
+                        "wallet-show": isShowTippy,
+                    })}
+                >
+                    {lucid ? (
+                        <div>
+                            <section className={cx("connected-wallet-container")}>
+                                <div className={cx("connected-wallet-total-ada")}>
+                                    {wallet?.balance} {" ₳"}
+                                </div>
 
+                                <div className={cx("connected-wallet-image-container")}>
+                                    <Image className={cx("connected-wallet-image")} src={wallet?.image} alt="image-connected" />
+                                </div>
+                                <div className={cx("connected-wallet-address")}>
+                                    {convertString({ inputString: String(wallet?.address), numberOfFirstChar: 7, numberOfLastChar: -6 })}
+                                </div>
+                                <div className={cx("connected-wallet-icon-container")}>
+                                    <Image className={cx("connected-wallet-icon")} src={icons.arrowBottom} alt="" />
+                                </div>
+                            </section>
+                        </div>
+                    ) : (
+                        <span>Connect Wallet</span>
+                    )}
+                </Button>
+            </Tippy>
             {/* <Notification /> */}
 
             {!lucid && (
