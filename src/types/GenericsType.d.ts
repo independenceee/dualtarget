@@ -15,3 +15,8 @@ export type NetworkType = {
     url: string;
     apiKey: string;
 };
+
+export type HeaderTableType = {
+    title: string;
+    description?: string;
+};

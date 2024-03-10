@@ -8,6 +8,7 @@ import Expand from "~/components/Expand/Expand";
 import Pagination from "~/components/Pagination";
 import Image from "next/image";
 import icons from "~/assets/icons";
+import { historyTransactions } from "~/constants/header-table";
 
 const cx = classNames.bind(styles);
 
@@ -29,7 +30,7 @@ const Orders = ({ className }: Props) => {
             ) : (
                 <div>
                     <div className={cx("table-wrapper")}>
-                        <Table className={cx("order-table")} />
+                        <Table className={cx("order-table")} headerTables={historyTransactions} />
                         <Pagination pageSize={5} totalItems={20} />
                     </div>
                     <div>
