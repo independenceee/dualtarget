@@ -10,6 +10,9 @@ import wallets from "~/constants/wallets";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
 import { networks } from "~/constants/networks";
+import checkNetwork from "~/helpers/check-network";
+import { ModalContextType } from "~/types/contexts/ModalContextType";
+import ModalContext from "../components/ModalContext";
 
 type Props = {
     children: ReactNode;
@@ -17,6 +20,9 @@ type Props = {
 
 const WalletProvider = function ({ children }: Props) {
     const { lucid, setLucid } = useContext<LucidContextType>(LucidContext);
+    const { toogleErrorNetwork, isShowingErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
+        useContext<ModalContextType>(ModalContext);
+
     const [wallet, setWallet] = useState<WalletType>(null!);
     const [loading, setLoading] = useState<boolean>(false);
     const { network } = useContext<NetworkContextType>(NetworkContext);
@@ -33,6 +39,7 @@ const WalletProvider = function ({ children }: Props) {
                         checkApi: wallet.checkApi,
                         image: wallet.image,
                     });
+                    return;
                 }
             });
         }
@@ -59,11 +66,26 @@ const WalletProvider = function ({ children }: Props) {
 
             const lucid = await Lucid.new(
                 new Blockfrost(currentNetwork?.url as string, currentNetwork?.apiKey as string),
+
                 currentNetwork?.networkName as Network,
             );
 
             lucid.selectWallet(await api());
+
             const address: string = (await lucid.wallet.address()) as string;
+
+            const networkConnection: Network = checkNetwork({ address: address as string, pattern: "test" });
+
+            if (networkConnection !== network && !isShowingErrorNetwork) {
+                toggleShowingWallet();
+                toogleErrorNetwork();
+                return;
+            }
+
+            if (network === "Preprod" && !isShowingTestNetwork) {
+                toggleTestNetwork();
+            }
+
             const stakeKey: string = (await lucid.wallet.rewardAddress()) as string;
             const utxos: Array<UTxO> = (await lucid.wallet.getUtxos()) as Array<UTxO>;
             const { poolId } = await lucid.delegationAt(stakeKey as string);
@@ -95,6 +117,10 @@ const WalletProvider = function ({ children }: Props) {
         try {
             setWallet(null!);
             setLucid(null!);
+            if (isShowingErrorNetwork) {
+                toogleErrorNetwork();
+            }
+
             localStorage.removeItem("wallet");
         } catch (error) {
             console.log(error);

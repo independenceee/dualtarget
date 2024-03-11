@@ -13,9 +13,16 @@ const NetworkProvider = function ({ children }: Props) {
 
     useEffect(() => {
         const networkConnection = localStorage.getItem("network");
+        if (networkConnection) {
+            setNetwork(JSON.parse(networkConnection));
+        }
     }, []);
 
-    useEffect(() => {}, [network]);
+    useEffect(() => {
+        if (network) {
+            localStorage.setItem("network", JSON.stringify(network));
+        }
+    }, [network]);
 
     return (
         <NetworkContext.Provider

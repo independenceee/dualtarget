@@ -6,7 +6,6 @@ import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import classNames from "classnames/bind";
 import Modal from "~/components/Modal";
-import { useModal } from "~/hooks";
 import icons from "~/assets/icons";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
@@ -23,6 +22,8 @@ import images from "~/assets/images";
 import Tippy from "~/components/Tippy";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
+import { ModalContextType } from "~/types/contexts/ModalContextType";
+import ModalContext from "~/contexts/components/ModalContext";
 
 const cx = classNames.bind(styles);
 type Props = {
@@ -30,8 +31,8 @@ type Props = {
 };
 
 const ConnectWallet = function ({ className }: Props) {
-    const { isShowing: isShowingWallet, toggle: toggleShowingWallet } = useModal();
-    const { isShowing: isShowingConnectError, toggle: toggleShowingConnectError } = useModal();
+    const { isShowingErrorNetwork, toogleErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
+        useContext<ModalContextType>(ModalContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
@@ -127,6 +128,7 @@ const ConnectWallet = function ({ className }: Props) {
                     onClick={toggleShowingWallet}
                     className={cx("connect-wallet-button", {
                         "wallet-show": isShowTippy,
+                        isShowingErrorNetwork: isShowingErrorNetwork,
                     })}
                 >
                     {lucid ? (
@@ -148,7 +150,7 @@ const ConnectWallet = function ({ className }: Props) {
                             </section>
                         </div>
                     ) : (
-                        <span>Connect Wallet</span>
+                        <span>{isShowingErrorNetwork ? "Wrong Network" : "Connect Wallet"}</span>
                     )}
                 </Button>
             </Tippy>
@@ -184,12 +186,18 @@ const ConnectWallet = function ({ className }: Props) {
                 </Modal>
             )}
 
-            <Modal toggle={toggleShowingConnectError} isShowing={isShowingConnectError}>
+            <Modal isShowing={isShowingTestNetwork} toggle={toggleTestNetwork}>
+                123
+            </Modal>
+
+            <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>
                     <h2 className={cx("connect-wallet-error-title")}>Wallet Network Error</h2>
                     <p className={cx("connect-wallet-error-description")}>Please change the network to preprod or disconnect</p>
                     <div className={cx("connect-wallet-error-button-wrapper")}>
-                        <Button className={cx("connect-wallet-error-button")}>Disconnect</Button>
+                        <Button onClick={disconnect} className={cx("connect-wallet-error-button")}>
+                            Disconnect
+                        </Button>
                     </div>
                 </div>
             </Modal>
