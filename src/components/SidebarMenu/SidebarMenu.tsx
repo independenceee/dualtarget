@@ -42,7 +42,7 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                                 name={name}
                                 redirect={redirect}
                                 isActive={Boolean(selected === redirect)}
-                                setSelected={setSelected}
+                                setSelectedRouter={setSelected}
                                 className={cx("nav-item-link")}
                                 setOpen={setOpen}
                             />

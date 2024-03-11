@@ -1,6 +1,6 @@
 "use client";
 
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
 import HeaderOption from "./HeaderOption";
@@ -15,8 +15,12 @@ import ConnectWallet from "~/layouts/components/ConnectWallet";
 
 const cx = classNames.bind(styles);
 
-const Header = function () {
-    const [selected, setSelected] = useState<string>(configs.routes.home);
+type Props = {
+    selectedRouter: string;
+    setSelectedRouter: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const Header = function ({ selectedRouter, setSelectedRouter }: Props) {
     return (
         <header className={cx("header")}>
             <div className={cx("wrapper")}>
@@ -43,8 +47,8 @@ const Header = function () {
                                         key={index}
                                         name={name}
                                         redirect={redirect}
-                                        isActive={Boolean(selected === redirect)}
-                                        setSelected={setSelected}
+                                        isActive={Boolean(selectedRouter === redirect)}
+                                        setSelectedRouter={setSelectedRouter}
                                     />
                                 );
                             })}

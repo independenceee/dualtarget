@@ -56,10 +56,9 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 
 ### Feedback
 
--   Xóa Preview network
--   Logo Thay đổi theo Dualtarget (cạnh network )
-
--   Header - Deposit - Withdraw
+-   Xóa Preview network => DONE
+-   Logo Thay đổi theo Dualtarget (cạnh network ) => ĐỢI SƠN
+-   Header - Deposit - Withdraw => DONE
 
 1.  Deposit (calculate_selling_strategy(price_l, price_h, step, income, totalada, stake))
 

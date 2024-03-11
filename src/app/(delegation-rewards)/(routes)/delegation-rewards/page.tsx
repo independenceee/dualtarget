@@ -7,6 +7,7 @@ import Image from "next/image";
 import icons from "~/assets/icons";
 import Table from "~/components/Table";
 import { historyRewards } from "~/constants/header-table";
+import Pagination from "~/components/Pagination";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
@@ -71,7 +72,10 @@ const DelegationRewards = function () {
                         <span>No available data</span>
                     </section>
                 ) : (
-                    <Table headerTables={historyRewards} />
+                    <div>
+                        <Table headerTables={historyRewards} />
+                        <Pagination pageSize={5} totalItems={20} />
+                    </div>
                 )}
             </div>
         </div>

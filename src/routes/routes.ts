@@ -2,8 +2,8 @@ import configs from "~/configs";
 
 const publicRoutes = [
     { name: "Home", redirect: configs.routes.home },
-    { name: "Djed Stablecoin", redirect: configs.routes.djed },
-    { name: "Shen Reservecoin", redirect: configs.routes.shen },
+    { name: "Deposit", redirect: configs.routes.deposit },
+    { name: "Withdraw", redirect: configs.routes.withdraw },
     { name: "Delegation Rewards", redirect: configs.routes.rewards },
     { name: "FAQ", redirect: configs.routes.faq },
 ];
