@@ -20,7 +20,9 @@ type Props = {
 
 const WalletProvider = function ({ children }: Props) {
     const { lucid, setLucid } = useContext<LucidContextType>(LucidContext);
-    const { toogleErrorNetwork, isShowingErrorNetwork, isShowingWallet, toggleShowingWallet } = useContext<ModalContextType>(ModalContext);
+    const { toogleErrorNetwork, isShowingErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
+        useContext<ModalContextType>(ModalContext);
+
     const [wallet, setWallet] = useState<WalletType>(null!);
     const [loading, setLoading] = useState<boolean>(false);
     const { network } = useContext<NetworkContextType>(NetworkContext);
@@ -78,6 +80,10 @@ const WalletProvider = function ({ children }: Props) {
                 toggleShowingWallet();
                 toogleErrorNetwork();
                 return;
+            }
+
+            if (network === "Preprod" && !isShowingTestNetwork) {
+                toggleTestNetwork();
             }
 
             const stakeKey: string = (await lucid.wallet.rewardAddress()) as string;

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import classNames from "classnames/bind";
 import Modal from "~/components/Modal";
-import { useModal } from "~/hooks";
 import icons from "~/assets/icons";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
@@ -32,7 +31,8 @@ type Props = {
 };
 
 const ConnectWallet = function ({ className }: Props) {
-    const { isShowingErrorNetwork, toogleErrorNetwork, isShowingWallet, toggleShowingWallet } = useContext<ModalContextType>(ModalContext);
+    const { isShowingErrorNetwork, toogleErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
+        useContext<ModalContextType>(ModalContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
@@ -128,7 +128,7 @@ const ConnectWallet = function ({ className }: Props) {
                     onClick={toggleShowingWallet}
                     className={cx("connect-wallet-button", {
                         "wallet-show": isShowTippy,
-                        "isShowingErrorNetwork": isShowingErrorNetwork,
+                        isShowingErrorNetwork: isShowingErrorNetwork,
                     })}
                 >
                     {lucid ? (
@@ -150,9 +150,7 @@ const ConnectWallet = function ({ className }: Props) {
                             </section>
                         </div>
                     ) : (
-                        <span>
-                            {isShowingErrorNetwork ? "Wrong Network" : "Connect Wallet"}
-                        </span>
+                        <span>{isShowingErrorNetwork ? "Wrong Network" : "Connect Wallet"}</span>
                     )}
                 </Button>
             </Tippy>
@@ -187,6 +185,10 @@ const ConnectWallet = function ({ className }: Props) {
                     </div>
                 </Modal>
             )}
+
+            <Modal isShowing={isShowingTestNetwork} toggle={toggleTestNetwork}>
+                123
+            </Modal>
 
             <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>
