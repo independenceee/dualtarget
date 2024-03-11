@@ -5,6 +5,9 @@ import styles from "./DelegationRewards.module.scss";
 import Tippy from "~/components/Tippy";
 import Image from "next/image";
 import icons from "~/assets/icons";
+import Table from "~/components/Table";
+import { historyRewards } from "~/constants/header-table";
+import Pagination from "~/components/Pagination";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
@@ -63,10 +66,17 @@ const DelegationRewards = function () {
                     </div>
                 </section>
 
-                <section className={cx("status")}>
-                    <div className={cx("no-data")} />
-                    <span>No available data</span>
-                </section>
+                {false ? (
+                    <section className={cx("status")}>
+                        <div className={cx("no-data")} />
+                        <span>No available data</span>
+                    </section>
+                ) : (
+                    <div>
+                        <Table headerTables={historyRewards} />
+                        <Pagination pageSize={5} totalItems={20} />
+                    </div>
+                )}
             </div>
         </div>
     );

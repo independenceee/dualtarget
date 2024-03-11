@@ -2,14 +2,14 @@ import classNames from "classnames/bind";
 import React from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
-import Orders from "~/components/Orders/Orders";
-import styles from "./Shen.module.scss";
+import Orders from "~/components/Orders";
+import styles from "./Deposit.module.scss";
 import Service from "~/components/Card/Service";
 import Image from "next/image";
 import images from "~/assets/images";
 const cx = classNames.bind(styles);
 
-const Shen = function () {
+const Djed = function () {
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -32,6 +32,7 @@ const Shen = function () {
                                     <Service type="PAY" />
                                 </Card>
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
+                                <Image className={cx("coin-image-right-mobile")} src={images.coinDjedRight} alt="coin-djed" />
                             </div>
                             <div className={cx("card-wrapper")}>
                                 <Card
@@ -46,6 +47,7 @@ const Shen = function () {
                                     <Service type="GET" />
                                 </Card>
                                 <Image className={cx("coin-image-right")} src={images.coinDjedRight} alt="coin-djed" />
+                                <Image className={cx("coin-image-left-mobile")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>
                         </div>
                     </div>
@@ -61,4 +63,4 @@ const Shen = function () {
     );
 };
 
-export default Shen;
+export default Djed;

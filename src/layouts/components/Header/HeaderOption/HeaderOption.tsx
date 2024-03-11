@@ -9,14 +9,14 @@ type Props = {
     redirect: string;
     name: string;
     isActive: boolean;
-    setSelected: React.Dispatch<React.SetStateAction<string>>;
+    setSelectedRouter: React.Dispatch<React.SetStateAction<string>>;
     className?: string;
     setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const HeaderOption = function ({ redirect, name, isActive, setOpen, setSelected, className }: Props) {
+const HeaderOption = function ({ redirect, name, isActive, setOpen, setSelectedRouter, className }: Props) {
     const handleClickNavItem = function (redirect: string) {
-        setSelected(redirect);
+        setSelectedRouter(redirect);
     };
 
     return (

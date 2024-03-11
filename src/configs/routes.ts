@@ -1,7 +1,7 @@
 const routes = {
     home: "/",
-    djed: "/djed",
-    shen: "/shen",
+    deposit: "/deposit",
+    withdraw: "/withdraw",
     rewards: "/delegation-rewards",
     faq: "/faq",
     term: "/term",

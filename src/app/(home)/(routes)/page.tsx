@@ -44,22 +44,22 @@ export default function Home() {
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
                         <Card
-                            title="Djed Stablecoin"
+                            title="Deposit Stablecoin"
                             icon={icons.djed}
                             className={cx("stat-djed-stablecoin")}
                             buttonOptions={{
-                                href: routes.djed,
+                                href: routes.deposit,
                                 children: "Mint/Burn",
                             }}
                         >
                             <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
                         </Card>
                         <Card
-                            title="Djed Stablecoin"
+                            title="Withdraw Stablecoin"
                             icon={icons.djed}
                             className={cx("stat-djed-stablecoin")}
                             buttonOptions={{
-                                href: routes.djed,
+                                href: routes.withdraw,
                                 children: "Mint/Burn",
                             }}
                         >
