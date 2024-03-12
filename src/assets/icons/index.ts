@@ -6,6 +6,7 @@ const icons = {
     corporation: require("./coti.svg"),
     helpCircle: require("./help_circle.svg"),
     shen: require("./shen.svg"),
+    chart: require("./chart.svg"),
     reserves: require("./reserves.svg"),
     close: require("./close.png"),
     djed: require("./djed.svg"),
@@ -16,6 +17,8 @@ const icons = {
     separate: require("./separate.png"),
     searchDelete: require("./search-delete.svg"),
     arrowBottomYellow: require("./arrow-bottom-yellow.svg"),
+    cardanoChartCoin: require("./cardano.webp"),
+    djedChartCoin: require("./djed.webp"),
     files: {
         defaultFile: require("./file-default.svg"),
     },

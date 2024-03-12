@@ -13,7 +13,7 @@ const Table = function ({ className, headerTables }: Props) {
     return (
         <div className={cx("wrapper", className)}>
             <table className={cx("table")}>
-                <thead className={cx("table-header")}>
+                <tr className={cx("table-header")}>
                     {headerTables.map(function (headerTable: HeaderTableType, index: number) {
                         return (
                             <td key={index} className={cx("table-header-item")}>
@@ -21,7 +21,7 @@ const Table = function ({ className, headerTables }: Props) {
                             </td>
                         );
                     })}
-                </thead>
+                </tr>
                 <tbody className={cx("rows")}>
                     <tr className={cx("row")}>
                         <td className={cx("row-item", "date")}>07 Mar, 2024 03:24</td>

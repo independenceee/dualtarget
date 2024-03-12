@@ -186,9 +186,9 @@ const ConnectWallet = function ({ className }: Props) {
                 </Modal>
             )}
 
-            <Modal isShowing={isShowingTestNetwork} toggle={toggleTestNetwork}>
+            {/* <Modal isShowing={isShowingTestNetwork} toggle={toggleTestNetwork}>
                 123
-            </Modal>
+            </Modal> */}
 
             <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>
