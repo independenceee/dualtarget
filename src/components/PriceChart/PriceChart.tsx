@@ -1,14 +1,17 @@
 "use client";
 
-import classNames from "classnames/bind";
 import React, { useEffect, useState } from "react";
+import classNames from "classnames/bind";
 import ReactApexChart, { Props as ChartProps } from "react-apexcharts";
 import styles from "./PriceChart.module.scss";
 import Image from "next/image";
 import icons from "~/assets/icons";
+
 import Tippy from "../Tippy";
 import { ChartDataType } from "~/constants/price-chart";
 import Loading from "../Loading";
+
+
 
 const cx = classNames.bind(styles);
 
@@ -137,20 +140,22 @@ const PriceChart = function ({ data, isLoading }: Props) {
                 ],
             });
         }
-    }, [chartConfigs, data]);
+    }, [data]);
 
     useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth > 768 && !show) {
-                setShow(true);
-            }
-        };
+        if (typeof window !== "undefined") {
+            const handleResize = () => {
+                if (window.innerWidth > 768 && !show) {
+                    setShow(true);
+                }
+            };
 
-        window.addEventListener("resize", handleResize);
+            window.addEventListener("resize", handleResize);
 
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+            return () => {
+                window.removeEventListener("resize", handleResize);
+            };
+        }
     }, [show]);
 
     const handleToggleChart = function () {
@@ -322,14 +327,14 @@ const PriceChart = function ({ data, isLoading }: Props) {
                             <Loading className={cx("loading-icon")} />
                         </div>
                     ) : (
-                        <>
+                        <div>
                             <div id="chart" className={cx("chart-offset")}>
                                 <div id="chart-timeline">
                                     <ReactApexChart options={chartConfigs.options} series={chartConfigs.series} type="area" height={350} />
                                 </div>
                             </div>
                             <div id="html-dist"></div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

@@ -1,4 +1,5 @@
 "use client";
+
 import classNames from "classnames/bind";
 import React, { useEffect, useState } from "react";
 import Card from "~/components/Card";
@@ -8,14 +9,19 @@ import styles from "./Withdraw.module.scss";
 import Service from "~/components/Card/Service";
 import Image from "next/image";
 import images from "~/assets/images";
-import Button from "~/components/Button";
-import PriceChart from "~/components/PriceChart";
 import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
+import dynamic from "next/dynamic";
+
+const PriceChart = dynamic(() => import("~/components/PriceChart"), {
+    ssr: false,
+});
+
 const cx = classNames.bind(styles);
 
-const Shen = function () {
+const Withdraw = function () {
     const [data, setData] = useState<ChartDataType>([]);
     const [loading, setLoading] = useState<boolean>(false);
+
     useEffect(() => {
         setLoading(true);
         getChartData(dataChart)
@@ -66,4 +72,4 @@ const Shen = function () {
     );
 };
 
-export default Shen;
+export default Withdraw;

@@ -1,13 +1,15 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import classNames from "classnames/bind";
-import Button from "~/components/Button";
 import styles from "./Hamburger.module.scss";
-import SidebarMenu from "../SidebarMenu";
+import SidebarMenu from "~/components/SidebarMenu";
+import { ModalContextType } from "~/types/contexts/ModalContextType";
+import ModalContext from "~/contexts/components/ModalContext";
 
 const cx = classNames.bind(styles);
 
 const Hamburger = function () {
     const [open, setOpen] = useState<boolean>(false);
+    const { isShowingWallet } = useContext<ModalContextType>(ModalContext);
     const handleOpenMenu = () => {
         setOpen((prev) => !prev);
     };
@@ -21,11 +23,12 @@ const Hamburger = function () {
     }, []);
 
     return (
-        <>
+        <div>
             <button
                 type="button"
                 className={cx("wrapper", {
                     open: open,
+                    isShowingWallet: isShowingWallet,
                 })}
                 onClick={handleOpenMenu}
             >
@@ -34,7 +37,7 @@ const Hamburger = function () {
                 <span className={cx("bar")} />
             </button>
             <SidebarMenu open={open} setOpen={setOpen} />
-        </>
+        </div>
     );
 };
 
