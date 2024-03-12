@@ -1,7 +1,7 @@
 @import "../../../../styles/layouts.scss";
 
 .wrapper {
-    padding: 17.2rem 6.4rem 0;
+    padding: 17.2rem 4rem 0;
 }
 
 .header {
@@ -21,7 +21,6 @@
 }
 
 .stats {
-    @extend .container;
     display: flex;
     gap: 2.8rem;
 }
@@ -31,10 +30,10 @@
 }
 
 .card-wrapper {
-    width: 50%;
+    max-width: 452px;
+    width: 100%;
     position: relative;
 }
-
 
 .stat-djed-stablecoin,
 .stat-shen-reservation {
@@ -43,10 +42,6 @@
 
 .orders {
     margin: 3.2rem auto 5.6rem;
-}
-
-.card-wrapper {
-    position: relative;
 }
 
 .coin-image-left,
@@ -73,6 +68,7 @@
 @media (max-width: 1024px) {
     .card-wrapper {
         width: 100%;
+        margin: 0 auto;
     }
 
     .stats {
