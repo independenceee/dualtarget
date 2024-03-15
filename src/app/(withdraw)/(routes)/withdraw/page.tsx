@@ -11,7 +11,6 @@ import Image from "next/image";
 import images from "~/assets/images";
 import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
 import dynamic from "next/dynamic";
-
 const PriceChart = dynamic(() => import("~/components/PriceChart"), {
     ssr: false,
 });
