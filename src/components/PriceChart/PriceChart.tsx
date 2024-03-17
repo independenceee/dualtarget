@@ -11,8 +11,6 @@ import Tippy from "../Tippy";
 import { ChartDataType } from "~/constants/price-chart";
 import Loading from "../Loading";
 
-
-
 const cx = classNames.bind(styles);
 
 type Props = {
