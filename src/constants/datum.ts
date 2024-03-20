@@ -3,7 +3,7 @@ import { Data } from "lucid-cardano";
 const DualtargetDatumSchema = Data.Object({
     odOwner: Data.Bytes(), // Address
     odBeneficiary: Data.Bytes(), // Address
-    assetA: Data.Integer(), // !ADA
+    assetA: Data.Integer(), // !ADA/
     amountA: Data.Integer(),
     assetOut: Data.Integer(),
     minimumAmountOut: Data.Integer(),
@@ -11,12 +11,12 @@ const DualtargetDatumSchema = Data.Object({
     buyPrice: Data.Integer(),
     sellPrice: Data.Integer(),
     odstrategy: Data.Bytes(),
-    BatcherFee: Data.Bytes(),
-    OutputADA: Data.Bytes(),
+    BatcherFee: Data.Integer(),
+    OutputADA: Data.Integer(),
     fee_address: Data.Bytes(),
+    validator_address: Data.Bytes(),
     deadline: Data.Integer(),
     isLimitOrder: Data.Integer(),
-    validator_address: Data.Bytes(),
 });
 
 export type DualtargetDatum = Data.Static<typeof DualtargetDatumSchema>;

@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders/Orders";
@@ -11,6 +11,10 @@ import Image from "next/image";
 import images from "~/assets/images";
 import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
 import dynamic from "next/dynamic";
+import { SmartContractContextType } from "~/types/contexts/SmartContractContextType";
+import SmartContractContext from "~/contexts/components/SmartContractContext";
+import { LucidContextType } from "~/types/contexts/LucidContextType";
+import LucidContext from "~/contexts/components/LucidContext";
 const PriceChart = dynamic(() => import("~/components/PriceChart"), {
     ssr: false,
 });
@@ -20,6 +24,8 @@ const cx = classNames.bind(styles);
 const Withdraw = function () {
     const [data, setData] = useState<ChartDataType>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const { lucid } = useContext<LucidContextType>(LucidContext);
+    const { deposit } = useContext<SmartContractContextType>(SmartContractContext);
 
     useEffect(() => {
         setLoading(true);
@@ -36,7 +42,9 @@ const Withdraw = function () {
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")}>Mint or Burn DJED</h2>
+                    <h2 className={cx("title")} onClick={() => deposit({ lucid: lucid })}>
+                        Mint or Burn DJED
+                    </h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>

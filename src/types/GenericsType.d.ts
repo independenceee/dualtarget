@@ -53,3 +53,11 @@ export interface ResultItem {
     usdPool: number;
     sumADA: number;
 }
+
+export interface ClaimableUTxO {
+    utxo: any;
+    BatcherFee_addr: string;
+    fee: number;
+    minimumAmountOut: number;
+    minimumAmountOutProfit: number;
+}

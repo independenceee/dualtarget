@@ -66,16 +66,12 @@ const WalletProvider = function ({ children }: Props) {
 
             const lucid = await Lucid.new(
                 new Blockfrost(currentNetwork?.url as string, currentNetwork?.apiKey as string),
-
                 currentNetwork?.networkName as Network,
             );
 
             lucid.selectWallet(await api());
-
             const address: string = (await lucid.wallet.address()) as string;
-
             const networkConnection: Network = checkNetwork({ address: address as string, pattern: "test" });
-
             if (networkConnection !== network && !isShowingErrorNetwork) {
                 toggleShowingWallet();
                 toogleErrorNetwork();

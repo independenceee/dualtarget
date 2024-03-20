@@ -20,7 +20,7 @@ type Props = {
     stake: number;
 };
 
-const qty_DualT = function (step: number, income: number, stake: number, entry: number): [number, number, number] {
+const qtyDualT = function (step: number, income: number, stake: number, entry: number): [number, number, number] {
     try {
         const USDTPool: number = (income * 12) / (stake / 100);
         const qtyEntrySell: number = USDTPool / (entry * (1 + step / 100));
@@ -43,13 +43,14 @@ function calculateSellingStrategy({ priceLower, priceHight, step, income, totalA
     const decimalPlaces: number = 100;
 
     while (price <= priceHight) {
-        const [qty_buy, qty_sell, qtyEntry] = qty_DualT(step, income, stake, price / decimalPlaces);
+        const [qtyDualTBuy, qtyDualTSell, qtyEntry] = qtyDualT(step, income, stake, price / decimalPlaces);
         const buyPrice: number = Math.floor(price);
         const sellPrice: number = Math.floor(buyPrice * (1 + step / 100));
-        const amountIn: number = Math.floor(qty_sell * decimalPlaces);
+        const amountIn: number = Math.floor(qtyDualTSell * decimalPlaces);
         const minimumAmountOut: number = Math.floor((amountIn * buyPrice) / decimalPlaces);
         const minimumAmountOutProfit: number = Math.floor(((step / 100) * sellPrice * amountIn) / decimalPlaces);
-        const amountSend: number = amountIn + BatcherFee + OutputADA;
+        //! const amountSend: number = amountIn + batcherFee + outputADA;
+        const amountSend: number = amountIn + batcherFee + totalADA;
         sumADA += amountSend;
         result.push({
             buyPrice: Math.floor(buyPrice),
@@ -57,8 +58,8 @@ function calculateSellingStrategy({ priceLower, priceHight, step, income, totalA
             amountSend: Math.floor(amountSend),
             minimumAmountOut: Math.floor(minimumAmountOut),
             minimumAmountOutProfit: Math.floor(minimumAmountOutProfit),
-            amountSell: Math.floor(qty_sell * decimalPlaces),
-            amountBuy: Math.floor(qty_buy * decimalPlaces),
+            amountSell: Math.floor(qtyDualTSell * decimalPlaces),
+            amountBuy: Math.floor(qtyDualTBuy * decimalPlaces),
             amountEntry: Math.floor(qtyEntry * decimalPlaces),
             usdPool: Math.floor((price * qtyEntry) / decimalPlaces),
             sumADA: Math.floor(sumADA),

@@ -14,7 +14,7 @@ const nextConfig = {
         KOIOS_RPC_URL_MAINNET: "https://api.koios.rest/api/v1",
         NEXT_APP_BASE_URL: "https://backend.demarket.vn/api/v1",
         VILAI_POOL_ID: "pool1u7zrgexnxsysctnnwljjjymr70he829fr5n3vefnv80guxr42dv",
-        DUALTARGET_CONTRACT_ADDRESS_PREPROD: "addr_test1vp2rq8ygtnuky00tkrqhw5drwv0nwlwu57qqnrlfrl34jccaqax73",
+        DUALTARGET_CONTRACT_ADDRESS_PREPROD: "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk",
     },
 };
 
