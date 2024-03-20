@@ -19,5 +19,5 @@ const DualtargetDatumSchema = Data.Object({
     validator_address: Data.Bytes(),
 });
 
-type DualtargetDatum = Data.Static<typeof DualtargetDatumSchema>;
+export type DualtargetDatum = Data.Static<typeof DualtargetDatumSchema>;
 export const DualtargetDatum = DualtargetDatumSchema as unknown as DualtargetDatum;

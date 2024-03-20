@@ -379,9 +379,7 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 
 ### Feedback
 
--   Xóa Preview network => DONE
--   Logo Thay đổi theo Dualtarget (cạnh network ) => ĐỢI SƠN
--   Header - Deposit - Withdraw => DONE
+-   Logo Thay đổi theo Dualtarget (cạnh network ) => DONE
 
 1.  Deposit (calculate_selling_strategy(price_l, price_h, step, income, totalada, stake))
 
@@ -419,3 +417,218 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 -   Tính phần lãi
 -   Lợi nhuận theo năm / tháng
 -   Chart + Mesh Mua và bán
+
+```ts
+import { Wallet, TransactionBuilder, TransactionOutput, VerificationKeyHash } from 'your-blockchain-library'; // Import necessary modules from your blockchain library
+
+interface DaultargetParams {
+    odOwner: Uint8Array;
+    odBeneficiary: Uint8Array;
+    assetA: string;
+    amountA: number;
+    assetOut: string;
+    minimumAmountOut: number;
+    minimumAmountOutProfit: number;
+    buyPrice: number;
+    sellPrice: number;
+    odstrategy: string;
+    BatcherFee: number;
+    OutputADA: number;
+    fee_address: Uint8Array;
+    validator_address: Uint8Array;
+    deadline: number;
+    isLimitOrder: number;
+}
+
+function main(name: string, beneficiary: string, price_l: number, price_h: number, step: number, income: number, totalada: number, stake: number, wait_time: number) {
+    const wallet = new Wallet();
+    const context = wallet.context;
+
+    const payment_address = getAddress(name);
+    const vkey_owner_hash: VerificationKeyHash = payment_address.payment_part;
+
+    const beneficiary_address = getAddress(beneficiary);
+    const vkey_hash: VerificationKeyHash = beneficiary_address.payment_part;
+
+    const [_, _, fee_address] = getSigningInfo(beneficiary);
+    const fee_address_byte = fee_address.payment_part.toUint8Array(); // Convert to byte array
+
+    const [_, _, script_address] = getContract("dualtarget");
+    const validator_address_byte = script_address.payment_part.toUint8Array(); // Convert to byte array
+
+    const selling_strategy = calculateSellingStrategy(price_l, price_h, step, income, totalada, stake);
+    const params: DaultargetParams[] = [];
+
+    for (const entry of selling_strategy) {
+        const param: DaultargetParams = {
+            odOwner: vkey_owner_hash,
+            odBeneficiary: vkey_hash,
+            assetA: "ADA",
+            amountA: entry.amount_send,
+            assetOut: "MIN",
+            minimumAmountOut: entry.minimumAmountOut,
+            minimumAmountOutProfit: entry.minimumAmountOutProfit,
+            buyPrice: entry.buyPrice,
+            sellPrice: entry.sellPrice,
+            odstrategy: "ADADJED",
+            BatcherFee: BatcherFee,
+            OutputADA: OutputADA,
+            fee_address: fee_address_byte,
+            validator_address: validator_address_byte,
+            deadline: new Date().getTime() + wait_time * 1000, // Convert wait_time to milliseconds and add to current time
+            isLimitOrder: 2
+        };
+        params.push(param);
+    }
+
+    const builder = new TransactionBuilder(context);
+    builder.addInputAddress(payment_address);
+    for (const param of params) {
+        const datum = param;
+        builder.addOutput(new TransactionOutput(script_address, datum.amountA, datum));
+    }
+
+    const [payment_vkey, payment_skey, payment_address] = getSigningInfo(name);
+    const signed_tx = builder.buildAndSign([payment_skey], payment_address);
+
+    context.submitTx(signed_tx.toCbor());
+
+    console.log(`transaction id: ${signed_tx.id}`);
+    if (network === Network.TESTNET) {
+        console.log(`Cexplorer: https://preprod.cexplorer.io/tx/${signed_tx.id}`);
+    } else {
+        console.log(`Cexplorer: https://cexplorer.io/tx/${signed_tx.id}`);
+    }
+}
+
+```
+
+```ts
+import { Wallet, TransactionBuilder, Redeemer, TransactionOutput, VerificationKeyHash, Address, UTxO } from "your-blockchain-library"; // Import necessary modules from your blockchain library
+
+interface DaultargetParams {
+    odOwner: Uint8Array;
+    odBeneficiary: Uint8Array;
+    assetA: string;
+    amountA: number;
+    assetOut: string;
+    minimumAmountOut: number;
+    minimumAmountOutProfit: number;
+    buyPrice: number;
+    sellPrice: number;
+    odstrategy: string;
+    BatcherFee: number;
+    OutputADA: number;
+    fee_address: Uint8Array;
+    validator_address: Uint8Array;
+    deadline: number;
+    isLimitOrder: number;
+}
+
+interface ClaimableUTxO {
+    utxo: any;
+    BatcherFee_addr: string;
+    fee: number;
+    minimumAmountOut: number;
+    minimumAmountOutProfit: number;
+}
+
+interface NonNFTUTxO {
+    utxo: UTxO;
+}
+
+function main(name: string) {
+    const wallet = new Wallet();
+    const context = wallet.context;
+
+    const [script_cbor, script_hash, script_address] = getContract("dualtarget");
+
+    const payment_address = getAddress(name);
+
+    const script_utxos = context.utxos(script_address);
+    let sc_utxo: any = "";
+    const claimable_utxos: ClaimableUTxO[] = [];
+
+    for (const item of script_utxos) {
+        if (item.output.script) {
+            sc_utxo = item;
+        } else if (item.output.datum) {
+            const outputdatum: any = cbor2.loads(item.output.datum.cbor);
+            const params: DaultargetParams = {
+                odOwner: outputdatum.value[0],
+                odBeneficiary: outputdatum.value[1],
+                assetA: outputdatum.value[2],
+                amountA: outputdatum.value[3],
+                assetOut: outputdatum.value[4],
+                minimumAmountOut: outputdatum.value[5],
+                minimumAmountOutProfit: outputdatum.value[6],
+                buyPrice: outputdatum.value[7],
+                sellPrice: outputdatum.value[8],
+                odstrategy: outputdatum.value[9],
+                BatcherFee: outputdatum.value[10],
+                OutputADA: outputdatum.value[11],
+                fee_address: outputdatum.value[12],
+                validator_address: outputdatum.value[13],
+                deadline: outputdatum.value[14],
+                isLimitOrder: outputdatum.value[15],
+            };
+            if (
+                params.odOwner === Uint8Array.from(payment_address.payment_part) &&
+                item.output.amount.coin === Math.floor(params.OutputADA / 2) &&
+                params.isLimitOrder === 0
+            ) {
+                const fee_address1 = new Address(VerificationKeyHash.fromPrimitive(params.fee_address), network);
+                claimable_utxos.push({
+                    utxo: item,
+                    BatcherFee_addr: fee_address1.toString(),
+                    fee: params.BatcherFee,
+                    minimumAmountOut: params.minimumAmountOut,
+                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                });
+            }
+        }
+    }
+
+    if (!sc_utxo) {
+        console.log("Reference UTxO not found!");
+        process.exit(1);
+    }
+
+    if (!claimable_utxos.length) {
+        console.log("No UTxO to claim!");
+        process.exit(1);
+    }
+
+    const nft_utxo: any[] = [];
+    let non_nft_utxo: NonNFTUTxO | null = null;
+    const non_nft_utxo_spend: UTxO[] = [];
+
+    const utxos = context.utxos(payment_address);
+    for (const utxo of utxos) {
+        if (!utxo.output.amount.multi_asset && utxo.output.amount.coin >= 4000000 && utxo.output.amount.coin < 6000000) {
+            non_nft_utxo = { utxo: utxo };
+        } else if (!utxo.output.amount.multi_asset) {
+            non_nft_utxo_spend.push({ utxo: utxo });
+        } else {
+            nft_utxo.push({ utxo: utxo });
+        }
+    }
+
+    if (!non_nft_utxo) {
+        console.log("No collateral UTxOs found!");
+        process.exit(1);
+    }
+
+    const redeemer = new Redeemer(new RefundRedeemer());
+
+    const builder = new TransactionBuilder(context);
+    builder.referenceInputs.add(sc_utxo);
+
+    for (const utxo_to_spend of claimable_utxos) {
+        builder.addScriptInput(utxo_to_spend.utxo, (redeemer = new Redeemer(new RefundRedeemer())));
+        console.log(utxo_to_spend.utxo);
+    }
+
+    builder.addOutput(new TransactionOutput(utxo_to_spend.BatcherFee_addr, utxo_to_spend.fee));
+}
+```

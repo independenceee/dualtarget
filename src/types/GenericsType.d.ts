@@ -20,3 +20,36 @@ export type HeaderTableType = {
     title: string;
     description?: string;
 };
+
+// test
+export interface DaultargetParams {
+    odOwner: Uint8Array;
+    odBeneficiary: Uint8Array;
+    assetA: string;
+    amountA: number;
+    assetOut: string;
+    minimumAmountOut: number;
+    minimumAmountOutProfit: number;
+    buyPrice: number;
+    sellPrice: number;
+    odstrategy: string;
+    BatcherFee: number;
+    OutputADA: number;
+    fee_address: Uint8Array;
+    validator_address: Uint8Array;
+    deadline: number;
+    isLimitOrder: number;
+}
+
+export interface ResultItem {
+    buyPrice: number;
+    sellPrice: number;
+    amountSend: number;
+    minimumAmountOut: number;
+    minimumAmountOutProfit: number;
+    amountSell: number;
+    amountBuy: number;
+    amountEntry: number;
+    usdPool: number;
+    sumADA: number;
+}
