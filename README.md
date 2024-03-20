@@ -36,6 +36,58 @@
     'sumADA': 320922238
 }
 
+0
+:
+"54301c885cf9623debb0c17751a3731f377ddca780098fe91fe35963"
+1
+:
+"7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a"
+2
+:
+Constr {index: 0, fields: Array(2)}
+3
+:
+106673553n
+4
+:
+Constr {index: 0, fields: Array(2)}
+5
+:
+109090908n
+6
+:
+11999999n
+7
+:
+1100000n
+8
+:
+1210000n
+9
+:
+"414441444a4544"
+10
+:
+1500000n
+11
+:
+6000000n
+12
+:
+"7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a"
+13
+:
+"ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7"
+14
+:
+1710507890000n
+15
+:
+2n
+length
+:
+16
+
 ```
 
 ```py
@@ -419,7 +471,7 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 -   Chart + Mesh Mua và bán
 
 ```ts
-import { Wallet, TransactionBuilder, TransactionOutput, VerificationKeyHash } from 'your-blockchain-library'; // Import necessary modules from your blockchain library
+import { Wallet, TransactionBuilder, TransactionOutput, VerificationKeyHash } from "your-blockchain-library"; // Import necessary modules from your blockchain library
 
 interface DaultargetParams {
     odOwner: Uint8Array;
@@ -440,7 +492,17 @@ interface DaultargetParams {
     isLimitOrder: number;
 }
 
-function main(name: string, beneficiary: string, price_l: number, price_h: number, step: number, income: number, totalada: number, stake: number, wait_time: number) {
+function main(
+    name: string,
+    beneficiary: string,
+    price_l: number,
+    price_h: number,
+    step: number,
+    income: number,
+    totalada: number,
+    stake: number,
+    wait_time: number,
+) {
     const wallet = new Wallet();
     const context = wallet.context;
 
@@ -476,7 +538,7 @@ function main(name: string, beneficiary: string, price_l: number, price_h: numbe
             fee_address: fee_address_byte,
             validator_address: validator_address_byte,
             deadline: new Date().getTime() + wait_time * 1000, // Convert wait_time to milliseconds and add to current time
-            isLimitOrder: 2
+            isLimitOrder: 2,
         };
         params.push(param);
     }
@@ -500,7 +562,6 @@ function main(name: string, beneficiary: string, price_l: number, price_h: numbe
         console.log(`Cexplorer: https://cexplorer.io/tx/${signed_tx.id}`);
     }
 }
-
 ```
 
 ```ts

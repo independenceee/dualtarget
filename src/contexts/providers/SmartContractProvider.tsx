@@ -1,6 +1,6 @@
 "use client";
 
-import { Data, Lucid, Redeemer, Script, TxHash, TxSigned, UTxO } from "lucid-cardano";
+import { Constr, Data, Lucid, Redeemer, Script, TxHash, TxSigned, UTxO } from "lucid-cardano";
 import React, { ReactNode, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import convertAddressToPublicKey from "~/helpers/convert-address-to-public-key";
@@ -27,9 +27,8 @@ const SmartContractProvider = function ({ children }: Props) {
         console.log(scriptUtxos);
         const utxos: UTxO[] = scriptUtxos.filter((utxo: any, index: number) => {
             console.log(utxo.datum);
-            const checkAsset: DualtargetDatum = Data.from(utxo.datum, DualtargetDatum);
 
-            const existAsset = Data.from<DualtargetDatum>(utxo.datum, DualtargetDatum);
+            const existAsset = Data.from(utxo.datum);
             console.log(existAsset);
         });
         // try {
