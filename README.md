@@ -36,57 +36,6 @@
     'sumADA': 320922238
 }
 
-0
-:
-"54301c885cf9623debb0c17751a3731f377ddca780098fe91fe35963"
-1
-:
-"7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a"
-2
-:
-Constr {index: 0, fields: Array(2)}
-3
-:
-106673553n
-4
-:
-Constr {index: 0, fields: Array(2)}
-5
-:
-109090908n
-6
-:
-11999999n
-7
-:
-1100000n
-8
-:
-1210000n
-9
-:
-"414441444a4544"
-10
-:
-1500000n
-11
-:
-6000000n
-12
-:
-"7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a"
-13
-:
-"ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7"
-14
-:
-1710507890000n
-15
-:
-2n
-length
-:
-16
 
 ```
 
@@ -174,25 +123,15 @@ class TrueRedeemer(PlutusData):
 )
 
 def main(name: str, beneficiary: str, price_l: int, price_h: int, step: int, income: int, totalada: int, stake: int, wait_time: int):
-# def main(name: str, beneficiary: str, price_l: int, wait_time: int):
-    # Load chain context
-    #context = OgmiosChainContext(ogmios_url, network=network, kupo_url=kupo_url)
-    #context = get_chain_context()
     wallet = Wallet()
     context=wallet.context
-    # Get payment address
     payment_address = get_address(name)
     vkey_owner_hash: VerificationKeyHash = payment_address.payment_part
-
-
-    # Get the beneficiary VerificationKeyHash (PubKeyHash)
     beneficiary_address = get_address(beneficiary)
     vkey_hash: VerificationKeyHash = beneficiary_address.payment_part
 
     _, _, fee_address = get_signing_info(beneficiary)
-    fee_address=fee_address.payment_part.to_primitive() #đưa vào datum
-
-
+    fee_address=fee_address.payment_part.to_primitive()
     _, _, script_address = get_contract("dualtarget")
     validator_address=script_address.payment_part.to_primitive() #đưa vào datum
     print(f"validator_address {validator_address}")
@@ -299,16 +238,15 @@ def main(name: str):
             )
 
             if (
-                params.odOwner == bytes(payment_address.payment_part)  and item.output.amount.coin == int(params.OutputADA/2) and params.isLimitOrder == 0
-
+                params.odOwner == bytes(payment_address.payment_part)  
+                and item.output.amount.coin == int(params.OutputADA/2) 
+                and params.isLimitOrder == 0
             ):
                 fee_address1 = Address(
                     VerificationKeyHash.from_primitive(params.fee_address),
                     network=network,
                 )
-                """
-                TODO: also check if the deadline has passed and if the oracle datum info is greater than the datum limit
-                """
+                
                 claimable_utxos.append(
                     {"utxo": item,
                     "BatcherFee_addr": str(fee_address1), "fee": params.BatcherFee,

@@ -50,7 +50,7 @@ function calculateSellingStrategy({ priceLower, priceHight, step, income, totalA
         const minimumAmountOut: number = Math.floor((amountIn * buyPrice) / decimalPlaces);
         const minimumAmountOutProfit: number = Math.floor(((step / 100) * sellPrice * amountIn) / decimalPlaces);
         //! const amountSend: number = amountIn + batcherFee + outputADA;
-        const amountSend: number = amountIn + batcherFee + totalADA;
+        const amountSend: number = amountIn + totalADA;
         sumADA += amountSend;
         result.push({
             buyPrice: Math.floor(buyPrice),
