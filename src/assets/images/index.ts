@@ -1,5 +1,5 @@
 const images = {
-    logo: require("./logo.svg"),
+    logo: require("./logo.png"),
     cardano: require("./logo.svg"),
     galaxy: require("./galaxy_background.png"),
     cardanoSide: require("./cardano-side.svg"),

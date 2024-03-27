@@ -1,13 +1,13 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useContext, useState, useTransition } from "react";
 import classNames from "classnames/bind";
 import styles from "./SidebarMenu.module.scss";
-import Image from "next/image";
 import NetworkSelector from "../NetworkSelector";
 import { networks } from "~/constants/networks";
 import { publicRoutes } from "~/routes/routes";
 import HeaderOption from "~/layouts/components/Header/HeaderOption";
 import configs from "~/configs";
 import ConnectWallet from "~/layouts/components/ConnectWallet";
+import TranslateContext from "~/contexts/components/TranslateContext";
 
 const cx = classNames.bind(styles);
 
@@ -18,7 +18,7 @@ type Props = {
 
 const SidebarMenu = function ({ open, setOpen }: Props) {
     const [selected, setSelected] = useState<string>(configs.routes.home);
-
+    const { t } = useContext(TranslateContext);
     return (
         <div
             className={cx("wrapper", {
@@ -39,7 +39,7 @@ const SidebarMenu = function ({ open, setOpen }: Props) {
                         return (
                             <HeaderOption
                                 key={index}
-                                name={name}
+                                name={t(`header.${name}`)}
                                 redirect={redirect}
                                 isActive={Boolean(selected === redirect)}
                                 setSelectedRouter={setSelected}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import classNames from "classnames/bind";
 import styles from "./HeaderOption.module.scss";

@@ -14,9 +14,8 @@ const nextConfig = {
         KOIOS_RPC_URL_MAINNET: "https://api.koios.rest/api/v1",
         NEXT_APP_BASE_URL: "https://backend.demarket.vn/api/v1",
         VILAI_POOL_ID: "pool1u7zrgexnxsysctnnwljjjymr70he829fr5n3vefnv80guxr42dv",
-        POLICYID_C2E_TOKEN: "c88c4d8b1e448d579f58992debe9f905b47607ea878f3c2480248834",
-        ASSETNAME_C2E_TOKEN: "C2E",
-        EXPIRED_TIME: "1728000000",
+        DUALTARGET_CONTRACT_ADDRESS_PREPROD: "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk",
+        EXCHANGE_ADDRESS_FREE_PREPROP: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
     },
 };
 

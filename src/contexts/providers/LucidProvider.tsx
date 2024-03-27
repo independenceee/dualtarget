@@ -1,9 +1,9 @@
 "use client";
 
 import React, { ReactNode, useState } from "react";
-import { Blockfrost, Lucid } from "lucid-cardano";
+import { Lucid } from "lucid-cardano";
 import LucidContext from "~/contexts/components/LucidContext";
-import { Network } from "lucid-cardano";
+
 type Props = {
     children: ReactNode;
 };

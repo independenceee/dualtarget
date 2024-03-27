@@ -36,6 +36,7 @@
     'sumADA': 320922238
 }
 
+
 ```
 
 ```py
@@ -122,25 +123,15 @@ class TrueRedeemer(PlutusData):
 )
 
 def main(name: str, beneficiary: str, price_l: int, price_h: int, step: int, income: int, totalada: int, stake: int, wait_time: int):
-# def main(name: str, beneficiary: str, price_l: int, wait_time: int):
-    # Load chain context
-    #context = OgmiosChainContext(ogmios_url, network=network, kupo_url=kupo_url)
-    #context = get_chain_context()
     wallet = Wallet()
     context=wallet.context
-    # Get payment address
     payment_address = get_address(name)
     vkey_owner_hash: VerificationKeyHash = payment_address.payment_part
-
-
-    # Get the beneficiary VerificationKeyHash (PubKeyHash)
     beneficiary_address = get_address(beneficiary)
     vkey_hash: VerificationKeyHash = beneficiary_address.payment_part
 
     _, _, fee_address = get_signing_info(beneficiary)
-    fee_address=fee_address.payment_part.to_primitive() #đưa vào datum
-
-
+    fee_address=fee_address.payment_part.to_primitive()
     _, _, script_address = get_contract("dualtarget")
     validator_address=script_address.payment_part.to_primitive() #đưa vào datum
     print(f"validator_address {validator_address}")
@@ -247,16 +238,15 @@ def main(name: str):
             )
 
             if (
-                params.odOwner == bytes(payment_address.payment_part)  and item.output.amount.coin == int(params.OutputADA/2) and params.isLimitOrder == 0
-
+                params.odOwner == bytes(payment_address.payment_part)
+                and item.output.amount.coin == int(params.OutputADA/2)
+                and params.isLimitOrder == 0
             ):
                 fee_address1 = Address(
                     VerificationKeyHash.from_primitive(params.fee_address),
                     network=network,
                 )
-                """
-                TODO: also check if the deadline has passed and if the oracle datum info is greater than the datum limit
-                """
+
                 claimable_utxos.append(
                     {"utxo": item,
                     "BatcherFee_addr": str(fee_address1), "fee": params.BatcherFee,
@@ -379,9 +369,7 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 
 ### Feedback
 
--   Xóa Preview network => DONE
--   Logo Thay đổi theo Dualtarget (cạnh network ) => ĐỢI SƠN
--   Header - Deposit - Withdraw => DONE
+-   Logo Thay đổi theo Dualtarget (cạnh network ) => DONE
 
 1.  Deposit (calculate_selling_strategy(price_l, price_h, step, income, totalada, stake))
 
@@ -419,3 +407,24 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 -   Tính phần lãi
 -   Lợi nhuận theo năm / tháng
 -   Chart + Mesh Mua và bán
+
+
+def qty_DualT(P_step,income,stake,entry):
+
+    try:
+        USDT_pool=income*12/(stake/100) #số lượng USD cần đảm bảo
+        qty_entry_sell=USDT_pool/(entry*(1+P_step/100)) # số lượng ADA cần tại giá sell
+        qty_entry=USDT_pool/entry # số lượng ADA cần tại giá hiện tại
+        qty_entry_buy=USDT_pool/(entry*(1-P_step/100)) # số lượng ADA cần tại giá buy
+        
+        qty_DualT_buy=qty_entry_buy-qty_entry # số lượng ADA cần buy tại giá
+
+        qty_DualT_sell=qty_entry-qty_entry_sell # số lượng ADA cần sell tại giá
+
+    except Exception as e:
+        # Xử lý khi lỗi sập bẫy
+        print('qtyDualTarget: ' + str(e)  )
+        
+    return qty_DualT_buy, qty_DualT_sell, qty_entry
+
+```

@@ -1,5 +1,7 @@
+"use client";
+
 import classNames from "classnames/bind";
-import React from "react";
+import React, { useContext } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders";
@@ -7,14 +9,22 @@ import styles from "./Deposit.module.scss";
 import Service from "~/components/Card/Service";
 import Image from "next/image";
 import images from "~/assets/images";
+import { SmartContractContextType } from "~/types/contexts/SmartContractContextType";
+import SmartContractContext from "~/contexts/components/SmartContractContext";
+import { LucidContextType } from "~/types/contexts/LucidContextType";
+import LucidContext from "~/contexts/components/LucidContext";
 const cx = classNames.bind(styles);
 
 const Djed = function () {
+    const { deposit, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
+    const { lucid } = useContext<LucidContextType>(LucidContext);
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")}>Mint or Burn DJED</h2>
+                    <h2 className={cx("title")} onClick={() => deposit({ lucid: lucid })}>
+                        Mint or Burn DJED
+                    </h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
