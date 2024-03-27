@@ -41,16 +41,16 @@ export interface DaultargetParams {
     isLimitOrder: number;
 }
 
-export interface ResultItem {
+export interface SellingStrategyResult {
     buyPrice: number;
     sellPrice: number;
-    amountSend: number;
+    amount_send: number;
     minimumAmountOut: number;
     minimumAmountOutProfit: number;
-    amountSell: number;
-    amountBuy: number;
-    amountEntry: number;
-    usdPool: number;
+    amount_sell: number;
+    amount_buy: number;
+    amount_entry: number;
+    usd_pool: number;
     sumADA: number;
 }
 

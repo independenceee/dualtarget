@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useContext } from "react";
 import Image from "next/image";
 import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
@@ -8,10 +11,13 @@ import Gutter from "~/components/Card/Gutter";
 import Title from "~/components/Card/Title";
 import routes from "~/configs/routes";
 import Coin from "~/components/Card/Coin";
+import { TranslateContextType } from "~/types/contexts/TranslateContextType";
+import TranslateContext from "~/contexts/components/TranslateContext";
 
 const cx = classNames.bind(styles);
 
 export default function Home() {
+    const { t } = useContext<TranslateContextType>(TranslateContext);
     return (
         <div className={cx("wrapper")}>
             <div className={cx("background-gallaxy-wrapper")}>
@@ -29,8 +35,8 @@ export default function Home() {
             <section className={cx("content")}>
                 <div className={cx("introduction")}>
                     <div className={cx("introduction-header")}>
-                        <span className={cx("prefix")}>Djed</span>
-                        <span className={cx("title")}>Stablecoin</span>
+                        <span className={cx("prefix")}>Dualtarget</span>
+                        <span className={cx("title")}>{t("home")}</span>
                     </div>
                     <div className={cx("introduction-description")}>
                         <div className={cx("description-child")}>
