@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
 import HeaderOption from "./HeaderOption";
 import { publicRoutes } from "~/routes/routes";
-import configs from "~/configs";
 import Image from "next/image";
 import images from "~/assets/images";
 import NetworkSelector from "~/components/NetworkSelector";
 import { networks } from "~/constants/networks";
 import Hamburger from "~/components/Hamburger";
 import ConnectWallet from "~/layouts/components/ConnectWallet";
+import LanguageSelector from "~/components/LanguageSelector";
+import TranslateContext from "~/contexts/components/TranslateContext";
 
 const cx = classNames.bind(styles);
 
@@ -21,6 +22,8 @@ type Props = {
 };
 
 const Header = function ({ selectedRouter, setSelectedRouter }: Props) {
+    const { t } = useContext(TranslateContext);
+
     return (
         <header className={cx("header")}>
             <div className={cx("wrapper")}>
@@ -45,7 +48,7 @@ const Header = function ({ selectedRouter, setSelectedRouter }: Props) {
                                     <HeaderOption
                                         setOpen={null!}
                                         key={index}
-                                        name={name}
+                                        name={t(`header.${name}`)}
                                         redirect={redirect}
                                         isActive={Boolean(selectedRouter === redirect)}
                                         setSelectedRouter={setSelectedRouter}
@@ -55,6 +58,7 @@ const Header = function ({ selectedRouter, setSelectedRouter }: Props) {
                         </ul>
                     </nav>
                     <div className={cx("nav-right-wrapper")}>
+                        <LanguageSelector />
                         <ConnectWallet className={cx("connect-wallet-button")} />
                         <Hamburger />
                     </div>

@@ -18,8 +18,9 @@ type Props = {
     isLoading: boolean;
 };
 
+type CHART_TIME_OPTION = "ONE_DAY" | "ONE_WEEK" | "SIX_MONTHS" | "ONE_YEAR";
+
 const PriceChart = function ({ data, isLoading }: Props) {
-    console.log(data);
     const [show, setShow] = useState<boolean>(true);
     const [crytocurrency, setCrytocurrency] = useState<string>("DJED");
     const [chartConfigs, setChartConfigs] = useState<ChartProps>({
@@ -120,7 +121,7 @@ const PriceChart = function ({ data, isLoading }: Props) {
             },
         },
 
-        selection: "ONE_DAY" as "ONE_DAY" | "ONE_WEEK" | "SIX_MONTHS" | "ONE_YEAR",
+        selection: "ONE_DAY" as CHART_TIME_OPTION,
     });
 
     useEffect(() => {
@@ -179,7 +180,6 @@ const PriceChart = function ({ data, isLoading }: Props) {
             case "ONE_WEEK":
                 ApexCharts.exec("area-datetime", "zoomX", new Date("01 Jan 2013").getTime(), new Date("27 Feb 2013").getTime());
                 break;
-
             default:
                 ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2012").getTime(), new Date("27 Feb 2013").getTime());
                 break;

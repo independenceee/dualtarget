@@ -19,6 +19,8 @@ const icons = {
     arrowBottomYellow: require("./arrow-bottom-yellow.svg"),
     cardanoChartCoin: require("./cardano.webp"),
     djedChartCoin: require("./djed.webp"),
+    vietnameseFlag: require("./vietnam-flag.svg"),
+    unitedKingdomFlag: require("./united-kingdom-flag.png"),
     files: {
         defaultFile: require("./file-default.svg"),
     },

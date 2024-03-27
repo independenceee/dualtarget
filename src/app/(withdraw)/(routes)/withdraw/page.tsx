@@ -22,7 +22,7 @@ const PriceChart = dynamic(() => import("~/components/PriceChart"), {
 const cx = classNames.bind(styles);
 
 const Withdraw = function () {
-    const [data, setData] = useState<ChartDataType>([]);
+    const [data, setData] = useState<ChartDataType | null>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
@@ -31,7 +31,7 @@ const Withdraw = function () {
         setLoading(true);
         getChartData(dataChart)
             .then((data) => {
-                setData(data as ChartDataType);
+                setData(data as ChartDataType | null);
             })
             .finally(() => {
                 setLoading(false);
