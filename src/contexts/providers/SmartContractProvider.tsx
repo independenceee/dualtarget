@@ -9,7 +9,7 @@ import { DualtargetDatum } from "~/constants/datum";
 import readValidator from "~/utils/read-validator";
 import { refundRedeemer } from "~/constants/redeemer";
 import convertPublicKeyToAddress from "~/helpers/convert-public-key-to-address";
-import historyPrice from "~/utils/history-price";
+
 type Props = {
     children: ReactNode;
 };
@@ -20,19 +20,35 @@ const SmartContractProvider = function ({ children }: Props) {
     const [waitingDeposit, setWaitingDeposit] = useState<boolean>(false);
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
 
-    const deposit = async function ({ lucid }: { lucid: Lucid }) {
+    const deposit = async function ({
+        lucid,
+        income,
+        priceHight,
+        priceLow,
+        stake,
+        step,
+        totalADA,
+    }: {
+        lucid: Lucid;
+        income: number;
+        priceHight: number;
+        priceLow: number;
+        stake: number;
+        step: number;
+        totalADA: number;
+    }) {
         try {
             setWaitingDeposit(true);
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
             const sellingStrategies: SellingStrategyResult[] = calculateSellingStrategy({
-                income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng
-                price_H: 2000000, //  Giá thấp nhất
-                price_L: 1000000, // Giá cao nhất
-                stake: 5, //  ROI % stake theo năm
-                step: 10, // Bước nhảy theo giá (%)
-                total_ADA: 24000000, // Tổng ada
+                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                price_H: priceHight, //  Giá thấp nhất =  2000000
+                price_L: priceLow, // Giá cao nhất = 1000000
+                stake: stake, //  ROI % stake theo năm = 5
+                step: step, // Bước nhảy theo giá (%) = 10
+                total_ADA: totalADA, // Tổng ada = 24000000
             });
 
             console.log(sellingStrategies);

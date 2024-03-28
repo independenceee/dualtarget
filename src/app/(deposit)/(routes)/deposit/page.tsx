@@ -15,6 +15,7 @@ import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import PriceChart from "~/components/PriceChart";
 import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
+
 const cx = classNames.bind(styles);
 
 const Djed = function () {
