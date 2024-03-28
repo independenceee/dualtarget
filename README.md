@@ -291,7 +291,7 @@ def main(name: str):
     #==============================================
     # Build the transaction
     builder = TransactionBuilder(context)
-    # reference_inputs smart contract
+    # reference_inputs smart contract ()
     builder.reference_inputs.add(sc_utxo)
 
     #builder.add_input_address(payment_address)
@@ -308,7 +308,28 @@ def main(name: str):
 
         )
     )
-     #=
+    #==============================================
+    builder.add_output( 
+        TransactionOutput(address=payment_address, amount=int(5000000))
+    )
+    builder.collaterals.append(non_nft_utxo) 
+    # This tells pycardano to add vkey_hash to the witness set when calculating the transaction cost
+    vkey_hash: VerificationKeyHash = payment_address.payment_part
+    builder.required_signers = [vkey_hash]
+    # we must specify at least the start of the tx valid range in slots
+    builder.validity_start = context.last_block_slot
+    # This specifies the end of tx valid range in slots
+    builder.ttl = builder.validity_start + 1000
+
+    # Sign the transaction
+    payment_vkey, payment_skey, payment_address = get_signing_info(name)
+    signed_tx = builder.build_and_sign(
+        signing_keys=[payment_skey],
+        change_address=payment_address,
+    )
+
+    # Submit the transaction
+    context.submit_tx(signed_tx.to_cbor())
 ```
 
 ```py
@@ -367,6 +388,27 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
     return result
 ```
 
+```py
+def qty_DualT(P_step,income,stake,entry):
+
+    try:
+        USDT_pool=income*12/(stake/100) #số lượng USD cần đảm bảo
+        qty_entry_sell=USDT_pool/(entry*(1+P_step/100)) # số lượng ADA cần tại giá sell
+        qty_entry=USDT_pool/entry # số lượng ADA cần tại giá hiện tại
+        qty_entry_buy=USDT_pool/(entry*(1-P_step/100)) # số lượng ADA cần tại giá buy
+
+        qty_DualT_buy=qty_entry_buy-qty_entry # số lượng ADA cần buy tại giá
+
+        qty_DualT_sell=qty_entry-qty_entry_sell # số lượng ADA cần sell tại giá
+
+    except Exception as e:
+        # Xử lý khi lỗi sập bẫy
+        print('qtyDualTarget: ' + str(e)  )
+
+    return qty_DualT_buy, qty_DualT_sell, qty_entry
+
+```
+
 ### Feedback
 
 -   Logo Thay đổi theo Dualtarget (cạnh network ) => DONE
@@ -407,24 +449,3 @@ def calculate_selling_strategy(price_L, price_H, step, income, total_ADA, stake)
 -   Tính phần lãi
 -   Lợi nhuận theo năm / tháng
 -   Chart + Mesh Mua và bán
-
-
-def qty_DualT(P_step,income,stake,entry):
-
-    try:
-        USDT_pool=income*12/(stake/100) #số lượng USD cần đảm bảo
-        qty_entry_sell=USDT_pool/(entry*(1+P_step/100)) # số lượng ADA cần tại giá sell
-        qty_entry=USDT_pool/entry # số lượng ADA cần tại giá hiện tại
-        qty_entry_buy=USDT_pool/(entry*(1-P_step/100)) # số lượng ADA cần tại giá buy
-        
-        qty_DualT_buy=qty_entry_buy-qty_entry # số lượng ADA cần buy tại giá
-
-        qty_DualT_sell=qty_entry-qty_entry_sell # số lượng ADA cần sell tại giá
-
-    except Exception as e:
-        # Xử lý khi lỗi sập bẫy
-        print('qtyDualTarget: ' + str(e)  )
-        
-    return qty_DualT_buy, qty_DualT_sell, qty_entry
-
-```

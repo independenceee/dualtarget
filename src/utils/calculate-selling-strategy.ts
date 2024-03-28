@@ -17,11 +17,8 @@ function qtyDualT(Pstep: number, income: number, stake: number, entry: number): 
         const qtyentrysell: number = USDTpool / (entry * (1 + Pstep / 100)); // số lượng ADA cần tại giá sell
         const qtyentry: number = USDTpool / entry; // số lượng ADA cần tại giá hiện tại
         const qtyentrybuy: number = USDTpool / (entry * (1 - Pstep / 100)); // số lượng ADA cần tại giá buy
-
         const qtyDualTbuy: number = qtyentrybuy - qtyentry; // số lượng ADA cần buy tại giá
         const qtyDualTsell: number = qtyentry - qtyentrysell; // số lượng ADA cần sell tại giá
-
-        console.log([qtyDualTbuy, qtyDualTsell, qtyentry]);
         return [qtyDualTbuy, qtyDualTsell, qtyentry];
     } catch (error) {
         console.log("qtyDualTarget: " + error);
@@ -58,9 +55,10 @@ function calculateSellingStrategy({
     stake: number;
 }): SellingStrategyResult[] {
     const result: SellingStrategyResult[] = [];
-    const decimal_places: number = 10;
+    const decimal_places: number = 1000000;
 
     let price: number = price_L;
+
     let sumADA: number = 0;
     let BatcherFee = 1500000;
     let OutputADA = 3000000;
@@ -73,9 +71,10 @@ function calculateSellingStrategy({
         const amountIn: number = Math.floor(qty_sell * decimal_places);
         const minimumAmountOut: number = Math.floor((amountIn * buyPrice) / decimal_places);
         const minimumAmountOutProfit: number = Math.floor(((step / 100) * sellPrice * amountIn) / decimal_places);
-        console.log(minimumAmountOut, minimumAmountOutProfit);
         const amount_send: number = amountIn + BatcherFee + OutputADA;
         sumADA += amount_send;
+
+        console.log(buyPrice, sellPrice, amountIn, minimumAmountOut);
 
         result.push({
             buyPrice: buyPrice,
