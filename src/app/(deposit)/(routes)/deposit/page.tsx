@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders";
@@ -13,18 +13,31 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
+import PriceChart from "~/components/PriceChart";
+import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
 const cx = classNames.bind(styles);
 
 const Djed = function () {
-    const { deposit, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
+    const [data, setData] = useState<ChartDataType | null>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const { lucid } = useContext<LucidContextType>(LucidContext);
+    const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
+
+    useEffect(() => {
+        setLoading(true);
+        getChartData(dataChart)
+            .then((data) => {
+                setData(data as ChartDataType | null);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")} onClick={() => deposit({ lucid: lucid })}>
-                        Mint or Burn DJED
-                    </h2>
+                    <h2 className={cx("title")}>Mint or Burn DJED</h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
@@ -35,8 +48,9 @@ const Djed = function () {
                                     icon={icons.djed}
                                     className={cx("stat-djed-stablecoin")}
                                     buttonOptions={{
-                                        children: "Mint",
-                                        disabled: true,
+                                        onClick: () => deposit({ lucid: lucid }),
+                                        children: "Deposit",
+                                        disabled: !lucid || !!waitingDeposit,
                                     }}
                                 >
                                     <Service type="PAY" />
@@ -44,21 +58,7 @@ const Djed = function () {
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
                                 <Image className={cx("coin-image-right-mobile")} src={images.coinDjedRight} alt="coin-djed" />
                             </div>
-                            <div className={cx("card-wrapper")}>
-                                <Card
-                                    title="Burn DJED"
-                                    icon={icons.djed}
-                                    className={cx("stat-djed-stablecoin")}
-                                    buttonOptions={{
-                                        children: "Burn",
-                                        disabled: true,
-                                    }}
-                                >
-                                    <Service type="GET" />
-                                </Card>
-                                <Image className={cx("coin-image-right")} src={images.coinDjedRight} alt="coin-djed" />
-                                <Image className={cx("coin-image-left-mobile")} src={images.coinDjedLeft} alt="coin-djed" />
-                            </div>
+                            <PriceChart data={data} isLoading={loading} />
                         </div>
                     </div>
                 </div>

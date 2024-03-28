@@ -9,7 +9,7 @@ import { DualtargetDatum } from "~/constants/datum";
 import readValidator from "~/utils/read-validator";
 import { refundRedeemer } from "~/constants/redeemer";
 import convertPublicKeyToAddress from "~/helpers/convert-public-key-to-address";
-// import historyPrice from "~/utils/history-price";
+import historyPrice from "~/utils/history-price";
 type Props = {
     children: ReactNode;
 };
@@ -21,19 +21,18 @@ const SmartContractProvider = function ({ children }: Props) {
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
 
     const deposit = async function ({ lucid }: { lucid: Lucid }) {
-        // await historyPrice();
         try {
             setWaitingDeposit(true);
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
             const sellingStrategies: SellingStrategyResult[] = calculateSellingStrategy({
-                income: 5,
-                price_H: 2000000,
-                price_L: 1000000,
-                stake: 5,
-                step: 10,
-                total_ADA: 24000000,
+                income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng
+                price_H: 2000000, //  Giá thấp nhất
+                price_L: 1000000, // Giá cao nhất
+                stake: 5, //  ROI % stake theo năm
+                step: 10, // Bước nhảy theo giá (%)
+                total_ADA: 24000000, // Tổng ada
             });
 
             console.log(sellingStrategies);
@@ -139,9 +138,6 @@ const SmartContractProvider = function ({ children }: Props) {
                         // Number(scriptUtxo.assets.lovelace) === 113590909 // UTXO djed
                         // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
                     ) {
-                        console.log(params.fee_address);
-                        const freeAddress1 = convertPublicKeyToAddress({ paymentAddress: params.fee_address });
-                        console.log(freeAddress1);
                         claimableUtxos.push({
                             utxo: scriptUtxo,
                             BatcherFee_addr: String(params.fee_address),
@@ -202,7 +198,11 @@ const SmartContractProvider = function ({ children }: Props) {
             setWaitingWithdraw(true);
         }
     };
-    return <SmartContractContext.Provider value={{ deposit, withdraw }}>{children}</SmartContractContext.Provider>;
+    return (
+        <SmartContractContext.Provider value={{ deposit, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}>
+            {children}
+        </SmartContractContext.Provider>
+    );
 };
 
 export default SmartContractProvider;

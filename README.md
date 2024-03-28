@@ -415,12 +415,12 @@ def qty_DualT(P_step,income,stake,entry):
 
 1.  Deposit (calculate_selling_strategy(price_l, price_h, step, income, totalada, stake))
 
-    -   Bao nhiêu $ một tháng
-    -   Bước nhảy theo giá (%)
-    -   Giá thấp nhất
-    -   Giá cao nhất
-    -   ROI % stake theo năm
-    -   Tổng ada
+   input -   Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng
+   input -   Bước nhảy theo giá (%)
+   input -   Giá thấp nhất
+   input -   Giá cao nhất
+   input -   ROI % stake theo năm
+   input -   Tổng ada
     -   Chart + Mesh Mua và bán => DONE
 
 => Output: UTXO,

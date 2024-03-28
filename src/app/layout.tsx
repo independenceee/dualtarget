@@ -4,6 +4,7 @@ import ContextProvider from "~/contexts";
 import { PublicLayout } from "~/layouts";
 import NetworkConnectionStatus from "~/components/NetworkConnectionStatus";
 import "./globals.scss";
+import historyPrice from "~/utils/history-price";
 
 export const metadata: Metadata = {
     title: "Dual Target - Home",
@@ -14,7 +15,8 @@ type Props = {
     children: ReactNode;
 };
 
-const RootLayout = function ({ children }: Readonly<Props>) {
+const RootLayout =  function ({ children }: Readonly<Props>) {
+    
     return (
         <html lang="en">
             <body>

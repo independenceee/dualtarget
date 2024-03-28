@@ -25,7 +25,7 @@ const Withdraw = function () {
     const [data, setData] = useState<ChartDataType | null>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { deposit, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
+    const { waitingWithdraw, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
 
     useEffect(() => {
         setLoading(true);
@@ -42,9 +42,7 @@ const Withdraw = function () {
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")} onClick={() => withdraw({ lucid: lucid })}>
-                        Mint or Burn DJED
-                    </h2>
+                    <h2 className={cx("title")}>Mint or Burn DJED</h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
@@ -55,8 +53,9 @@ const Withdraw = function () {
                                     icon={icons.djed}
                                     className={cx("stat-djed-stablecoin")}
                                     buttonOptions={{
-                                        children: "Mint",
-                                        disabled: true,
+                                        onClick: () => withdraw({ lucid: lucid }),
+                                        children: "Widthdraw",
+                                        disabled: !lucid || !!waitingWithdraw,
                                     }}
                                 >
                                     <Service type="PAY" />
