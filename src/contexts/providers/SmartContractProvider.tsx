@@ -8,7 +8,8 @@ import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
 import readValidator from "~/utils/read-validator";
 import { refundRedeemer } from "~/constants/redeemer";
-import historyPrice from "~/utils/history-price";
+import convertPublicKeyToAddress from "~/helpers/convert-public-key-to-address";
+// import historyPrice from "~/utils/history-price";
 type Props = {
     children: ReactNode;
 };
@@ -20,7 +21,7 @@ const SmartContractProvider = function ({ children }: Props) {
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
 
     const deposit = async function ({ lucid }: { lucid: Lucid }) {
-        await historyPrice();
+        // await historyPrice();
         try {
             setWaitingDeposit(true);
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
@@ -87,7 +88,6 @@ const SmartContractProvider = function ({ children }: Props) {
 
     const withdraw = async function ({ lucid }: { lucid: Lucid }) {
         try {
-            console.log("withdraw");
             setWaitingWithdraw(false);
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
@@ -139,6 +139,9 @@ const SmartContractProvider = function ({ children }: Props) {
                         // Number(scriptUtxo.assets.lovelace) === 113590909 // UTXO djed
                         // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
                     ) {
+                        console.log(params.fee_address);
+                        const freeAddress1 = convertPublicKeyToAddress({ paymentAddress: params.fee_address });
+                        console.log(freeAddress1);
                         claimableUtxos.push({
                             utxo: scriptUtxo,
                             BatcherFee_addr: String(params.fee_address),
@@ -180,11 +183,8 @@ const SmartContractProvider = function ({ children }: Props) {
             //     return;
             // }
 
-            console.log(claimableUtxos);
             let tx: any = lucid.newTx();
             for (const utxoToSpend of claimableUtxos) {
-                console.log(utxoToSpend);
-
                 tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer); // Redeemer
             }
             tx = await tx
