@@ -1,6 +1,8 @@
 package configs
 
 import (
+	"dualtarget-backend/src/constants"
+	"dualtarget-backend/src/helpers"
 	"fmt"
 
 	"gorm.io/driver/postgres"
@@ -8,17 +10,11 @@ import (
 )
 
 func DatabaseConnection() *gorm.DB {
-	const (
-		host     = "localhost"
-		port     = 5432
-		user     = "postgres"
-		password = "postgres"
-		dbName   = "test"
-	)
+	env := constants.Env()
 
-	sqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbName)
-	db, err := gorm.Open(postgres.Open(sqlInfo), &gorm.Config{})
-	helper.ErrorPanic(err)
+	sqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, USER, PASSWORD, DATABASE_NAME)
+	database, err := gorm.Open(postgres.Open(sqlInfo), &gorm.Config{})
+	helpers.ErrorPanic(err)
 
-	return db
+	return database
 }
