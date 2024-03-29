@@ -1,7 +1,7 @@
 @import "../../../../styles/layouts.scss";
 
 .wrapper {
-    padding: 17.2rem 6.4rem 0;
+    padding: 17.2rem 4rem 0;
 }
 
 .header {
@@ -21,7 +21,6 @@
 }
 
 .stats {
-    @extend .container;
     display: flex;
     gap: 2.8rem;
 }
@@ -31,7 +30,8 @@
 }
 
 .card-wrapper {
-    width: 50%;
+    max-width: 452px;
+    width: 100%;
     position: relative;
 }
 
@@ -42,10 +42,6 @@
 
 .orders {
     margin: 3.2rem auto 5.6rem;
-}
-
-.card-wrapper {
-    position: relative;
 }
 
 .coin-image-left,
@@ -63,51 +59,20 @@
 .coin-image-right {
     height: 170px;
     overflow: hidden;
-    right: -148px;
-    top: 0;
-    width: 209px;
-    z-index: 6;
-}
-
-.coin-image-left-mobile,
-.coin-image-right-mobile {
-    position: absolute;
-    display: none;
-}
-.coin-image-left-mobile {
-    height: 148px;
-    width: 162px;
-    left: -130px;
-    bottom: 0;
-}
-
-.coin-image-right-mobile {
-    height: 170px;
-    overflow: hidden;
     position: absolute;
     right: -148px;
     top: 0;
     width: 209px;
     z-index: 6;
 }
-
 @media (max-width: 1024px) {
     .card-wrapper {
         width: 100%;
+        margin: 0 auto;
     }
 
     .stats {
         flex-direction: column;
-    }
-
-    .coin-image-left,
-    .coin-image-right {
-        display: none;
-    }
-
-    .coin-image-left-mobile,
-    .coin-image-right-mobile {
-        display: block;
     }
 }
 
@@ -119,9 +84,5 @@
 
     .stats {
         padding: 0 !important;
-    }
-    .coin-image-left-mobile,
-    .coin-image-right-mobile {
-        display: none;
     }
 }

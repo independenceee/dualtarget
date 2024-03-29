@@ -11,14 +11,10 @@ import Image from "next/image";
 import images from "~/assets/images";
 import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
 import dynamic from "next/dynamic";
-<<<<<<< Updated upstream
 import { SmartContractContextType } from "~/types/contexts/SmartContractContextType";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-=======
-
->>>>>>> Stashed changes
 const PriceChart = dynamic(() => import("~/components/PriceChart"), {
     ssr: false,
 });
