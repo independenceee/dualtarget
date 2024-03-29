@@ -4,7 +4,7 @@ type Props = {
     paymentAddress: C.StakeCredential;
 };
 const convertPublicKeyToAddress = function ({ paymentAddress }: Props): C.Address {
-    const address = C.BaseAddress.new(0, paymentAddress, paymentAddress).to_address();
+    const address = C.BaseAddress.new(0, paymentAddress, null!).to_address();
     return address;
 };
 export default convertPublicKeyToAddress;
