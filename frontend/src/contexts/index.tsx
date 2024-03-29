@@ -15,7 +15,6 @@ type Props = {
 
 const ContextProvider = function ({ children }: Props) {
     return (
-<<<<<<< Updated upstream
         <TranslateProvider>
             <ModalProvider>
                 <NetworkProvider>
@@ -27,18 +26,6 @@ const ContextProvider = function ({ children }: Props) {
                 </NetworkProvider>
             </ModalProvider>
         </TranslateProvider>
-=======
-        <ModalProvider>
-            <NetworkProvider>
-                <LucidProvider>
-                    <WalletProvider>
-                        {/* <SmartContractProvider></SmartContractProvider> */}
-                        {children}
-                    </WalletProvider>
-                </LucidProvider>
-            </NetworkProvider>
-        </ModalProvider>
->>>>>>> Stashed changes
     );
 };
 

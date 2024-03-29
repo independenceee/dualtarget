@@ -56,8 +56,6 @@ const Djed = function () {
                                 >
                                     <Service type="PAY" />
                                 </Card>
-                                <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
-                                <Image className={cx("coin-image-right-mobile")} src={images.coinDjedRight} alt="coin-djed" />
                             </div>
                             <PriceChart data={data} isLoading={loading} />
                         </div>
