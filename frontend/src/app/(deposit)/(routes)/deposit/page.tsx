@@ -49,7 +49,7 @@ const Djed = function () {
                                     icon={icons.djed}
                                     className={cx("stat-djed-stablecoin")}
                                     buttonOptions={{
-                                        onClick: () => deposit({ lucid: lucid }),
+                                        // onClick: () => deposit({ lucid: lucid }),
                                         children: "Deposit",
                                         disabled: !lucid || !!waitingDeposit,
                                     }}
