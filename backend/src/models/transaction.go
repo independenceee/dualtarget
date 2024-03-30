@@ -1,11 +1,21 @@
 package models
 
-type Transaction struct {
-	Id     int    `gorm:"type:int";primary_key`
-	TxHash string `gorm:"type:varchar(255)"`
-	Date   string `gorm:"type:varchar(255)"`
-	action string `gorm:"type:varchar(255)"`
-	amount string `gorm:"type:varchar(255)"`
+import (
+	"time"
 
-	status string
+	"gorm.io/gorm"
+)
+
+type Transaction struct {
+	gorm.Model
+
+	Id        string `gorm:"type:varchar(255)"; gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	TxHash    string `gorm:"type:varchar(255)"`
+	Date      string `gorm:"type:varchar(255)"`
+	Action    string `gorm:"type:varchar(255)"`
+	Amount    string `gorm:"type:varchar(255)"`
+	Status    string `gorm:"type:varchar(255)"`
+	AccountId string `gorm:"type:varchar(255)"`
 }
