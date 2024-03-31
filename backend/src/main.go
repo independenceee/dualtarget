@@ -1,21 +1,15 @@
 package main
 
 import (
-	"net/http"
+	"dualtarget-backend/src/configs"
+	"dualtarget-backend/src/routers"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-
-	//api.Blockfrost()
-	// configs.DatabaseConnection()
-
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	configs.Database()
+	var app *gin.Engine = gin.Default()
+	routers.Routers(app)
+	app.Run(":8080")
 }

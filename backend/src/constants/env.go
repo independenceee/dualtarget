@@ -8,7 +8,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// instance env
 type Env struct {
 	DATABASE_HOST     string
 	DATABASE_PORT     string
@@ -17,10 +16,10 @@ type Env struct {
 	DATABASE_NAME     string
 }
 
-func env() *Env {
+func ReadEnv() *Env {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error: ", err)
 	}
 	var (
 		DATABASE_HOST     = os.Getenv("POSTGRES_HOST")
