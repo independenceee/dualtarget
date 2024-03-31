@@ -11,15 +11,14 @@ import (
 )
 
 func AccountRouter(router *gin.RouterGroup) {
-
 	validate := validator.New()
 	database := configs.Database()
 	accountRepository := repository.AccountRepositoryImplement(database)
 	accountService := services.AccountServiceImplement(accountRepository, validate)
 	accountController := controllers.AccountController(accountService)
 
-	router.GET("/")
-	router.GET("/:id", accountController.FindAll)
+	router.GET("/", accountController.FindAll)
+	router.GET("/:id", accountController.FindById)
 	router.POST("/", accountController.Create)
 	router.PATCH("/:id", accountController.Update)
 	router.DELETE("/:id", accountController.Delete)

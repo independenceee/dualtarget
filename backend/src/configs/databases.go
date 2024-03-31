@@ -26,8 +26,8 @@ func Database() *gorm.DB {
 	helpers.ErrorPanic(err)
 
 	// migrate database
-	database.Table("account").AutoMigrate(&models.Account{})
-	database.Table("transaction").AutoMigrate(&models.Transaction{})
+	database.Table("accounts").AutoMigrate(&models.Account{})
+	database.Table("transactions").AutoMigrate(&models.Transaction{})
 
 	return database
 }

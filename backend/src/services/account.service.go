@@ -8,6 +8,7 @@ import (
 	"dualtarget-backend/src/repository"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type IAccountService interface {
@@ -34,7 +35,9 @@ func (accountService *TAccountService) Create(accountRequest request.CreateAccou
 	err := accountService.Validate.Struct(accountRequest)
 	helpers.ErrorPanic(err)
 	accountModel := models.Account{
+		Id:            uuid.NewString(),
 		WalletAddress: accountRequest.WalletAddress,
+		StakeAddress:  accountRequest.StakeAddress,
 	}
 	accountService.AccountRepository.Save(accountModel)
 }
