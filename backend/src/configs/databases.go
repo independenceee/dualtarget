@@ -20,12 +20,10 @@ func Database() *gorm.DB {
 		log.Fatal("Error loading .env file")
 	}
 
-	// connect to database
 	sqlConnection := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", env.DATABASE_HOST, DATABASE_PORT, env.DATABASE_USER, env.DATABASE_PASSWORD, env.DATABASE_NAME)
 	database, err := gorm.Open(postgres.Open(sqlConnection), &gorm.Config{})
 	helpers.ErrorPanic(err)
 
-	// migrate database
 	database.Table("accounts").AutoMigrate(&models.Account{})
 	database.Table("transactions").AutoMigrate(&models.Transaction{})
 
