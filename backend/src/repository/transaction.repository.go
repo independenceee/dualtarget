@@ -1,7 +1,7 @@
 package repository
 
 import (
-	dto "dualtarget-backend/src/dto/account"
+	dto "dualtarget-backend/src/dto/transaction"
 	"dualtarget-backend/src/helpers"
 	"dualtarget-backend/src/models"
 	"errors"
@@ -9,56 +9,62 @@ import (
 	"gorm.io/gorm"
 )
 
-type IAccountRepository interface {
-	Save(account models.Account)
-	Update(account models.Account)
-	Delete(accountId int)
-	FindById(accountId int) (accountDto models.Account, err error)
-	FindAll() []models.Account
+type ITransactionRepository interface {
+	Save(transaction models.Transaction)
+	Update(transaction models.Transaction)
+	Delete(transactionId string)
+	FindById(transactionId string) (transaction models.Transaction, err error)
+	FindAll() []models.Transaction
 }
 
-type AccountRepositoryImplement struct {
+type TransactionRepositoryImplement struct {
 	DB *gorm.DB
 }
 
-func AccountRepository(DB *gorm.DB) *AccountRepositoryImplement {
-	return &AccountRepositoryImplement{DB: DB}
+func TransactionRepository(DB *gorm.DB) *TransactionRepositoryImplement {
+	return &TransactionRepositoryImplement{DB: DB}
 }
 
-func (account *AccountRepositoryImplement) Delete(accountId string) {
-	var accountDto models.Account
-	result := account.DB.Where("id = ?", accountId).Delete(&accountDto)
+func (transactionRepository *TransactionRepositoryImplement) Delete(transactionId string) {
+	var transactionDto models.Transaction
+	result := transactionRepository.DB.Where("id = ?", transactionId).Delete(&transactionDto)
 	helpers.ErrorPanic(result.Error)
 }
 
-func (account *AccountRepositoryImplement) FindAll() []models.Account {
-	var accounts []models.Account
-	result := account.DB.Find(&accounts)
+func (transactionRepository *TransactionRepositoryImplement) FindAll() []models.Transaction {
+	var transactions []models.Transaction
+	result := transactionRepository.DB.Find(&transactions)
 	helpers.ErrorPanic(result.Error)
-	return accounts
+	return transactions
 }
 
-func (account *AccountRepositoryImplement) FindById(accountId int) (tags models.Account, err error) {
-	var accountDto models.Account
-	result := account.DB.Find(&accountDto, accountId)
+func (transactionRepository *TransactionRepositoryImplement) FindById(accountId string) (transaction models.Transaction, err error) {
+	var transactionDto models.Transaction
+	result := transactionRepository.DB.Find(&transactionDto, accountId)
 	if result != nil {
-		return accountDto, nil
+		return transactionDto, nil
 	} else {
-		return accountDto, errors.New("tag is not found")
+		return transactionDto, errors.New("tag is not found")
 	}
 }
 
-func (account *AccountRepositoryImplement) Save(accountDto models.Account) {
-	result := account.DB.Create(&accountDto)
+// save transaction repository
+func (transactionRepository *TransactionRepositoryImplement) Save(transaction models.Transaction) {
+	result := transactionRepository.DB.Create(&transaction)
 	helpers.ErrorPanic(result.Error)
 }
 
-func (account *AccountRepositoryImplement) Update(accountDto models.Account) {
-	var updateAccount = dto.UpdateAccountDto{
-		Id:            accountDto.Id,
-		WalletAddress: accountDto.WalletAddress,
-		StakeAddress:  accountDto.StakeAddress,
+// update transaction repository
+func (transactionRepository *TransactionRepositoryImplement) Update(TransactionDto models.Transaction) {
+	var updateAccount = dto.UpdateTransactionDto{
+		Id:        TransactionDto.Id,
+		Date:      TransactionDto.Date,
+		TxHash:    TransactionDto.TxHash,
+		Status:    TransactionDto.Status,
+		Action:    TransactionDto.Action,
+		Amount:    TransactionDto.Amount,
+		AccountId: TransactionDto.AccountId,
 	}
-	result := account.DB.Model(&account).Updates(updateAccount)
+	result := transactionRepository.DB.Model(&updateAccount).Updates(updateAccount)
 	helpers.ErrorPanic(result.Error)
 }

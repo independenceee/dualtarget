@@ -19,7 +19,7 @@ type Env struct {
 func ReadEnv() *Env {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error: ", err)
 	}
 	var (
 		DATABASE_HOST     = os.Getenv("POSTGRES_HOST")

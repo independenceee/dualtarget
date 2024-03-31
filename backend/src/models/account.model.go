@@ -9,7 +9,7 @@ import (
 type Account struct {
 	gorm.Model
 
-	Id            string `gorm:"type:varchar(255)";gorm:"primaryKey"`
+	Id            string `gorm:"type:varchar(255) primaryKey"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	WalletAddress string        `gorm:"type:varchar(255)"`

@@ -3,6 +3,7 @@ package configs
 import (
 	"dualtarget-backend/src/constants"
 	"dualtarget-backend/src/helpers"
+	"dualtarget-backend/src/models"
 	"fmt"
 	"log"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DatabaseConnection() *gorm.DB {
+func Database() *gorm.DB {
 	env := constants.ReadEnv()
 
 	DATABASE_PORT, err := strconv.ParseUint(env.DATABASE_PORT, 10, 64)
@@ -19,9 +20,14 @@ func DatabaseConnection() *gorm.DB {
 		log.Fatal("Error loading .env file")
 	}
 
+	// connect to database
 	sqlConnection := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", env.DATABASE_HOST, DATABASE_PORT, env.DATABASE_USER, env.DATABASE_PASSWORD, env.DATABASE_NAME)
 	database, err := gorm.Open(postgres.Open(sqlConnection), &gorm.Config{})
 	helpers.ErrorPanic(err)
+
+	// migrate database
+	database.Table("account").AutoMigrate(&models.Account{})
+	database.Table("transaction").AutoMigrate(&models.Transaction{})
 
 	return database
 }
