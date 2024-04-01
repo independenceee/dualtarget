@@ -48,13 +48,11 @@ func (transactionRepository *TransactionRepositoryImplement) FindById(accountId 
 	}
 }
 
-// save transaction repository
 func (transactionRepository *TransactionRepositoryImplement) Save(transaction models.Transaction) {
 	result := transactionRepository.DB.Create(&transaction)
 	helpers.ErrorPanic(result.Error)
 }
 
-// update transaction repository
 func (transactionRepository *TransactionRepositoryImplement) Update(TransactionDto models.Transaction) {
 	var updateAccount = dto.UpdateTransactionDto{
 		Id:        TransactionDto.Id,

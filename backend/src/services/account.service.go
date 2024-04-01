@@ -12,10 +12,11 @@ import (
 )
 
 type IAccountService interface {
-	Create(account request.CreateAccount)
+	Create(account request.CreateAccount) response.AccountResponse
 	Update(account request.UpdateAccount)
 	Delete(accountId string)
 	FindById(accountId string) response.AccountResponse
+	FindByAddress(walletAddress string) response.AccountResponse
 	FindAll() []response.AccountResponse
 }
 
@@ -31,7 +32,7 @@ func AccountServiceImplement(accountRepository repository.IAccountRepository, va
 	}
 }
 
-func (accountService *TAccountService) Create(accountRequest request.CreateAccount) {
+func (accountService *TAccountService) Create(accountRequest request.CreateAccount) response.AccountResponse {
 	err := accountService.Validate.Struct(accountRequest)
 	helpers.ErrorPanic(err)
 	accountModel := models.Account{
@@ -39,7 +40,19 @@ func (accountService *TAccountService) Create(accountRequest request.CreateAccou
 		WalletAddress: accountRequest.WalletAddress,
 		StakeAddress:  accountRequest.StakeAddress,
 	}
-	accountService.AccountRepository.Save(accountModel)
+	account, err := accountService.AccountRepository.Save(accountModel)
+	helpers.ErrorPanic(err)
+
+	result := response.AccountResponse{
+		Id:            account.Id,
+		CreatedAt:     account.CreatedAt.String(),
+		UpdatedAt:     account.UpdatedAt.String(),
+		WalletAddress: account.WalletAddress,
+		StakeAddress:  account.StakeAddress,
+	}
+
+	return result
+
 }
 
 func (accountService *TAccountService) Delete(accountId string) {
@@ -54,6 +67,7 @@ func (accountService *TAccountService) Update(account request.UpdateAccount) {
 	existAccount.StakeAddress = account.StakeAddress
 	accountService.AccountRepository.Update(existAccount)
 }
+
 func (accountService *TAccountService) FindById(accountId string) response.AccountResponse {
 	existAccount, err := accountService.AccountRepository.FindById(accountId)
 	helpers.ErrorPanic(err)
@@ -65,6 +79,22 @@ func (accountService *TAccountService) FindById(accountId string) response.Accou
 		WalletAddress: existAccount.WalletAddress,
 		StakeAddress:  existAccount.StakeAddress,
 	}
+	return result
+}
+
+func (accountService *TAccountService) FindByAddress(walletAddress string) response.AccountResponse {
+	existAccount, err := accountService.AccountRepository.FindByAddress(walletAddress)
+
+	helpers.ErrorPanic(err)
+
+	result := response.AccountResponse{
+		Id:            existAccount.Id,
+		CreatedAt:     existAccount.CreatedAt.String(),
+		UpdatedAt:     existAccount.UpdatedAt.String(),
+		WalletAddress: existAccount.WalletAddress,
+		StakeAddress:  existAccount.StakeAddress,
+	}
+
 	return result
 }
 

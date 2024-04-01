@@ -25,11 +25,23 @@ func (controller *TAccountController) Create(context *gin.Context) {
 	err := context.ShouldBindJSON(&createAccountRequest)
 	helpers.ErrorPanic(err)
 
-	controller.AccountService.Create(createAccountRequest)
+	existingAccount := controller.AccountService.FindByAddress(createAccountRequest.WalletAddress)
+	if existingAccount == (response.AccountResponse{}) {
+		result := response.Response{
+			Code:   http.StatusOK,
+			Status: "OK",
+			Data:   existingAccount,
+		}
+		context.Header("Content-Type", "application/json")
+		context.JSON(http.StatusOK, result)
+		return
+	}
+
+	account := controller.AccountService.Create(createAccountRequest)
 	result := response.Response{
 		Code:   http.StatusOK,
-		Status: "200",
-		Data:   nil,
+		Status: "OK",
+		Data:   account,
 	}
 	context.Header("Content-Type", "application/json")
 	context.JSON(http.StatusOK, result)
@@ -48,7 +60,7 @@ func (controller *TAccountController) Update(context *gin.Context) {
 
 	result := response.Response{
 		Code:   http.StatusOK,
-		Status: "200",
+		Status: "OK",
 		Data:   nil,
 	}
 	context.Header("Content-Type", "application/json")
