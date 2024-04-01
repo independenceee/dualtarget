@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import ContextProvider from "~/contexts";
 import { PublicLayout } from "~/layouts";
 import NetworkConnectionStatus from "~/components/NetworkConnectionStatus";
-
 import historyPrice from "~/utils/history-price";
+
 export const metadata: Metadata = {
     title: { default: "Dualtarget", template: "%s - Dualtarget" },
     description: "Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot",

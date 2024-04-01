@@ -1,6 +1,6 @@
 "use client";
 
-import { Data, Lucid, TxHash, TxSigned, UTxO, C, Credential } from "lucid-cardano";
+import { Data, Lucid, TxHash, TxSigned, UTxO, Credential } from "lucid-cardano";
 import React, { ReactNode, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { ClaimableUTxO, SellingStrategyResult } from "~/types/GenericsType";
@@ -8,7 +8,6 @@ import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
 import readValidator from "~/utils/read-validator";
 import { refundRedeemer } from "~/constants/redeemer";
-import convertPublicKeyToAddress from "~/helpers/convert-public-key-to-address";
 
 type Props = {
     children: ReactNode;
@@ -142,7 +141,6 @@ const SmartContractProvider = function ({ children }: Props) {
                         deadline: outputDatum.fields[14],
                         isLimitOrder: outputDatum.fields[15],
                     };
-                    console.log(Number(Number(params.OutputADA) / 2));
 
                     /**
                      * 1. Lấy tất cả
@@ -154,7 +152,6 @@ const SmartContractProvider = function ({ children }: Props) {
                         // Number(scriptUtxo.assets.lovelace) === 113590909 // UTXO djed
                         // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
                     ) {
-                        console.log(params.fee_address);
                         let winter_addr: Credential = { type: "Key", hash: params.fee_address };
                         const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
                         console.log(freeAddress1);
@@ -168,8 +165,6 @@ const SmartContractProvider = function ({ children }: Props) {
                     }
                 }
             }
-
-            console.log(smartcontractUtxo);
 
             if (!smartcontractUtxo) {
                 console.log("Reference UTxO not found!");
@@ -201,13 +196,13 @@ const SmartContractProvider = function ({ children }: Props) {
 
             let tx: any = lucid.newTx();
             for (const utxoToSpend of claimableUtxos) {
+                console.log(BigInt(claimableUtxos[0].fee));
                 tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer); // Redeemer
             }
             tx = await tx
-                
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(Number(1500000)))
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(claimableUtxos[0].fee))
                 .addSigner(await lucid.wallet.address())
-                .attachSpendingValidator(validator)
+                .attachSpendingValidator(smartcontractUtxo.scriptRef?.script)
                 .complete();
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
