@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames/bind";
 import Image from "next/image";
 import styles from "~/components/FaqItem/FaqItem.module.scss";
+import images from "~/assets/images";
 
 const cx = classNames.bind(styles);
 type Props = {};
@@ -20,7 +21,7 @@ const faqs = [
                         minting and burning DJED and SHEN.
                     </p>
                     <p className={cx("faq-paragraph")}>
-                        <Image className={cx("faq-image")} src={""} alt="" />
+                        <Image className={cx("faq-image")} src={images.eternl} alt="" />
                     </p>
                 </span>
             );
@@ -35,57 +36,11 @@ const faqs = [
                         <b className={cx("faq-bold")}>Collateral</b> - Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses
                         endogenous collateral, such as: FRAX, Synthetix and UST.
                     </p>
-                    <p className={cx("faq-paragraph")}>
-                        <b>Collateral</b> - Djed uses exogenous exogenous collateral (ADA). A typical algorithmic stablecoin uses endogenous
-                        collateral, such as: FRAX, Synthetix and UST. Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses
-                        endogenous collateral, such as: FRAX, Synthetix and UST.
-                    </p>
-                    <p className={cx("faq-paragraph")}>
-                        <b>Collateral</b> - Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses endogenous collateral, such
-                        as: FRAX, Synthetix and UST. Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses endogenous
-                        collateral, such as: FRAX, Synthetix and UST.
-                    </p>
-                    <p className={cx("faq-paragraph")}>
-                        <b>Collateral</b> - Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses endogenous collateral, such
-                        as: FRAX, Synthetix and UST. Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses endogenous
-                        collateral, such as: FRAX, Synthetix and UST.
-                    </p>
-                    <p className={cx("faq-paragraph")}>
-                        <Image src={""} alt="" />
-                    </p>
                 </span>
             );
         },
     },
-    {
-        title: "",
-        Children: function (): JSX.Element {
-            return (
-                <span>
-                    <p>
-                        <b>Collateral</b> - Djed uses exogenous collateral (ADA). A typical algorithmic stablecoin uses endogenous collateral, such
-                        as: FRAX, Synthetix and UST.
-                    </p>
-                    <p>
-                        <Image src={""} alt="" />
-                    </p>
-                </span>
-            );
-        },
-    },
-    {
-        title: "",
-        Children: function (): JSX.Element {
-            return (
-                <span>
-                    <ul>
-                        <li>SHEN holders receive all DJED and SHEN mint/burn fees</li>
-                        <li></li>
-                    </ul>
-                </span>
-            );
-        },
-    },
+
     {
         title: "What happens to SHEN's price if the ratio falls below 400%?",
         Children: function (): JSX.Element {

@@ -15,6 +15,7 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
+import ccxt, { OHLCV, binance } from "ccxt";
 const PriceChart = dynamic(() => import("~/components/PriceChart"), {
     ssr: false,
 });
@@ -22,20 +23,31 @@ const PriceChart = dynamic(() => import("~/components/PriceChart"), {
 const cx = classNames.bind(styles);
 
 const Withdraw = function () {
-    const [data, setData] = useState<ChartDataType | null>([]);
+    const [data, setData] = useState<[number, number][]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
 
     useEffect(() => {
-        setLoading(true);
-        getChartData(dataChart)
-            .then((data) => {
-                setData(data as ChartDataType | null);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        const fetchADAData = async () => {
+            try {
+                const binance: binance = new ccxt.binance({
+                    apiKey: process.env.BINANCE_API_KEY! as string,
+                    secret: process.env.BINANCE_API_SECRET! as string,
+                });
+                binance.setSandboxMode(true);
+                const prices = (await binance.fetchOHLCV("ADA/USDT", "1y", undefined, 500)).map(function (result: OHLCV, index) {
+                    const [timestamp, price, ...other] = result;
+
+                    return [Number(timestamp), Number(price)];
+                });
+                setData(...prices);
+            } catch (error) {
+                console.error("Error fetching ADA data:", error);
+            }
+        };
+
+        fetchADAData();
     }, []);
 
     return (

@@ -1,5 +1,13 @@
 import { Network } from "lucid-cardano";
 
+export type AccountType = {
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    walletAddress: string;
+    stakeAddress: string;
+};
+
 export type WalletType = {
     name: string;
     image: string;

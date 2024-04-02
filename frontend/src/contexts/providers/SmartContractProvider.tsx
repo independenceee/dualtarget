@@ -194,19 +194,19 @@ const SmartContractProvider = function ({ children }: Props) {
             //     return;
             // }
 
-            let tx: any = lucid.newTx();
+            let tx: any = lucid.newTx().readFrom([smartcontractUtxo]);
             for (const utxoToSpend of claimableUtxos) {
                 console.log(BigInt(claimableUtxos[0].fee));
                 tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer); // Redeemer
             }
+
             tx = await tx
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(claimableUtxos[0].fee))
-                .addSigner(await lucid.wallet.address())
-                .attachSpendingValidator(smartcontractUtxo.scriptRef?.script)
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(1500000))
+                .addSigner((await lucid.wallet.address()) as string)
                 .complete();
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
-            const success = await lucid.awaitTx(txHash);
+            const success: boolean = await lucid.awaitTx(txHash);
             if (success) setTxHashWithdraw(txHash);
         } catch (error) {
             console.log(error);

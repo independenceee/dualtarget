@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import ContextProvider from "~/contexts";
 import { PublicLayout } from "~/layouts";
 import NetworkConnectionStatus from "~/components/NetworkConnectionStatus";
-import historyPrice from "~/utils/history-price";
 
 export const metadata: Metadata = {
     title: { default: "Dualtarget", template: "%s - Dualtarget" },
@@ -19,7 +18,6 @@ type Props = {
 };
 
 const RootLayout = function ({ children }: Readonly<Props>) {
-    historyPrice();
     return (
         <html lang="en">
             <body>
