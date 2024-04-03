@@ -9,13 +9,14 @@ import styles from "./Withdraw.module.scss";
 import Service from "~/components/Card/Service";
 import Image from "next/image";
 import images from "~/assets/images";
-import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
 import dynamic from "next/dynamic";
 import { SmartContractContextType } from "~/types/contexts/SmartContractContextType";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import ccxt, { OHLCV, binance } from "ccxt";
+import Button from "~/components/Button";
+
 const PriceChart = dynamic(() => import("~/components/PriceChart"), {
     ssr: false,
 });
@@ -41,7 +42,7 @@ const Withdraw = function () {
 
                     return [Number(timestamp), Number(price)];
                 });
-                setData(...prices);
+                setData(prices);
             } catch (error) {
                 console.error("Error fetching ADA data:", error);
             }
@@ -60,17 +61,11 @@ const Withdraw = function () {
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
-                                <Card
-                                    title="Mint DJED"
-                                    icon={icons.djed}
-                                    className={cx("stat-djed-stablecoin")}
-                                    buttonOptions={{
-                                        onClick: () => withdraw({ lucid: lucid }),
-                                        children: "Widthdraw",
-                                        disabled: !lucid || !!waitingWithdraw,
-                                    }}
-                                >
+                                <Card title="Mint DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
                                     <Service type="PAY" />
+                                    <Button onClick={() => withdraw({ lucid })} className={cx("withdraw-button")}>
+                                        Withdraw
+                                    </Button>
                                 </Card>
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>

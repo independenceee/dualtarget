@@ -3,7 +3,7 @@
 import { Data, Lucid, TxHash, TxSigned, UTxO, Credential } from "lucid-cardano";
 import React, { ReactNode, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { ClaimableUTxO, SellingStrategyResult } from "~/types/GenericsType";
+import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
 import readValidator from "~/utils/read-validator";
@@ -41,18 +41,18 @@ const SmartContractProvider = function ({ children }: Props) {
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
-            const sellingStrategies: SellingStrategyResult[] = calculateSellingStrategy({
-                income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                price_H: priceHight, //  Giá thấp nhất =  2000000
-                price_L: priceLow, // Giá cao nhất = 1000000
-                stake, //  ROI % stake theo năm = 5
-                step, // Bước nhảy theo giá (%) = 10
-                total_ADA: totalADA, // Tổng ada = 24000000
+            const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
+                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                priceHigh: priceHight, //  Giá thấp nhất =  2000000
+                priceLow: priceLow, // Giá cao nhất = 1000000
+                stake: stake, //  ROI % stake theo năm = 5
+                step: step, // Bước nhảy theo giá (%) = 10
+                totalADA: totalADA, // Tổng ada = 24000000
             });
 
             console.log("Selling: ", sellingStrategies);
 
-            const datums: any[] = sellingStrategies.map(function (sellingStrategy: SellingStrategyResult, index: number) {
+            const datums: any[] = sellingStrategies.map(function (sellingStrategy: CalculateSellingStrategy, index: number) {
                 return Data.to<DualtargetDatum>(
                     {
                         odOwner: vkeyOwnerHash,
@@ -61,17 +61,17 @@ const SmartContractProvider = function ({ children }: Props) {
                             policyId: "",
                             assetName: "",
                         },
-                        amountA: BigInt(sellingStrategy.amount_send),
+                        amountA: BigInt(sellingStrategy.amountSend),
                         assetOut: {
-                            policyId: "",
-                            assetName: "",
+                            policyId: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed72",
+                            assetName: "4d494e",
                         },
                         minimumAmountOut: BigInt(sellingStrategy.minimumAmountOut),
                         minimumAmountOutProfit: BigInt(sellingStrategy.minimumAmountOutProfit),
                         buyPrice: BigInt(sellingStrategy.buyPrice),
                         sellPrice: BigInt(sellingStrategy.sellPrice),
                         odstrategy: "414441444a4544",
-                        BatcherFee: BigInt(1),
+                        BatcherFee: BigInt(1500000),
                         OutputADA: BigInt(10000000),
                         fee_address: "7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a",
                         validator_address: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
@@ -84,12 +84,13 @@ const SmartContractProvider = function ({ children }: Props) {
 
             let tx: any = lucid.newTx();
 
-            sellingStrategies.forEach(async function (sellingStrategy, index: number) {
+            sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
                 console.log(sellingStrategy);
-                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amount_send) });
+                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend) });
             });
 
             tx = await tx.complete();
+
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
@@ -117,7 +118,7 @@ const SmartContractProvider = function ({ children }: Props) {
                     smartcontractUtxo = scriptUtxo;
                 } else if (scriptUtxo.datum) {
                     const outputDatum: any = Data.from(scriptUtxo.datum!);
-
+                    console.log(outputDatum.fields[10]);
                     const params = {
                         odOwner: outputDatum.fields[0],
                         odBeneficiary: outputDatum.fields[1],
@@ -127,8 +128,8 @@ const SmartContractProvider = function ({ children }: Props) {
                         },
                         amountA: outputDatum.fields[3],
                         assetOut: {
-                            policyId: "",
-                            assetName: "",
+                            policyId: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed72",
+                            assetName: "4d494e",
                         },
                         minimumAmountOut: outputDatum.fields[5],
                         minimumAmountOutProfit: outputDatum.fields[6],
@@ -195,22 +196,24 @@ const SmartContractProvider = function ({ children }: Props) {
             //     return;
             // }
 
-            let tx: any = lucid.newTx().readFrom([smartcontractUtxo]);
-            for (const utxoToSpend of claimableUtxos) {
-                console.log(BigInt(claimableUtxos[0].fee));
-                tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer); // Redeemer
-            }
 
-            tx = await tx
+            const buildera =await lucid.newTx().txBuilder().;
 
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(Number(1500000)))
-                .addSigner(await lucid.wallet.address())
-                .attachSpendingValidator(validator)
-                .complete();
-            const signedTx: TxSigned = await tx.sign().complete();
-            const txHash: TxHash = await signedTx.submit();
-            const success: boolean = await lucid.awaitTx(txHash);
-            if (success) setTxHashWithdraw(txHash);
+
+            // let tx: any = lucid.newTx();
+            // for (const utxoToSpend of claimableUtxos) {
+            //     tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer);
+            // }
+
+            // tx = await tx
+            //     .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(1500000))
+            //     .readFrom([smartcontractUtxo])
+            //     .addSigner(await lucid.wallet.address())
+            //     .complete();
+            // const signedTx: TxSigned = await tx.sign().complete();
+            // const txHash: TxHash = await signedTx.submit();
+            // const success: boolean = await lucid.awaitTx(txHash);
+            // if (success) setTxHashWithdraw(txHash);
         } catch (error) {
             console.log(error);
         } finally {
