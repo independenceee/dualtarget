@@ -169,19 +169,19 @@ const PriceChart = function ({ data, isLoading }: Props) {
 
         switch (timeline) {
             case "ONE_DAY":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("28 Jan 2024").getTime(), new Date("27 Apri 2024").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("28 Jan 2024").getTime(), Date.now());
                 break;
             case "SIX_MONTHS":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Sep 2024").getTime(), new Date("27 Feb 2024").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Sep 2024").getTime(), Date.now());
                 break;
             case "ONE_YEAR":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Feb 2024").getTime(), new Date("27 Feb 2024").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", Date.now(), Date.now());
                 break;
             case "ONE_WEEK":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("01 Jan 2024").getTime(), new Date("27 Feb 2024").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("01 Jan 2024").getTime(), Date.now());
                 break;
             default:
-                ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2024").getTime(), new Date("27 Feb 2024").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2024").getTime(), Date.now());
                 break;
         }
     };

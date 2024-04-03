@@ -41,7 +41,7 @@ const Withdraw = function () {
 
                     return [Number(timestamp), Number(price)];
                 });
-                setData(...prices);
+                setData(prices);
             } catch (error) {
                 console.error("Error fetching ADA data:", error);
             }

@@ -49,19 +49,18 @@ export interface DaultargetParams {
     isLimitOrder: number;
 }
 
-export interface SellingStrategyResult {
+export type CalculateSellingStrategy = {
     buyPrice: number;
     sellPrice: number;
-    amount_send: number;
+    amountSend: number;
     minimumAmountOut: number;
     minimumAmountOutProfit: number;
-    amount_sell: number;
-    amount_buy: number;
-    amount_entry: number;
-    usd_pool: number;
+    amountSell: number;
+    amountBuy: number;
+    amountEntry: number;
+    USDTPool: number;
     sumADA: number;
-}
-
+};
 export interface ClaimableUTxO {
     utxo: any;
     BatcherFee_addr: string;

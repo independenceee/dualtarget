@@ -90,6 +90,7 @@ const Djed = function () {
                                         <div className={cx("form")}>
                                             <Input
                                                 name="income"
+                                                placeholder="Enter the USD amount for a month"
                                                 register={register}
                                                 errorMessage={errors.income?.message}
                                                 rules={{
@@ -101,6 +102,7 @@ const Djed = function () {
                                             />
                                             <Input
                                                 name="priceHight"
+                                                placeholder="Enter the highest price"
                                                 register={register}
                                                 errorMessage={errors.priceHight?.message}
                                                 rules={{
@@ -112,6 +114,7 @@ const Djed = function () {
                                             />
                                             <Input
                                                 name="priceLow"
+                                                placeholder="Enter the lowest price"
                                                 register={register}
                                                 errorMessage={errors.priceLow?.message}
                                                 rules={{
@@ -123,6 +126,7 @@ const Djed = function () {
                                             />
                                             <Input
                                                 name="stake"
+                                                placeholder="Enter % stake for 1 year"
                                                 register={register}
                                                 errorMessage={errors.stake?.message}
                                                 rules={{
@@ -134,6 +138,7 @@ const Djed = function () {
                                             />
                                             <Input
                                                 name="step"
+                                                placeholder="Enter the price jump"
                                                 register={register}
                                                 errorMessage={errors.step?.message}
                                                 rules={{

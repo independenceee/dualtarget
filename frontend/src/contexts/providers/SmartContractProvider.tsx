@@ -3,7 +3,7 @@
 import { Data, Lucid, TxHash, TxSigned, UTxO, Credential } from "lucid-cardano";
 import React, { ReactNode, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { ClaimableUTxO, SellingStrategyResult } from "~/types/GenericsType";
+import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
 import readValidator from "~/utils/read-validator";
@@ -41,18 +41,18 @@ const SmartContractProvider = function ({ children }: Props) {
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
-            const sellingStrategies: SellingStrategyResult[] = calculateSellingStrategy({
-                income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                price_H: priceHight, //  Giá thấp nhất =  2000000
-                price_L: priceLow, // Giá cao nhất = 1000000
-                stake, //  ROI % stake theo năm = 5
-                step, // Bước nhảy theo giá (%) = 10
-                total_ADA: totalADA, // Tổng ada = 24000000
+            const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
+                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                priceHigh: priceHight, //  Giá thấp nhất =  2000000
+                priceLow: priceLow, // Giá cao nhất = 1000000
+                stake: stake, //  ROI % stake theo năm = 5
+                step: step, // Bước nhảy theo giá (%) = 10
+                totalADA: totalADA, // Tổng ada = 24000000
             });
 
             console.log("Selling: ", sellingStrategies);
 
-            const datums: any[] = sellingStrategies.map(function (sellingStrategy: SellingStrategyResult, index: number) {
+            const datums: any[] = sellingStrategies.map(function (sellingStrategy: CalculateSellingStrategy, index: number) {
                 return Data.to<DualtargetDatum>(
                     {
                         odOwner: vkeyOwnerHash,
@@ -61,7 +61,7 @@ const SmartContractProvider = function ({ children }: Props) {
                             policyId: "",
                             assetName: "",
                         },
-                        amountA: BigInt(sellingStrategy.amount_send),
+                        amountA: BigInt(sellingStrategy.amountSend),
                         assetOut: {
                             policyId: "",
                             assetName: "",
@@ -86,7 +86,7 @@ const SmartContractProvider = function ({ children }: Props) {
 
             sellingStrategies.forEach(async function (sellingStrategy, index: number) {
                 console.log(sellingStrategy);
-                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amount_send) });
+                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend) });
             });
 
             tx = await tx.complete();
