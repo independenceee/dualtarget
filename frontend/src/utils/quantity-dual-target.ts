@@ -10,8 +10,8 @@ const quantityDualTarget = function ({ stake, entry, income, step }: Props): [nu
         const USDTPool: number = (income * 12) / (stake / 100);
         const quantityEntrySell: number = USDTPool / (entry * (1 + step / 100));
         const quantityEntry: number = USDTPool / entry;
-        const quantityentryBuy: number = USDTPool / (entry * (1 - step / 100));
-        const quantityBuy: number = quantityentryBuy - quantityEntry;
+        const quantityEntryBuy: number = USDTPool / (entry * (1 - step / 100));
+        const quantityBuy: number = quantityEntryBuy - quantityEntry;
         const quantitySell: number = quantityEntry - quantityEntrySell;
         return [quantityBuy, quantitySell, quantityEntry];
     } catch (error) {

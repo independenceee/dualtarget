@@ -150,6 +150,7 @@ const Djed = function () {
                                             />
                                             <Input
                                                 name="totalADA"
+                                                placeholder="Enter the total number of ada"
                                                 register={register}
                                                 errorMessage={errors.totalADA?.message}
                                                 rules={{

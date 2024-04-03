@@ -63,15 +63,15 @@ const SmartContractProvider = function ({ children }: Props) {
                         },
                         amountA: BigInt(sellingStrategy.amountSend),
                         assetOut: {
-                            policyId: "",
-                            assetName: "",
+                            policyId: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed72",
+                            assetName: "4d494e",
                         },
                         minimumAmountOut: BigInt(sellingStrategy.minimumAmountOut),
                         minimumAmountOutProfit: BigInt(sellingStrategy.minimumAmountOutProfit),
                         buyPrice: BigInt(sellingStrategy.buyPrice),
                         sellPrice: BigInt(sellingStrategy.sellPrice),
                         odstrategy: "414441444a4544",
-                        BatcherFee: BigInt(1),
+                        BatcherFee: BigInt(1500000),
                         OutputADA: BigInt(10000000),
                         fee_address: "7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a",
                         validator_address: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
@@ -84,12 +84,13 @@ const SmartContractProvider = function ({ children }: Props) {
 
             let tx: any = lucid.newTx();
 
-            sellingStrategies.forEach(async function (sellingStrategy, index: number) {
+            sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
                 console.log(sellingStrategy);
                 tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend) });
             });
 
             tx = await tx.complete();
+
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
@@ -117,7 +118,7 @@ const SmartContractProvider = function ({ children }: Props) {
                     smartcontractUtxo = scriptUtxo;
                 } else if (scriptUtxo.datum) {
                     const outputDatum: any = Data.from(scriptUtxo.datum!);
-
+                    console.log(outputDatum.fields[10]);
                     const params = {
                         odOwner: outputDatum.fields[0],
                         odBeneficiary: outputDatum.fields[1],
@@ -127,8 +128,8 @@ const SmartContractProvider = function ({ children }: Props) {
                         },
                         amountA: outputDatum.fields[3],
                         assetOut: {
-                            policyId: "",
-                            assetName: "",
+                            policyId: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed72",
+                            assetName: "4d494e",
                         },
                         minimumAmountOut: outputDatum.fields[5],
                         minimumAmountOutProfit: outputDatum.fields[6],
@@ -195,22 +196,24 @@ const SmartContractProvider = function ({ children }: Props) {
             //     return;
             // }
 
-            let tx: any = lucid.newTx().readFrom([smartcontractUtxo]);
-            for (const utxoToSpend of claimableUtxos) {
-                console.log(BigInt(claimableUtxos[0].fee));
-                tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer); // Redeemer
-            }
 
-            tx = await tx
+            const buildera =await lucid.newTx().txBuilder().;
 
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(Number(1500000)))
-                .addSigner(await lucid.wallet.address())
-                .attachSpendingValidator(validator)
-                .complete();
-            const signedTx: TxSigned = await tx.sign().complete();
-            const txHash: TxHash = await signedTx.submit();
-            const success: boolean = await lucid.awaitTx(txHash);
-            if (success) setTxHashWithdraw(txHash);
+
+            // let tx: any = lucid.newTx();
+            // for (const utxoToSpend of claimableUtxos) {
+            //     tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer);
+            // }
+
+            // tx = await tx
+            //     .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(1500000))
+            //     .readFrom([smartcontractUtxo])
+            //     .addSigner(await lucid.wallet.address())
+            //     .complete();
+            // const signedTx: TxSigned = await tx.sign().complete();
+            // const txHash: TxHash = await signedTx.submit();
+            // const success: boolean = await lucid.awaitTx(txHash);
+            // if (success) setTxHashWithdraw(txHash);
         } catch (error) {
             console.log(error);
         } finally {
