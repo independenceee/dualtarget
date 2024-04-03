@@ -169,19 +169,19 @@ const PriceChart = function ({ data, isLoading }: Props) {
 
         switch (timeline) {
             case "ONE_DAY":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("28 Jan 2013").getTime(), new Date("27 Feb 2013").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("28 Jan 2024").getTime(), new Date("27 Apri 2024").getTime());
                 break;
             case "SIX_MONTHS":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Sep 2012").getTime(), new Date("27 Feb 2013").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Sep 2024").getTime(), new Date("27 Feb 2024").getTime());
                 break;
             case "ONE_YEAR":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Feb 2012").getTime(), new Date("27 Feb 2013").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Feb 2024").getTime(), new Date("27 Feb 2024").getTime());
                 break;
             case "ONE_WEEK":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("01 Jan 2013").getTime(), new Date("27 Feb 2013").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("01 Jan 2024").getTime(), new Date("27 Feb 2024").getTime());
                 break;
             default:
-                ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2012").getTime(), new Date("27 Feb 2013").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2024").getTime(), new Date("27 Feb 2024").getTime());
                 break;
         }
     };
