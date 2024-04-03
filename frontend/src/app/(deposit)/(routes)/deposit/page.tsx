@@ -17,6 +17,7 @@ import Tippy from "~/components/Tippy";
 import { useForm } from "react-hook-form";
 import Button from "~/components/Button";
 import Input from "~/components/Input";
+import ccxt, { binance } from "ccxt";
 
 const cx = classNames.bind(styles);
 
@@ -36,16 +37,37 @@ const Djed = function () {
         formState: { errors },
     } = useForm<DepositeBodyType>();
 
-    const [data, setData] = useState<ChartDataType | null>([]);
+    const [historyPrices, setHistoryPrices] = useState<ChartDataType | null>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
+useEffect(() => {
+    const fetchADAData = async () => {
+        try {
+            const binance: binance = new ccxt.binance({
+                apiKey: process.env.BINANCE_API_KEY as string,
+                secret: process.env.BINANCE_API_SECRET as string,
+            });
 
+            binance.setSandboxMode(true);
+            const prices = await binance.fetchOHLCV("ADA/USDT", "1h", undefined, 100);
+
+            console.log(prices);
+        } catch (error) {
+            console.error("Error fetching ADA data:", error);
+        }
+    };
+
+    fetchADAData();
+}, []);
     useEffect(() => {
         setLoading(true);
+
+        
+
         getChartData(dataChart)
-            .then((data) => {
-                setData(data as ChartDataType | null);
+            .then((prices) => {
+                setHistoryPrices(prices as ChartDataType | null);
             })
             .finally(() => {
                 setLoading(false);
@@ -84,9 +106,9 @@ const Djed = function () {
                             <div className={cx("card-wrapper")}>
                                 <Card title="Deposite DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onDeposite} className={"card-service"}>
-                                        <div className={cx("balance")}>
+                                        {/* <div className={cx("balance")}>
                                             <span>Balance: 0 ₳</span>
-                                        </div>
+                                        </div> */}
                                         <div className={cx("form")}>
                                             <Input
                                                 name="income"
@@ -247,7 +269,7 @@ const Djed = function () {
                                     </form>
                                 </Card>
                             </div>
-                            <PriceChart data={data} isLoading={loading} />
+                            <PriceChart data={historyPrices} isLoading={loading} />
                         </div>
                     </div>
                 </div>

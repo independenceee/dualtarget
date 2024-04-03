@@ -71,7 +71,8 @@ const PriceChart = function ({ data, isLoading }: Props) {
                 },
             },
             yaxis: {
-                show: false,
+                show: true,
+                opposite: true,
             },
             tooltip: {
                 enabled: true,
@@ -85,8 +86,8 @@ const PriceChart = function ({ data, isLoading }: Props) {
                 },
                 y: {
                     title: {
-                        formatter(seriesName) {
-                            return "" + crytocurrency;
+                        formatter(_) {
+                            return crytocurrency;
                         },
                     },
                 },
