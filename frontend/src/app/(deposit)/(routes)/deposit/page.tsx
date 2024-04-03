@@ -41,37 +41,31 @@ const Djed = function () {
     const [loading, setLoading] = useState<boolean>(false);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
-useEffect(() => {
-    const fetchADAData = async () => {
-        try {
-            const binance: binance = new ccxt.binance({
-                apiKey: process.env.BINANCE_API_KEY as string,
-                secret: process.env.BINANCE_API_SECRET as string,
-            });
 
-            binance.setSandboxMode(true);
-            const prices = await binance.fetchOHLCV("ADA/USDT", "1h", undefined, 100);
-
-            console.log(prices);
-        } catch (error) {
-            console.error("Error fetching ADA data:", error);
-        }
-    };
-
-    fetchADAData();
-}, []);
     useEffect(() => {
-        setLoading(true);
+        const fetchADAData = async () => {
+            setLoading(true);
+            try {
+                const binance: binance = new ccxt.binance({
+                    apiKey: process.env.BINANCE_API_KEY as string,
+                    secret: process.env.BINANCE_API_SECRET as string,
+                });
 
-        
+                binance.setSandboxMode(true);
+                const currentTime = new Date(Date.now());
+                const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
+                const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 1000);
+                const _historyPrices = prices && prices.map((price) => [price[0], price[4]]);
+                console.log(prices);
+                setHistoryPrices(_historyPrices as ChartDataType);
+            } catch (error) {
+                console.error("Error fetching ADA data:", error);
+            }
+        };
 
-        getChartData(dataChart)
-            .then((prices) => {
-                setHistoryPrices(prices as ChartDataType | null);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        fetchADAData().finally(() => {
+            setLoading(false);
+        });
     }, []);
 
     const onDeposite = handleSubmit((data) => {
