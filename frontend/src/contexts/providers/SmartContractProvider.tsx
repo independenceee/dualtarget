@@ -202,15 +202,10 @@ const SmartContractProvider = function ({ children }: Props) {
             }
 
             tx = await tx
-<<<<<<< HEAD
 
                 .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(Number(1500000)))
                 .addSigner(await lucid.wallet.address())
                 .attachSpendingValidator(validator)
-=======
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(1500000))
-                .addSigner((await lucid.wallet.address()) as string)
->>>>>>> 44a1efa592a24eb04dabbf1dce0e4613e35d574e
                 .complete();
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
