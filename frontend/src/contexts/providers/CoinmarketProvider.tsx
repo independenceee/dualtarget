@@ -16,9 +16,10 @@ const CoinmarketProvider = function ({ children }: Props) {
         const fetchADAData = async () => {
             try {
                 const binance: binance = new ccxt.binance({
-                    apiKey: process.env.BINANCE_API_KEY! as string,
-                    secret: process.env.BINANCE_API_SECRET! as string,
+                    apiKey: process.env.BINANCE_API_KEY as string,
+                    secret: process.env.BINANCE_API_SECRET as string,
                 });
+                
                 binance.setSandboxMode(true);
                 const prices = await binance.fetchOHLCV("ADA/USDT", "1h", undefined, 100);
 
