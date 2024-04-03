@@ -42,15 +42,16 @@ const SmartContractProvider = function ({ children }: Props) {
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
             const sellingStrategies: SellingStrategyResult[] = calculateSellingStrategy({
-                income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                price_H: 2000000, //  Giá thấp nhất =  2000000
-                price_L: 1000000, // Giá cao nhất = 1000000
-                stake: 5, //  ROI % stake theo năm = 5
-                step: 10, // Bước nhảy theo giá (%) = 10
+                income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                price_H: priceHight, //  Giá thấp nhất =  2000000
+                price_L: priceLow, // Giá cao nhất = 1000000
+                stake, //  ROI % stake theo năm = 5
+                step, // Bước nhảy theo giá (%) = 10
                 total_ADA: totalADA, // Tổng ada = 24000000
             });
 
-            console.log(sellingStrategies);
+            console.log("Selling: ", sellingStrategies);
+
             const datums: any[] = sellingStrategies.map(function (sellingStrategy: SellingStrategyResult, index: number) {
                 return Data.to<DualtargetDatum>(
                     {
@@ -201,8 +202,10 @@ const SmartContractProvider = function ({ children }: Props) {
             }
 
             tx = await tx
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(1500000))
-                .addSigner((await lucid.wallet.address()) as string)
+
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(Number(1500000)))
+                .addSigner(await lucid.wallet.address())
+                .attachSpendingValidator(validator)
                 .complete();
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
