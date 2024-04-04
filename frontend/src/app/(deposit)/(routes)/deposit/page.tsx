@@ -18,10 +18,11 @@ import { useForm } from "react-hook-form";
 import Button from "~/components/Button";
 import Input from "~/components/Input";
 import ccxt, { binance } from "ccxt";
+import Loading from "~/components/Loading";
 
 const cx = classNames.bind(styles);
 
-type DepositeBodyType = {
+type DepositeType = {
     income: number;
     priceHight: number;
     priceLow: number;
@@ -35,7 +36,7 @@ const Djed = function () {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<DepositeBodyType>();
+    } = useForm<DepositeType>();
 
     const [historyPrices, setHistoryPrices] = useState<ChartDataType | null>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -55,9 +56,10 @@ const Djed = function () {
                 const currentTime = new Date(Date.now());
                 const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
                 const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 1000);
-                const _historyPrices = prices && prices.map((price) => [price[0], price[4]]);
-                console.log(prices);
-                setHistoryPrices(_historyPrices as ChartDataType);
+                if (prices.length > 0) {
+                    const _historyPrices = prices.map((price) => [price[0], price[4]]);
+                    setHistoryPrices(_historyPrices as ChartDataType);
+                }
             } catch (error) {
                 console.error("Error fetching ADA data:", error);
             }
@@ -69,7 +71,6 @@ const Djed = function () {
     }, []);
 
     const onDeposite = handleSubmit((data) => {
-        console.log(!!lucid);
         lucid &&
             deposit({
                 lucid,
@@ -79,13 +80,7 @@ const Djed = function () {
                 stake: data.stake,
                 step: data.step,
                 totalADA: data.totalADA,
-            })
-                .then((data) => {
-                    console.log(data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            }).catch((error) => {});
     });
 
     return (
@@ -100,10 +95,10 @@ const Djed = function () {
                             <div className={cx("card-wrapper")}>
                                 <Card title="Deposite DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onDeposite} className={"card-service"}>
-                                        {/* <div className={cx("balance")}>
-                                            <span>Balance: 0 ₳</span>
-                                        </div> */}
-                                        <div className={cx("form")}>
+                                        <div className={cx("balance")}>
+                                            <span>Balance: {0} ₳</span>
+                                        </div>
+                                        <div className={cx("form-wrapper")}>
                                             <Input
                                                 name="income"
                                                 placeholder="Enter the USD amount for a month"
@@ -192,7 +187,7 @@ const Djed = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                -
+                                                {waitingDeposit ? <Loading /> : "-"}
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
@@ -226,7 +221,7 @@ const Djed = function () {
                                                 <div className={cx("title-wrapper")}>
                                                     <span>You will pay</span>
                                                 </div>
-                                                -
+                                                {waitingDeposit ? <Loading /> : "-"}
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>

@@ -73,8 +73,8 @@
     margin: 8px 4px;
     text-align: end;
 }
-.form {
-    margin-bottom: 2.3rem;
+.form-wrapper {
+    margin-bottom: 2.4rem;
 }
 
 .service-stats {
@@ -87,7 +87,11 @@
     font-size: 16px;
     font-weight: 600;
 }
-
+.icon-help-circle {
+    margin-top: 5px;
+    margin-left: 4px;
+    transform: translateY(-4px);
+}
 .title-wrapper {
     display: flex;
 }

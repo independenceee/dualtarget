@@ -1,15 +1,20 @@
-.network-selector {
+.wrapper {
+    position: relative;
+    z-index: 1;
+}
+.dropdown-menu {
+    width: 100%;
     color: var(--white-color);
     font-size: 16px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     text-transform: uppercase;
     cursor: pointer;
     padding: 1.2rem 2.4rem;
-    width: fit-content;
     position: relative;
     font-weight: 500;
+
     &::before {
         content: "";
         background: linear-gradient(101deg, #7054d1 18%, #ab56c9 61%, #b275dc 102%);
@@ -70,11 +75,11 @@
     }
 }
 
-.network {
+.item {
     color: var(--white-color);
     font-size: 16px;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     text-transform: uppercase;
     cursor: pointer;
@@ -82,7 +87,8 @@
     &::before {
         display: none;
     }
-    &:hover {
+    &:hover,
+    &.selected {
         background: linear-gradient(101deg, #7054d1 18%, #ab56c9 61%, #b275dc 102%);
     }
 }

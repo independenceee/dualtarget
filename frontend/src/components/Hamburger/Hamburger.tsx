@@ -36,7 +36,7 @@ const Hamburger = function () {
                 <span className={cx("bar")} />
                 <span className={cx("bar")} />
             </button>
-            <SidebarMenu open={open} setOpen={setOpen} />
+            <SidebarMenu className={cx("sidebar-menu")} open={open} setOpen={setOpen} />
         </div>
     );
 };

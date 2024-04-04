@@ -41,7 +41,7 @@ function calculateSellingStrategy({
         const amountSend: number = amountIn + BATCHER_FEE + OUTPUT_ADA;
         sumADA += amountSend;
 
-        console.log(buyPrice, sellPrice, amountIn, minimumAmountOut);
+        // console.log(buyPrice, sellPrice, amountIn, minimumAmountOut);
 
         result.push({
             buyPrice: buyPrice,

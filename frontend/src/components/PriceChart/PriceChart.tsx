@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -201,7 +202,7 @@ const PriceChart = function ({ data, isLoading }: Props) {
                 ApexCharts.exec("area-datetime", "zoomX", oneYearAgo, timestamp.end);
                 break;
             default:
-                ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2024").getTime(), timestamp.end);
+                ApexCharts.exec("area-datetime", "zoomX", timestamp.start, timestamp.end);
                 break;
         }
     };
