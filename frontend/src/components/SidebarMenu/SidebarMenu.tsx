@@ -14,14 +14,15 @@ const cx = classNames.bind(styles);
 type Props = {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
+    className?: string;
 };
 
-const SidebarMenu = function ({ open, setOpen }: Props) {
+const SidebarMenu = function ({ open, setOpen, className }: Props) {
     const [selected, setSelected] = useState<string>(configs.routes.home);
     const { t } = useContext(TranslateContext);
     return (
         <div
-            className={cx("wrapper", {
+            className={cx("wrapper", className, {
                 open,
             })}
         >

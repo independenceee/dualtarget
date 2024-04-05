@@ -1,20 +1,13 @@
 import { Data } from "lucid-cardano";
 
-const TokenSchema = Data.Object({
-    policyId: Data.Bytes(),
-    assetName: Data.Bytes(),
-});
-export type Token = Data.Static<typeof TokenSchema>;
-export const Token = TokenSchema as unknown as Token;
-
 const DualtargetDatumSchema = Data.Object({
     odOwner: Data.Bytes(),
     odBeneficiary: Data.Bytes(),
-    assetA: Data.Object({
+    assetADA: Data.Object({
         policyId: Data.Bytes(),
         assetName: Data.Bytes(),
     }),
-    amountA: Data.Integer(),
+    amountADA: Data.Integer(),
     assetOut: Data.Object({
         policyId: Data.Bytes(),
         assetName: Data.Bytes(),
@@ -23,11 +16,11 @@ const DualtargetDatumSchema = Data.Object({
     minimumAmountOutProfit: Data.Integer(),
     buyPrice: Data.Integer(),
     sellPrice: Data.Integer(),
-    odstrategy: Data.Bytes(),
-    BatcherFee: Data.Integer(),
-    OutputADA: Data.Integer(),
-    fee_address: Data.Bytes(),
-    validator_address: Data.Bytes(),
+    odStrategy: Data.Bytes(),
+    batcherFee: Data.Integer(),
+    outputADA: Data.Integer(),
+    feeAddress: Data.Bytes(),
+    validatorAddress: Data.Bytes(),
     deadline: Data.Integer(),
     isLimitOrder: Data.Integer(),
 });

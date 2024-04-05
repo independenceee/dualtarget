@@ -29,6 +29,7 @@
 .test {
     color: red;
 }
+
 .chart-block {
     display: none;
     background-image: linear-gradient(180deg, #373c62 0, #424a7b);
@@ -36,7 +37,7 @@
     padding: 3.8rem 4rem 4rem;
     border-radius: 5rem;
     overflow: hidden;
-
+    // flex: 1;
     &.show {
         display: block;
     }

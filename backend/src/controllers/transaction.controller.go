@@ -1,94 +1,108 @@
 package controllers
 
-// type TTransactionController struct {
-// 	transactionService services.
-// }
+import (
+	"dualtarget-backend/src/data/request"
+	"dualtarget-backend/src/data/response"
+	"dualtarget-backend/src/helpers"
+	"dualtarget-backend/src/services"
+	"net/http"
+	"strconv"
 
-// func TransactionController(service services.IAccountService) *TAccountController {
-// 	return &TAccountController{
-// 		accountService: service,
-// 	}
-// }
+	"github.com/gin-gonic/gin"
+)
 
-// func (controller *TAccountController) Create(context *gin.Context) {
-// 	createAccountRequest := request.CreateAccount{}
-// 	err := context.ShouldBindJSON(&createAccountRequest)
-// 	helpers.ErrorPanic(err)
+type TTransactionController struct {
+	transactionService services.ITransactionService
+}
 
-// 	controller.accountService.Create(createAccountRequest)
-// 	result := response.Response{
-// 		Code:   http.StatusOK,
-// 		Status: "200",
-// 		Data:   nil,
-// 	}
-// 	context.Header("Content-Type", "application/json")
-// 	context.JSON(http.StatusOK, result)
-// }
+func TransactionController(service services.ITransactionService) *TTransactionController {
+	return &TTransactionController{
+		transactionService: service,
+	}
+}
 
-// func (controller *TAccountController) Update(context *gin.Context) {
-// 	updateAccountRequest := request.UpdateAccount{}
-// 	err := context.ShouldBindJSON(&updateAccountRequest)
-// 	helpers.ErrorPanic(err)
+func (controller *TTransactionController) Create(context *gin.Context) {
+	createTransactionRequest := request.CreateTransaction{}
+	err := context.ShouldBindJSON(&createTransactionRequest)
+	helpers.ErrorPanic(err)
 
-// 	accountId := context.Param("id")
-// 	id, err := strconv.Atoi((accountId))
-// 	helpers.ErrorPanic(err)
+	controller.transactionService.Create(createTransactionRequest)
+	result := response.Response{
+		Code:   http.StatusOK,
+		Status: "200",
+		Data:   nil,
+	}
+	context.Header("Content-Type", "application/json")
+	context.JSON(http.StatusOK, result)
+}
 
-// 	updateAccountRequest.Id = id
-// 	controller.accountService.Update(updateAccountRequest)
+func (controller *TTransactionController) Update(context *gin.Context) {
+	updateTransactionRequest := request.UpdateTransaction{}
+	err := context.ShouldBindJSON(&updateTransactionRequest)
+	helpers.ErrorPanic(err)
 
-// 	result := response.Response{
-// 		Code:   http.StatusOK,
-// 		Status: "200",
-// 		Data:   nil,
-// 	}
-// 	context.Header("Content-Type", "application/json")
-// 	context.JSON(http.StatusOK, result)
+	id := context.Param("id")
 
-// }
+	updateTransactionRequest.Id = id
+	controller.transactionService.Update(updateTransactionRequest)
 
-// func (controller *TAccountController) Delete(context *gin.Context) {
-// 	accountId := context.Param("id")
-// 	id, err := strconv.Atoi(accountId)
-// 	helpers.ErrorPanic(err)
-// 	controller.accountService.Delete(id)
+	result := response.Response{
+		Code:   http.StatusOK,
+		Status: "200",
+		Data:   nil,
+	}
+	context.Header("Content-Type", "application/json")
+	context.JSON(http.StatusOK, result)
 
-// 	result := response.Response{
-// 		Code:   http.StatusOK,
-// 		Status: "200",
-// 		Data:   nil,
-// 	}
+}
 
-// 	context.Header("Content-Type", "application/json")
-// 	context.JSON(http.StatusOK, result)
-// }
+func (controller *TTransactionController) Delete(context *gin.Context) {
+	id := context.Param("id")
+	controller.transactionService.Delete(id)
+	result := response.Response{
+		Code:   http.StatusOK,
+		Status: "200",
+		Data:   nil,
+	}
 
-// func (controller *TAccountController) FindById(context *gin.Context) {
+	context.Header("Content-Type", "application/json")
+	context.JSON(http.StatusOK, result)
+}
 
-// 	accountId := context.Param("id")
-// 	id, err := strconv.Atoi(accountId)
-// 	helpers.ErrorPanic(err)
+func (controller *TTransactionController) FindById(context *gin.Context) {
+	id := context.Param("id")
+	tagResponse := controller.transactionService.FindById(id)
 
-// 	tagResponse := controller.accountService.FindById(id)
+	result := response.Response{
+		Code:   http.StatusOK,
+		Status: "200",
+		Data:   tagResponse,
+	}
+	context.Header("Content-Type", "application/json")
+	context.JSON(http.StatusOK, result)
+}
 
-// 	result := response.Response{
-// 		Code:   http.StatusOK,
-// 		Status: "200",
-// 		Data:   tagResponse,
-// 	}
-// 	context.Header("Content-Type", "application/json")
-// 	context.JSON(http.StatusOK, result)
-// }
+func (controller *TTransactionController) FindAll(context *gin.Context) {
 
-// func (controller *TAccountController) FindAll(context *gin.Context) {
+	countQuery := context.Query("count")
+	sizeQuery := context.Query("size")
+	count, err := strconv.Atoi(countQuery)
+	helpers.ErrorPanic(err)
+	size, err := strconv.Atoi(sizeQuery)
+	helpers.ErrorPanic(err)
 
-// 	accounts := controller.accountService.FindAll()
-// 	webResponse := response.Response{
-// 		Code:   http.StatusOK,
-// 		Status: "200",
-// 		Data:   accounts,
-// 	}
-// 	context.Header("Content-Type", "application/json")
-// 	context.JSON(http.StatusOK, webResponse)
+	accounts, totalPage := controller.transactionService.FindAll(count, size)
+	responseData := map[string]interface{}{
+		"accounts":   accounts,
+		"total_page": totalPage,
+	}
 
-// }
+	webResponse := response.Response{
+		Code:   http.StatusOK,
+		Status: "200",
+		Data:   responseData,
+	}
+	context.Header("Content-Type", "application/json")
+	context.JSON(http.StatusOK, webResponse)
+
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/blockfrost/blockfrost-go"
 )
 
-func Blockfrost(ProjectID string, Server string) *blockfrost.APIClient {
+func Blockfrost(ProjectID string, Server string) blockfrost.APIClient {
 	if ProjectID == "" && Server == "" {
 		log.Fatal("ProjectID and Server has been required")
 	}
@@ -16,5 +16,5 @@ func Blockfrost(ProjectID string, Server string) *blockfrost.APIClient {
 		Server:    Server,
 	})
 
-	return &api
+	return api
 }

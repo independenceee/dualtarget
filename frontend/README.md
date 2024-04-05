@@ -309,10 +309,10 @@ def main(name: str):
         )
     )
     #==============================================
-    builder.add_output( 
+    builder.add_output(
         TransactionOutput(address=payment_address, amount=int(5000000))
     )
-    builder.collaterals.append(non_nft_utxo) 
+    builder.collaterals.append(non_nft_utxo)
     # This tells pycardano to add vkey_hash to the witness set when calculating the transaction cost
     vkey_hash: VerificationKeyHash = payment_address.payment_part
     builder.required_signers = [vkey_hash]
@@ -415,13 +415,12 @@ def qty_DualT(P_step,income,stake,entry):
 
 1.  Deposit (calculate_selling_strategy(price_l, price_h, step, income, totalada, stake))
 
-   input -   Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng
-   input -   Bước nhảy theo giá (%)
-   input -   Giá thấp nhất
-   input -   Giá cao nhất
-   input -   ROI % stake theo năm
-   input -   Tổng ada
-    -   Chart + Mesh Mua và bán => DONE
+input - Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng
+input - Bước nhảy theo giá (%)
+input - Giá thấp nhất
+input - Giá cao nhất
+input - ROI % stake theo năm
+input - Tổng ada - Chart + Mesh Mua và bán => DONE
 
 => Output: UTXO,
 
@@ -445,7 +444,13 @@ def qty_DualT(P_step,income,stake,entry):
 *   ALL
 *   Từng phần (Step Giá thấp nhất giá cao nhất)
 
+min utxos max
+
 -   Tính tổng
 -   Tính phần lãi
 -   Lợi nhuận theo năm / tháng
 -   Chart + Mesh Mua và bán
+
+```js
+
+```

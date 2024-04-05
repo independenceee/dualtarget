@@ -1,20 +1,23 @@
 "use client";
 
-import { Data, Lucid, TxHash, TxSigned, UTxO, C, Credential } from "lucid-cardano";
-import React, { ReactNode, useState } from "react";
+import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address } from "lucid-cardano";
+import React, { ReactNode, useContext, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { ClaimableUTxO, SellingStrategyResult } from "~/types/GenericsType";
+import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
-import readValidator from "~/utils/read-validator";
 import { refundRedeemer } from "~/constants/redeemer";
-import convertPublicKeyToAddress from "~/helpers/convert-public-key-to-address";
+import readDatum from "~/utils/read-datum";
+import { WalletContextType } from "~/types/contexts/WalletContextType";
+import WalletContext from "../components/WalletContext";
 
 type Props = {
     children: ReactNode;
 };
 
 const SmartContractProvider = function ({ children }: Props) {
+    const { refresh } = useContext<WalletContextType>(WalletContext);
+
     const [txHashDeposit, setTxHashDeposit] = useState<TxHash>("");
     const [txHashWithdraw, setTxHashWithdraw] = useState<TxHash>("");
     const [waitingDeposit, setWaitingDeposit] = useState<boolean>(false);
@@ -39,42 +42,40 @@ const SmartContractProvider = function ({ children }: Props) {
     }) {
         try {
             setWaitingDeposit(true);
-            const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
-            const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
-            const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
-            const sellingStrategies: SellingStrategyResult[] = calculateSellingStrategy({
-                income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                price_H: 2000000, //  Giá thấp nhất =  2000000
-                price_L: 1000000, // Giá cao nhất = 1000000
-                stake: 5, //  ROI % stake theo năm = 5
-                step: 10, // Bước nhảy theo giá (%) = 10
-                total_ADA: totalADA, // Tổng ada = 24000000
+
+            const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
+                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                priceHigh: priceHight * 1000000, //  Giá thấp nhất =  2000000
+                priceLow: priceLow * 1000000, // Giá cao nhất = 1000000
+                stake: stake, //  ROI % stake theo năm = 5
+                step: step, // Bước nhảy theo giá (%) = 10
+                totalADA: totalADA * 1000000, // Tổng ada = 24000000
             });
 
-            console.log(sellingStrategies);
-            const datums: any[] = sellingStrategies.map(function (sellingStrategy: SellingStrategyResult, index: number) {
+            console.log("Selling: ", sellingStrategies);
+            const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
+            const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
+
+            const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
+            const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
+
+            const datums: any[] = sellingStrategies.map(function (sellingStrategy: CalculateSellingStrategy, index: number) {
                 return Data.to<DualtargetDatum>(
                     {
                         odOwner: vkeyOwnerHash,
                         odBeneficiary: vkeyBeneficiaryHash,
-                        assetA: {
-                            policyId: "",
-                            assetName: "",
-                        },
-                        amountA: BigInt(sellingStrategy.amount_send),
-                        assetOut: {
-                            policyId: "",
-                            assetName: "",
-                        },
+                        assetADA: { policyId: datumParams.assetAda.policyId, assetName: datumParams.assetAda.assetName },
+                        amountADA: BigInt(sellingStrategy.amountSend),
+                        assetOut: { policyId: datumParams.assetOut.policyId, assetName: datumParams.assetOut.assetName },
                         minimumAmountOut: BigInt(sellingStrategy.minimumAmountOut),
                         minimumAmountOutProfit: BigInt(sellingStrategy.minimumAmountOutProfit),
                         buyPrice: BigInt(sellingStrategy.buyPrice),
                         sellPrice: BigInt(sellingStrategy.sellPrice),
-                        odstrategy: "414441444a4544",
-                        BatcherFee: BigInt(1),
-                        OutputADA: BigInt(10000000),
-                        fee_address: "7d9bac6e1fe750ddfc81eee27de78d13f80d93cf59e13e356913649a",
-                        validator_address: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
+                        odStrategy: datumParams.odStrategy,
+                        batcherFee: datumParams.batcherFee,
+                        outputADA: datumParams.outputADA,
+                        feeAddress: datumParams.feeAddress,
+                        validatorAddress: datumParams.validatorAddress,
                         deadline: BigInt(new Date().getTime() + 10 * 1000),
                         isLimitOrder: BigInt(0),
                     },
@@ -82,14 +83,25 @@ const SmartContractProvider = function ({ children }: Props) {
                 );
             });
 
+            console.log("datum " + datums);
+
+            /////////////////////////////////////////////////////////
             let tx: any = lucid.newTx();
 
-            sellingStrategies.forEach(async function (sellingStrategy, index: number) {
-                console.log(sellingStrategy);
-                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amount_send) });
+            sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
+                tx = await tx.payToContract(
+                    contractAddress,
+                    {
+                        inline: datums[index],
+                    },
+                    {
+                        lovelace: BigInt(sellingStrategy.amountSend),
+                    },
+                );
             });
 
             tx = await tx.complete();
+
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
@@ -108,68 +120,64 @@ const SmartContractProvider = function ({ children }: Props) {
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
 
-            const validator = readValidator();
-            let smartcontractUtxo: UTxO = null!;
+            let smartcontractUtxo: UTxO | undefined = scriptUtxos.find(function (scriptUtxo: UTxO) {
+                return scriptUtxo.scriptRef?.script;
+            });
 
+            if (!smartcontractUtxo) throw new Error("Cound not find smart contract utxo");
+            const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
             const claimableUtxos: ClaimableUTxO[] = [];
             for (const scriptUtxo of scriptUtxos) {
                 if (scriptUtxo.scriptRef?.script) {
                     smartcontractUtxo = scriptUtxo;
+                    const outputDatum: any = Data.from(scriptUtxo.datum!);
+                    console.log(outputDatum.fields[2]);
                 } else if (scriptUtxo.datum) {
                     const outputDatum: any = Data.from(scriptUtxo.datum!);
-
+                    console.log(outputDatum);
                     const params = {
                         odOwner: outputDatum.fields[0],
                         odBeneficiary: outputDatum.fields[1],
-                        assetA: {
-                            policyId: "",
-                            assetName: "",
-                        },
+                        assetADA: { policyId: datumParams.assetAda.policyId, assetName: datumParams.assetAda.assetName },
                         amountA: outputDatum.fields[3],
-                        assetOut: {
-                            policyId: "",
-                            assetName: "",
-                        },
+                        assetOut: { policyId: datumParams.assetOut.policyId, assetName: datumParams.assetOut.assetName },
                         minimumAmountOut: outputDatum.fields[5],
                         minimumAmountOutProfit: outputDatum.fields[6],
                         buyPrice: outputDatum.fields[7],
                         sellPrice: outputDatum.fields[8],
-                        odstrategy: outputDatum.fields[9],
-                        BatcherFee: outputDatum.fields[10],
-                        OutputADA: outputDatum.fields[11],
-                        fee_address: outputDatum.fields[12],
-                        validator_address: outputDatum.fields[13],
+                        odStrategy: datumParams.odStrategy,
+                        batcherFee: datumParams.batcherFee,
+                        outputADA: datumParams.outputADA,
+                        feeAddress: datumParams.feeAddress,
+                        validatorAddress: datumParams.validatorAddress,
                         deadline: outputDatum.fields[14],
                         isLimitOrder: outputDatum.fields[15],
                     };
-                    console.log(Number(Number(params.OutputADA) / 2));
 
                     /**
                      * 1. Lấy tất cả
                      * 2. Lấy UTXO DJED
                      * 3. Lấy UTXO Profit
                      */
+
                     if (
-                        String(params.odOwner) === String(paymentAddress)
-                        // Number(scriptUtxo.assets.lovelace) === 113590909 // UTXO djed
+                        String(params.odOwner) === String(paymentAddress) // Lấy tất cả =  Djed + Profit
+                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed
                         // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
                     ) {
-                        console.log(params.fee_address);
-                        let winter_addr: Credential = { type: "Key", hash: params.fee_address };
+                        let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                         const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
-                        console.log(freeAddress1);
+
                         claimableUtxos.push({
                             utxo: scriptUtxo,
                             BatcherFee_addr: String(freeAddress1),
-                            fee: params.BatcherFee,
+                            fee: params.batcherFee,
                             minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                             minimumAmountOutProfit: params.minimumAmountOutProfit,
                         });
                     }
                 }
             }
-
-            console.log(smartcontractUtxo);
 
             if (!smartcontractUtxo) {
                 console.log("Reference UTxO not found!");
@@ -180,38 +188,19 @@ const SmartContractProvider = function ({ children }: Props) {
                 console.log("No utxo to claim!");
                 return;
             }
-            // const nftUtxo: any[] = [];
-            // let nonNftUtxo: any = null;
-            // const nonNftUtxoSpend: UTxO[] = [];
-            // const utxos: Array<UTxO> = await lucid.utxosAt(await lucid.wallet.address());
-            // console.log(utxos);
-            // for (const utxo of utxos) {
-            //     if (BigInt(utxo.assets.lovelace) >= BigInt(4000000) && BigInt(utxo.assets.lovelace) < BigInt(6000000)) {
-            //         nonNftUtxo = { utxo: utxo };
-            //     } else if (!utxo.assets) {
-            //         nonNftUtxoSpend.push(utxo);
-            //     } else {
-            //         nftUtxo.push(utxo);
-            //     }
-            // }
-            // if (!nonNftUtxo) {
-            //     console.log("No collateral UTxOs found!");
-            //     return;
-            // }
 
-            let tx: any = lucid.newTx();
+            let tx: any = lucid.newTx().readFrom([smartcontractUtxo]);
             for (const utxoToSpend of claimableUtxos) {
-                tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer); // Redeemer
+                tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer);
             }
             tx = await tx
-                
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, BigInt(Number(1500000)))
-                .addSigner(await lucid.wallet.address())
-                .attachSpendingValidator(validator)
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, { lovelace: BigInt(1500000) as Lovelace })
+                .addSigner((await lucid.wallet.address()) as Address)
                 .complete();
+
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
-            const success = await lucid.awaitTx(txHash);
+            const success: boolean = await lucid.awaitTx(txHash);
             if (success) setTxHashWithdraw(txHash);
         } catch (error) {
             console.log(error);

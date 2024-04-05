@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Children, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./FaqItem.module.scss";
 
 const cx = classNames.bind(styles);
 
-type Props = {};
+type Props = {
+    title?: string;
+    Children: () => JSX.Element;
+};
 
-const FaqItem = function ({}: Props) {
+const FaqItem = function ({ title, Children }: Props) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const handleOpen = function () {
@@ -19,9 +22,13 @@ const FaqItem = function ({}: Props) {
             <header className={cx("inner")}>
                 <section className={cx("icon", { isOpen: isOpen })} />
                 <section className={cx("title-wrapper")}>
-                    <h3 className={cx("title")}>What is DJED s stability mechanism?</h3>
+                    <h3 className={cx("title")}>{title}</h3>
                 </section>
-                {isOpen && <section className={cx("container")}></section>}
+                {isOpen && (
+                    <section className={cx("container")}>
+                        <Children />
+                    </section>
+                )}
             </header>
         </div>
     );

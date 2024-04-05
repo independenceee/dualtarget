@@ -86,7 +86,6 @@ const WalletProvider = function ({ children }: Props) {
             const utxos: Array<UTxO> = (await lucid.wallet.getUtxos()) as Array<UTxO>;
             const { poolId } = await lucid.delegationAt(stakeKey as string);
             const balance: number = utxos.reduce(function (balance: number, utxo: UTxO) {
-                console.log(utxo.assets);
                 return balance + Number(utxo.assets.lovelace) / 1000000;
             }, 0);
 

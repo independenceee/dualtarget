@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -22,7 +23,8 @@ type CHART_TIME_OPTION = "ONE_DAY" | "ONE_WEEK" | "SIX_MONTHS" | "ONE_YEAR";
 
 const PriceChart = function ({ data, isLoading }: Props) {
     const [show, setShow] = useState<boolean>(true);
-    const [crytocurrency, setCrytocurrency] = useState<string>("DJED");
+    const [timestamp, setTimestamp] = useState<{ start: number; end: number } | null>(null);
+
     const [chartConfigs, setChartConfigs] = useState<ChartProps>({
         series: [
             {
@@ -71,7 +73,8 @@ const PriceChart = function ({ data, isLoading }: Props) {
                 },
             },
             yaxis: {
-                show: false,
+                show: true,
+                opposite: true,
             },
             tooltip: {
                 enabled: true,
@@ -85,8 +88,8 @@ const PriceChart = function ({ data, isLoading }: Props) {
                 },
                 y: {
                     title: {
-                        formatter(seriesName) {
-                            return "" + crytocurrency;
+                        formatter(_) {
+                            return "DJED";
                         },
                     },
                 },
@@ -125,11 +128,7 @@ const PriceChart = function ({ data, isLoading }: Props) {
     });
 
     useEffect(() => {
-        handleUpdateChartData("ONE_DAY");
-    }, []);
-
-    useEffect(() => {
-        if (data != null) {
+        if (data && data.length > 0) {
             setChartConfigs({
                 ...chartConfigs,
                 series: [
@@ -138,6 +137,16 @@ const PriceChart = function ({ data, isLoading }: Props) {
                     },
                 ],
             });
+            setTimestamp({
+                start: data[0][0],
+                end: data[data.length - 1][0],
+            });
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if (data && data.length > 0) {
+            handleUpdateChartData("ONE_DAY");
         }
     }, [data]);
 
@@ -167,21 +176,33 @@ const PriceChart = function ({ data, isLoading }: Props) {
             selection: timeline,
         }));
 
+        if (!timestamp) return;
+
+        const datetime = new Date(timestamp.end);
+
         switch (timeline) {
             case "ONE_DAY":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("28 Jan 2013").getTime(), new Date("27 Feb 2013").getTime());
-                break;
-            case "SIX_MONTHS":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Sep 2012").getTime(), new Date("27 Feb 2013").getTime());
-                break;
-            case "ONE_YEAR":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("27 Feb 2012").getTime(), new Date("27 Feb 2013").getTime());
+                const oneDayAgo = datetime.setDate(datetime.getDate() - 1);
+                ApexCharts.exec("area-datetime", "zoomX", oneDayAgo, timestamp.end);
                 break;
             case "ONE_WEEK":
-                ApexCharts.exec("area-datetime", "zoomX", new Date("01 Jan 2013").getTime(), new Date("27 Feb 2013").getTime());
+                const oneWeekAgo = datetime.setDate(datetime.getDate() - 6);
+                ApexCharts.exec("area-datetime", "zoomX", oneWeekAgo, timestamp.end);
+                break;
+            case "ONE_MONTH":
+                const oneMonthAgo = datetime.setMonth(datetime.getMonth() - 1);
+                ApexCharts.exec("area-datetime", "zoomX", oneMonthAgo, timestamp.end);
+                break;
+            case "SIX_MONTHS":
+                const sixMonthsAgo = datetime.setMonth(datetime.getMonth() - 6);
+                ApexCharts.exec("area-datetime", "zoomX", sixMonthsAgo, timestamp.end);
+                break;
+            case "ONE_YEAR":
+                const oneYearAgo = datetime.setFullYear(datetime.getFullYear() - 1);
+                ApexCharts.exec("area-datetime", "zoomX", oneYearAgo, timestamp.end);
                 break;
             default:
-                ApexCharts.exec("area-datetime", "zoomX", new Date("23 Jan 2012").getTime(), new Date("27 Feb 2013").getTime());
+                ApexCharts.exec("area-datetime", "zoomX", timestamp.start, timestamp.end);
                 break;
         }
     };
@@ -263,17 +284,6 @@ const PriceChart = function ({ data, isLoading }: Props) {
                                 </div>
                             </div>
                         </div>
-                        <button className={cx("exchange-icon-wrapper")}>
-                            <svg fill="none" height={20} viewBox="0 0 20 20" width={20} xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M6.66406 5.83333L16.6641 5.83333M16.6641 5.83333L13.3307 2.5M16.6641 5.83333L13.3307 9.16667M13.3307 14.1667L3.33073 14.1667M3.33073 14.1667L6.66406 17.5M3.33073 14.1667L6.66406 10.8333"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.6"
-                                />
-                            </svg>
-                        </button>
                     </div>
                     <div className={cx("price-by-time-analytics")}>
                         <button

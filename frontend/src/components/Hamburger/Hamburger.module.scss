@@ -1,4 +1,9 @@
+.sidebar-menu {
+    z-index: 100;
+}
+
 .wrapper {
+    position: relative;
     flex-shrink: 0;
     align-items: normal;
     background: transparent;
@@ -10,7 +15,7 @@
     order: 1;
     padding: 0;
     width: fit-content;
-    z-index: 10;
+    z-index: 101;
     .bar {
         background: #fff;
         border-radius: 10px;

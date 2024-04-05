@@ -13,6 +13,7 @@ import routes from "~/configs/routes";
 import Coin from "~/components/Card/Coin";
 import { TranslateContextType } from "~/types/contexts/TranslateContextType";
 import TranslateContext from "~/contexts/components/TranslateContext";
+import Button from "~/components/Button";
 
 const cx = classNames.bind(styles);
 
@@ -49,27 +50,17 @@ export default function Home() {
             <section className={cx("stats")}>
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
-                        <Card
-                            title="Deposit Stablecoin"
-                            icon={icons.djed}
-                            className={cx("stat-djed-stablecoin")}
-                            buttonOptions={{
-                                href: routes.deposit,
-                                children: "Mint/Burn",
-                            }}
-                        >
+                        <Card title="Deposit Stablecoin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                             <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
+                            <Button className={cx("stat-button")} href={routes.deposit}>
+                                Deposit
+                            </Button>
                         </Card>
-                        <Card
-                            title="Withdraw Stablecoin"
-                            icon={icons.djed}
-                            className={cx("stat-djed-stablecoin")}
-                            buttonOptions={{
-                                href: routes.withdraw,
-                                children: "Mint/Burn",
-                            }}
-                        >
+                        <Card title="Withdraw Stablecoin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                             <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
+                            <Button className={cx("stat-button")} href={routes.withdraw}>
+                                Withdraw
+                            </Button>
                         </Card>
                     </div>
                     <div className={cx("sub-stats")}>*Buy\Sell price includes base fee, and does not include operator fee</div>

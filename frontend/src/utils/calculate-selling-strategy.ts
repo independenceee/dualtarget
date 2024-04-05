@@ -1,97 +1,66 @@
-interface ResultItem {
-    buyPrice: number;
-    sellPrice: number;
-    amountSend: number;
-    minimumAmountOut: number;
-    minimumAmountOutProfit: number;
-    amountSell: number;
-    amountBuy: number;
-    amountEntry: number;
-    usdPool: number;
-    sumADA: number;
-}
-
-function qtyDualT(Pstep: number, income: number, stake: number, entry: number): [number, number, number] {
-    try {
-        const USDTpool: number = (income * 12) / (stake / 100); // số lượng USD cần đảm bảo
-        const qtyentrysell: number = USDTpool / (entry * (1 + Pstep / 100)); // số lượng ADA cần tại giá sell
-        const qtyentry: number = USDTpool / entry; // số lượng ADA cần tại giá hiện tại
-        const qtyentrybuy: number = USDTpool / (entry * (1 - Pstep / 100)); // số lượng ADA cần tại giá buy
-        const qtyDualTbuy: number = qtyentrybuy - qtyentry; // số lượng ADA cần buy tại giá
-        const qtyDualTsell: number = qtyentry - qtyentrysell; // số lượng ADA cần sell tại giá
-        return [qtyDualTbuy, qtyDualTsell, qtyentry];
-    } catch (error) {
-        console.log("qtyDualTarget: " + error);
-        return [0, 0, 0];
-    }
-}
-
-interface SellingStrategyResult {
-    buyPrice: number;
-    sellPrice: number;
-    amount_send: number;
-    minimumAmountOut: number;
-    minimumAmountOutProfit: number;
-    amount_sell: number;
-    amount_buy: number;
-    amount_entry: number;
-    usd_pool: number;
-    sumADA: number;
-}
+import quantityDualTarget from "./quantity-dual-target";
+import { CalculateSellingStrategy } from "~/types/GenericsType";
 
 function calculateSellingStrategy({
-    price_H,
-    price_L,
+    priceHigh,
+    priceLow,
     step,
     income,
     stake,
-    total_ADA,
+    totalADA,
 }: {
-    price_L: number;
-    price_H: number;
+    priceLow: number;
+    priceHigh: number;
     step: number;
     income: number;
-    total_ADA: number;
+    totalADA: number;
     stake: number;
-}): SellingStrategyResult[] {
-    const result: SellingStrategyResult[] = [];
-    const decimal_places: number = 1000000;
+}): Array<CalculateSellingStrategy> {
+    const DECIMAL_PLACES: number = 1000000;
+    const OUTPUT_ADA: number = 3000000;
+    const BATCHER_FEE: number = 1500000;
+    let price: number = priceLow;
 
-    let price: number = price_L;
+    let sumADA: number = 0; // Số lượng ada cần nhập vào => UI
 
-    let sumADA: number = 0;
-    let BatcherFee = 1500000;
-    let OutputADA = 3000000;
+    const result: Array<CalculateSellingStrategy> = [];
 
-    while (price <= price_H) {
-        const [qty_buy, qty_sell, qty_entry] = qtyDualT(step, income, stake, price / decimal_places);
+    while (price <= priceHigh) {
+        const [quantityBuy, quantitySell, quantityEntry] = quantityDualTarget({
+            step: step,
+            income: income,
+            stake: stake,
+            entry: price / DECIMAL_PLACES,
+        });
 
         const buyPrice: number = Math.floor(price);
         const sellPrice: number = Math.floor(buyPrice * (1 + step / 100));
-        const amountIn: number = Math.floor(qty_sell * decimal_places);
-        const minimumAmountOut: number = Math.floor((amountIn * buyPrice) / decimal_places);
-        const minimumAmountOutProfit: number = Math.floor(((step / 100) * sellPrice * amountIn) / decimal_places);
-        const amount_send: number = amountIn + BatcherFee + OutputADA;
-        sumADA += amount_send;
+        const amountIn: number = Math.floor(quantitySell * DECIMAL_PLACES);
+        const minimumAmountOut: number = Math.floor((amountIn * buyPrice) / DECIMAL_PLACES);
+        const minimumAmountOutProfit: number = Math.floor(((step / 100) * sellPrice * amountIn) / DECIMAL_PLACES);
+        const amountSend: number = amountIn + BATCHER_FEE + OUTPUT_ADA;
+        sumADA += amountSend;
 
-        console.log(buyPrice, sellPrice, amountIn, minimumAmountOut);
+
 
         result.push({
             buyPrice: buyPrice,
             sellPrice: sellPrice,
-            amount_send: amount_send,
+            amountSend: amountSend,
             minimumAmountOut: minimumAmountOut,
             minimumAmountOutProfit: minimumAmountOutProfit,
-            amount_sell: Math.floor(qty_sell * decimal_places),
-            amount_buy: Math.floor(qty_buy * decimal_places),
-            amount_entry: Math.floor(qty_entry * decimal_places),
-            usd_pool: Math.floor((price * qty_entry) / decimal_places),
+            amountSell: Math.floor(quantitySell * DECIMAL_PLACES),
+            amountBuy: Math.floor(quantityBuy * DECIMAL_PLACES),
+            amountEntry: Math.floor(quantityEntry * DECIMAL_PLACES),
+            USDTPool: Math.floor((price * quantityEntry) / DECIMAL_PLACES),
             sumADA: Math.floor(sumADA),
         });
 
         price *= 1 + step / 100;
     }
 
+    console.log(result[result.length-1].sumADA)
+    
     return result;
 }
 

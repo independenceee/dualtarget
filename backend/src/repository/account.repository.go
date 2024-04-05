@@ -10,10 +10,11 @@ import (
 )
 
 type IAccountRepository interface {
-	Save(account models.Account)
+	Save(account models.Account) (accountDto models.Account, err error)
 	Update(account models.Account)
 	Delete(accountId string)
 	FindById(accountId string) (accountDto models.Account, err error)
+	FindByAddress(walletAddress string) (accountDto models.Account, err error)
 	FindAll() []models.Account
 }
 
@@ -38,9 +39,9 @@ func (accountRepository *TAccountRepository) FindAll() []models.Account {
 	return accounts
 }
 
-func (accountRepository *TAccountRepository) FindById(accountId string) (account models.Account, err error) {
+func (accountRepository *TAccountRepository) FindById(id string) (account models.Account, err error) {
 	var accountDto models.Account
-	result := accountRepository.DB.Find(&accountDto, accountId)
+	result := accountRepository.DB.Where("id = ?", id).Find(&accountDto)
 	if result != nil {
 		return accountDto, nil
 	} else {
@@ -48,9 +49,20 @@ func (accountRepository *TAccountRepository) FindById(accountId string) (account
 	}
 }
 
-func (accountRepository *TAccountRepository) Save(accountDto models.Account) {
-	result := accountRepository.DB.Create(&accountDto)
+func (accountRepository *TAccountRepository) FindByAddress(walletAddress string) (account models.Account, err error) {
+	var accountDto models.Account
+	result := accountRepository.DB.Where("wallet_address = ?", walletAddress).Find(&accountDto)
+	if result != nil {
+		return accountDto, nil
+	} else {
+		return accountDto, errors.New("Account is not found")
+	}
+}
+
+func (accountRepository *TAccountRepository) Save(account models.Account) (accountDto models.Account, err error) {
+	result := accountRepository.DB.Create(&account)
 	helpers.ErrorPanic(result.Error)
+	return account, nil
 }
 
 func (accountRepository *TAccountRepository) Update(accountDto models.Account) {

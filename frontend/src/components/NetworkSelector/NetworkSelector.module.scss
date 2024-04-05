@@ -23,13 +23,13 @@
         position: absolute;
     }
 
-    &.network-selector.active::before {
+    &.active::before {
         border-radius: unset;
         border-top-right-radius: 12px;
         border-top-left-radius: 12px;
     }
 
-    &.network-selector.active .arrow-icon {
+    &.active .arrow-icon {
         rotate: 180deg;
     }
 }

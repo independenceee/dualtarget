@@ -10,9 +10,9 @@ import (
 	"github.com/vicanso/go-axios"
 )
 
-func HttpRequest() *axios.Instance {
+func HttpRequest(url string) *axios.Instance {
 	instance := axios.NewInstance(&axios.InstanceConfig{
-		BaseURL:     "https=/preprod.koios.rest/api/v1",
+		BaseURL:     url,
 		EnableTrace: true,
 		Client: &http.Client{
 			Transport: &http.Transport{
@@ -30,8 +30,8 @@ func HttpRequest() *axios.Instance {
 	return instance
 }
 
-func Get(path string, query ...url.Values) []byte {
-	response, err := HttpRequest().Get(path, query...)
+func Get(base string, path string, query ...url.Values) []byte {
+	response, err := HttpRequest(base).Get(path, query...)
 	if err != nil {
 		log.Fatal("Failed to GET")
 	}
@@ -39,8 +39,8 @@ func Get(path string, query ...url.Values) []byte {
 	return response.Data
 }
 
-func Post(path string, data interface{}, query ...url.Values) []byte {
-	response, err := HttpRequest().Post(path, data, query...)
+func Post(base string, path string, data interface{}, query ...url.Values) []byte {
+	response, err := HttpRequest(base).Post(path, data, query...)
 	if err != nil {
 		log.Fatal("Failed to POST")
 	}
@@ -48,8 +48,8 @@ func Post(path string, data interface{}, query ...url.Values) []byte {
 	return response.Data
 }
 
-func Patch(path string, data interface{}, query ...url.Values) []byte {
-	response, err := HttpRequest().Patch(path, data, query...)
+func Patch(base string, path string, data interface{}, query ...url.Values) []byte {
+	response, err := HttpRequest(base).Patch(path, data, query...)
 	if err != nil {
 		log.Fatal("Failed to PATCH")
 	}
@@ -57,8 +57,8 @@ func Patch(path string, data interface{}, query ...url.Values) []byte {
 	return response.Data
 }
 
-func Delete(path string, query ...url.Values) []byte {
-	response, err := HttpRequest().Delete(path, query...)
+func Delete(base string, path string, query ...url.Values) []byte {
+	response, err := HttpRequest(base).Delete(path, query...)
 	if err != nil {
 		log.Fatal("Failed to DELETE")
 	}

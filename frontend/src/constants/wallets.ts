@@ -12,7 +12,9 @@ const wallets: Array<WalletType> = [
             return await window.cardano.nami.enable();
         },
         checkApi: async function () {
-            return await window.cardano.nami;
+            return (await window.cardano.nami).catch((e: unknown) => {
+                console.log(e);
+            });
         },
         downloadApi: configs.wallets.nami,
     },
