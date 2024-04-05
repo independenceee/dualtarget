@@ -55,7 +55,7 @@ const Djed = function () {
                 binance.setSandboxMode(true);
                 const currentTime = new Date(Date.now());
                 const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
-                const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 1000);
+                const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 10000);
                 if (prices.length > 0) {
                     const _historyPrices = prices.map((price) => [price[0], price[4]]);
                     setHistoryPrices(_historyPrices as ChartDataType);
