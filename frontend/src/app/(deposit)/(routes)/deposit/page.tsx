@@ -93,7 +93,6 @@ const Djed = function () {
                 totalADA: +data.totalADA,
             }).catch((error) => {});
     });
-    console.log(watch());
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
