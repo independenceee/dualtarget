@@ -1,19 +1,23 @@
 "use client";
 
 import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address } from "lucid-cardano";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useContext, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
-import readValidator from "~/utils/read-validator";
 import { refundRedeemer } from "~/constants/redeemer";
+import readDatum from "~/utils/read-datum";
+import { WalletContextType } from "~/types/contexts/WalletContextType";
+import WalletContext from "../components/WalletContext";
 
 type Props = {
     children: ReactNode;
 };
 
 const SmartContractProvider = function ({ children }: Props) {
+    const { refresh } = useContext<WalletContextType>(WalletContext);
+
     const [txHashDeposit, setTxHashDeposit] = useState<TxHash>("");
     const [txHashWithdraw, setTxHashWithdraw] = useState<TxHash>("");
     const [waitingDeposit, setWaitingDeposit] = useState<boolean>(false);
@@ -49,8 +53,9 @@ const SmartContractProvider = function ({ children }: Props) {
             });
 
             console.log("Selling: ", sellingStrategies);
-
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
+            const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
+
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
 
@@ -59,24 +64,18 @@ const SmartContractProvider = function ({ children }: Props) {
                     {
                         odOwner: vkeyOwnerHash,
                         odBeneficiary: vkeyBeneficiaryHash,
-                        assetA: {
-                            policyId: "",
-                            assetName: "",
-                        },
-                        amountA: BigInt(sellingStrategy.amountSend),
-                        assetOut: {
-                            policyId: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed72",
-                            assetName: "4d494e",
-                        },
+                        assetADA: { policyId: datumParams.assetAda.policyId, assetName: datumParams.assetAda.assetName },
+                        amountADA: BigInt(sellingStrategy.amountSend),
+                        assetOut: { policyId: datumParams.assetOut.policyId, assetName: datumParams.assetOut.assetName },
                         minimumAmountOut: BigInt(sellingStrategy.minimumAmountOut),
                         minimumAmountOutProfit: BigInt(sellingStrategy.minimumAmountOutProfit),
                         buyPrice: BigInt(sellingStrategy.buyPrice),
                         sellPrice: BigInt(sellingStrategy.sellPrice),
-                        odstrategy: "414441444a4544",
-                        BatcherFee: BigInt(1500000),
-                        OutputADA: BigInt(6000000),
-                        fee_address: "849bb882b0999fe8eee3190d53a1dc46fd707c41859f4973aec84cc0",
-                        validator_address: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
+                        odStrategy: datumParams.odStrategy,
+                        batcherFee: datumParams.batcherFee,
+                        outputADA: datumParams.outputADA,
+                        feeAddress: datumParams.feeAddress,
+                        validatorAddress: datumParams.validatorAddress,
                         deadline: BigInt(new Date().getTime() + 10 * 1000),
                         isLimitOrder: BigInt(0),
                     },
@@ -107,7 +106,6 @@ const SmartContractProvider = function ({ children }: Props) {
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
             if (success) setTxHashDeposit(txHash);
-            /////////////////////////////////////////////////////////
         } catch (error) {
             console.log(error);
         } finally {
@@ -122,37 +120,36 @@ const SmartContractProvider = function ({ children }: Props) {
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
 
-            const validator = readValidator();
-            let smartcontractUtxo: UTxO = null!;
+            let smartcontractUtxo: UTxO | undefined = scriptUtxos.find(function (scriptUtxo: UTxO) {
+                return scriptUtxo.scriptRef?.script;
+            });
 
+            if (!smartcontractUtxo) throw new Error("Cound not find smart contract utxo");
+            const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
             const claimableUtxos: ClaimableUTxO[] = [];
             for (const scriptUtxo of scriptUtxos) {
                 if (scriptUtxo.scriptRef?.script) {
                     smartcontractUtxo = scriptUtxo;
+                    const outputDatum: any = Data.from(scriptUtxo.datum!);
+                    console.log(outputDatum.fields[2]);
                 } else if (scriptUtxo.datum) {
                     const outputDatum: any = Data.from(scriptUtxo.datum!);
                     console.log(outputDatum);
                     const params = {
                         odOwner: outputDatum.fields[0],
                         odBeneficiary: outputDatum.fields[1],
-                        assetA: {
-                            policyId: "",
-                            assetName: "",
-                        },
+                        assetADA: { policyId: datumParams.assetAda.policyId, assetName: datumParams.assetAda.assetName },
                         amountA: outputDatum.fields[3],
-                        assetOut: {
-                            policyId: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed72",
-                            assetName: "4d494e",
-                        },
+                        assetOut: { policyId: datumParams.assetOut.policyId, assetName: datumParams.assetOut.assetName },
                         minimumAmountOut: outputDatum.fields[5],
                         minimumAmountOutProfit: outputDatum.fields[6],
                         buyPrice: outputDatum.fields[7],
                         sellPrice: outputDatum.fields[8],
-                        odstrategy: outputDatum.fields[9],
-                        BatcherFee: outputDatum.fields[10],
-                        OutputADA: outputDatum.fields[11],
-                        fee_address: "849bb882b0999fe8eee3190d53a1dc46fd707c41859f4973aec84cc0",
-                        validator_address: outputDatum.fields[13],
+                        odStrategy: datumParams.odStrategy,
+                        batcherFee: datumParams.batcherFee,
+                        outputADA: datumParams.outputADA,
+                        feeAddress: datumParams.feeAddress,
+                        validatorAddress: datumParams.validatorAddress,
                         deadline: outputDatum.fields[14],
                         isLimitOrder: outputDatum.fields[15],
                     };
@@ -168,13 +165,13 @@ const SmartContractProvider = function ({ children }: Props) {
                         // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed
                         // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
                     ) {
-                        let winter_addr: Credential = { type: "Key", hash: params.fee_address };
+                        let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                         const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
 
                         claimableUtxos.push({
                             utxo: scriptUtxo,
                             BatcherFee_addr: String(freeAddress1),
-                            fee: params.BatcherFee,
+                            fee: params.batcherFee,
                             minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                             minimumAmountOutProfit: params.minimumAmountOutProfit,
                         });
