@@ -445,6 +445,8 @@ def qty_DualT(P_step,income,stake,entry):
 *   ALL
 *   Từng phần (Step Giá thấp nhất giá cao nhất)
 
+min utxos max
+
 -   Tính tổng
 -   Tính phần lãi
 -   Lợi nhuận theo năm / tháng

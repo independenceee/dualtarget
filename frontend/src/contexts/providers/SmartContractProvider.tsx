@@ -43,11 +43,11 @@ const SmartContractProvider = function ({ children }: Props) {
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
             const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
                 income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHigh: priceHight, //  Giá thấp nhất =  2000000
-                priceLow: priceLow, // Giá cao nhất = 1000000
+                priceHigh: priceHight * 1000000, //  Giá thấp nhất =  2000000
+                priceLow: priceLow * 1000000, // Giá cao nhất = 1000000
                 stake: stake, //  ROI % stake theo năm = 5
                 step: step, // Bước nhảy theo giá (%) = 10
-                totalADA: totalADA, // Tổng ada = 24000000
+                totalADA: totalADA * 1000000, // Tổng ada = 24000000
             });
 
             console.log("Selling: ", sellingStrategies);
@@ -82,6 +82,7 @@ const SmartContractProvider = function ({ children }: Props) {
                 );
             });
 
+            /////////////////////////////////////////////////////////
             let tx: any = lucid.newTx();
 
             sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
@@ -95,6 +96,7 @@ const SmartContractProvider = function ({ children }: Props) {
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
             if (success) setTxHashDeposit(txHash);
+            /////////////////////////////////////////////////////////
         } catch (error) {
             console.log(error);
         } finally {
@@ -149,14 +151,15 @@ const SmartContractProvider = function ({ children }: Props) {
                      * 2. Lấy UTXO DJED
                      * 3. Lấy UTXO Profit
                      */
+
                     if (
-                        String(params.odOwner) === String(paymentAddress)
-                        // Number(scriptUtxo.assets.lovelace) === 113590909 // UTXO djed
+                        String(params.odOwner) === String(paymentAddress) // Lấy tất cả =  Djed + Profit
+                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed
                         // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
                     ) {
                         let winter_addr: Credential = { type: "Key", hash: params.fee_address };
                         const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
-                        console.log(freeAddress1);
+
                         claimableUtxos.push({
                             utxo: scriptUtxo,
                             BatcherFee_addr: String(freeAddress1),
@@ -177,24 +180,23 @@ const SmartContractProvider = function ({ children }: Props) {
                 console.log("No utxo to claim!");
                 return;
             }
-            // const nftUtxo: any[] = [];
-            // let nonNftUtxo: any = null;
-            // const nonNftUtxoSpend: UTxO[] = [];
-            // const utxos: Array<UTxO> = await lucid.utxosAt(await lucid.wallet.address());
-            // console.log(utxos);
-            // for (const utxo of utxos) {
-            //     if (BigInt(utxo.assets.lovelace) >= BigInt(4000000) && BigInt(utxo.assets.lovelace) < BigInt(6000000)) {
-            //         nonNftUtxo = { utxo: utxo };
-            //     } else if (!utxo.assets) {
-            //         nonNftUtxoSpend.push(utxo);
-            //     } else {
-            //         nftUtxo.push(utxo);
-            //     }
-            // }
-            // if (!nonNftUtxo) {
-            //     console.log("No collateral UTxOs found!");
-            //     return;
-            // }
+            const nftUtxo: any[] = [];
+            let nonNftUtxo: any = null;
+            const nonNftUtxoSpend: UTxO[] = [];
+            const utxos: Array<UTxO> = await lucid.utxosAt(await lucid.wallet.address());
+            for (const utxo of utxos) {
+                if (BigInt(utxo.assets.lovelace) >= BigInt(4000000) && BigInt(utxo.assets.lovelace) < BigInt(6000000)) {
+                    nonNftUtxo = { utxo: utxo };
+                } else if (!utxo.assets) {
+                    nonNftUtxoSpend.push(utxo);
+                } else {
+                    nftUtxo.push(utxo);
+                }
+            }
+            if (!nonNftUtxo) {
+                console.log("No collateral UTxOs found!");
+                return;
+            }
 
             let tx: any = lucid.newTx();
             for (const utxoToSpend of claimableUtxos) {
@@ -210,6 +212,16 @@ const SmartContractProvider = function ({ children }: Props) {
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
             if (success) setTxHashWithdraw(txHash);
+
+            // let builder = lucid.newTx().txBuilder;
+
+            // builder.add_reference_input(smartcontractUtxo as any);
+
+            // for (const utxoToSpend of claimableUtxos) {
+            //     builder.add_input(utxoToSpend.utxo as any, refundRedeemer as any);
+            // }
+
+            // builder.add_output()
         } catch (error) {
             console.log(error);
         } finally {
