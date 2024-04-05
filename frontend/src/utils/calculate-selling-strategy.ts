@@ -21,7 +21,7 @@ function calculateSellingStrategy({
     const BATCHER_FEE: number = 1500000;
     let price: number = priceLow;
 
-    let sumADA: number = 0;
+    let sumADA: number = 0; // Số lượng ada cần nhập vào => UI
 
     const result: Array<CalculateSellingStrategy> = [];
 
@@ -41,7 +41,7 @@ function calculateSellingStrategy({
         const amountSend: number = amountIn + BATCHER_FEE + OUTPUT_ADA;
         sumADA += amountSend;
 
-        // console.log(buyPrice, sellPrice, amountIn, minimumAmountOut);
+
 
         result.push({
             buyPrice: buyPrice,
@@ -59,6 +59,8 @@ function calculateSellingStrategy({
         price *= 1 + step / 100;
     }
 
+    console.log(result[result.length-1].sumADA)
+    
     return result;
 }
 

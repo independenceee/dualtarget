@@ -87,14 +87,14 @@ const Withdraw = function () {
     }, []);
 
     const onWithdraw = handleSubmit(async (data) => {
-        // try {
-        //     lucid &&
-        //         withdraw({
-        //             lucid,
-        //         });
-        // } catch (error) {
-        //     console.warn("Error: ", error);
-        // }
+        try {
+            lucid &&
+                withdraw({
+                    lucid,
+                });
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
         console.log(data);
     });
 
@@ -223,7 +223,7 @@ const Withdraw = function () {
                                             </div>
                                         </div>
 
-                                        <Button disabled={Boolean(lucid)} className={cx("withdraw-button")}>
+                                        <Button disabled={!lucid || waitingWithdraw} onClick={onWithdraw} className={cx("withdraw-button")}>
                                             Withdraw
                                         </Button>
                                     </form>
