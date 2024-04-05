@@ -7,9 +7,11 @@ import icons from "~/assets/icons";
 
 const cx = classNames.bind(styles);
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {}
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
+    currentValue?: number;
+}
 
-const InputRange = function ({ disabled, min = 0, max = 100 }: Props) {
+const InputRange = function ({ disabled, min = 0, max = 100, currentValue=0 }: Props) {
     return (
         <div className={cx("amount-slider-container")}>
             <div className={cx("percentage")}>

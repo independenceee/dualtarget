@@ -14,29 +14,40 @@ import LucidContext from "~/contexts/components/LucidContext";
 import PriceChart from "~/components/PriceChart";
 import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
 import Tippy from "~/components/Tippy";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
 import Input from "~/components/Input";
 import ccxt, { binance } from "ccxt";
 import Loading from "~/components/Loading";
+import InputNumber from "~/components/InputNumber";
 
 const cx = classNames.bind(styles);
 
 type DepositeType = {
-    income: number;
-    priceHight: number;
-    priceLow: number;
-    stake: number;
-    step: number;
-    totalADA: number;
+    income: string;
+    priceHight: string;
+    priceLow: string;
+    stake: string;
+    step: string;
+    totalADA: string;
 };
 
 const Djed = function () {
     const {
-        register,
         handleSubmit,
+        watch,
+        control,
         formState: { errors },
-    } = useForm<DepositeType>();
+    } = useForm<DepositeType>({
+        defaultValues: {
+            income: "",
+            priceHight: "",
+            priceLow: "",
+            stake: "",
+            step: "",
+            totalADA: "",
+        },
+    });
 
     const [historyPrices, setHistoryPrices] = useState<ChartDataType | null>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -74,15 +85,15 @@ const Djed = function () {
         lucid &&
             deposit({
                 lucid,
-                income: data.income,
-                priceHight: data.priceHight,
-                priceLow: data.priceLow,
-                stake: data.stake,
-                step: data.step,
-                totalADA: data.totalADA,
+                income: +data.income,
+                priceHight: +data.priceHight,
+                priceLow: +data.priceLow,
+                stake: +data.stake,
+                step: +data.step,
+                totalADA: +data.totalADA,
             }).catch((error) => {});
     });
-
+    console.log(watch());
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -99,78 +110,131 @@ const Djed = function () {
                                             <span>Balance: {0} ₳</span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
-                                            <Input
-                                                name="income"
-                                                placeholder="Enter the USD amount for a month"
-                                                register={register}
-                                                errorMessage={errors.income?.message}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: "This field is required",
-                                                    },
-                                                }}
-                                            />
-                                            <Input
-                                                name="priceHight"
-                                                placeholder="Enter the highest price"
-                                                register={register}
-                                                errorMessage={errors.priceHight?.message}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: "This field is required",
-                                                    },
-                                                }}
-                                            />
-                                            <Input
-                                                name="priceLow"
-                                                placeholder="Enter the lowest price"
-                                                register={register}
-                                                errorMessage={errors.priceLow?.message}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: "This field is required",
-                                                    },
-                                                }}
-                                            />
-                                            <Input
-                                                name="stake"
-                                                placeholder="Enter % stake for 1 year"
-                                                register={register}
-                                                errorMessage={errors.stake?.message}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: "This field is required",
-                                                    },
-                                                }}
-                                            />
-                                            <Input
-                                                name="step"
-                                                placeholder="Enter the price jump"
-                                                register={register}
-                                                errorMessage={errors.step?.message}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: "This field is required",
-                                                    },
-                                                }}
-                                            />
-                                            <Input
-                                                name="totalADA"
-                                                placeholder="Enter the total number of ada"
-                                                register={register}
-                                                errorMessage={errors.totalADA?.message}
-                                                rules={{
-                                                    required: {
-                                                        value: true,
-                                                        message: "This field is required",
-                                                    },
-                                                }}
-                                            />
+                                            <div className={cx("row-wrapper")}>
+                                                <Controller
+                                                    control={control}
+                                                    name="income"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="USDT amount"
+                                                            className={cx("input")}
+                                                            placeholder="Enter the USD amount for a month"
+                                                            errorMessage={errors.income?.message}
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+                                            <div className={cx("row-wrapper")}>
+                                                <Controller
+                                                    control={control}
+                                                    name="priceLow"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="Min price"
+                                                            className={cx("input")}
+                                                            placeholder="Enter the lowest price"
+                                                            errorMessage={errors.priceLow?.message}
+                                                        />
+                                                    )}
+                                                />
+                                                <div className={cx("slash")}> - </div>
+                                                <Controller
+                                                    control={control}
+                                                    name="priceHight"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="Max price"
+                                                            className={cx("input")}
+                                                            placeholder="Enter the highest price"
+                                                            errorMessage={errors.priceHight?.message}
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+                                            <div className={cx("row-wrapper")}>
+                                                <Controller
+                                                    control={control}
+                                                    name="stake"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="Interest rate (%)"
+                                                            className={cx("input")}
+                                                            placeholder="Enter % stake for 1 year"
+                                                            errorMessage={errors.stake?.message}
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+                                            <div className={cx("row-wrapper")}>
+                                                <Controller
+                                                    control={control}
+                                                    name="step"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="Step"
+                                                            className={cx("input")}
+                                                            placeholder="Enter the price jump"
+                                                            errorMessage={errors.step?.message}
+                                                        />
+                                                    )}
+                                                />
+
+                                                <div className={cx("slash")}> - </div>
+                                                <Controller
+                                                    control={control}
+                                                    name="totalADA"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="Total ADA"
+                                                            className={cx("input")}
+                                                            placeholder="Enter the total number of ada"
+                                                            errorMessage={errors.totalADA?.message}
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div className={cx("info")}>
