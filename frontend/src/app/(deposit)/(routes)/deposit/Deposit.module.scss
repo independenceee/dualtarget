@@ -23,15 +23,21 @@
 .stats {
     display: flex;
     gap: 2.8rem;
+    flex-direction: column;
 }
 
 .stats-inner {
     width: 100%;
 }
+.slash {
+    font-size: 1.6rem;
+    padding: 0 1.2rem;
+}
 
 .card-wrapper {
-    max-width: 452px;
+    max-width: 650px;
     width: 100%;
+    margin: 0 auto;
     position: relative;
 }
 
@@ -73,6 +79,7 @@
     margin: 8px 4px;
     text-align: end;
 }
+
 .form-wrapper {
     margin-bottom: 2.4rem;
 }
@@ -94,6 +101,15 @@
 }
 .title-wrapper {
     display: flex;
+}
+
+.row-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    width: 100%;
 }
 
 .stats-fee {
@@ -138,11 +154,6 @@
 @media (max-width: 1024px) {
     .card-wrapper {
         width: 100%;
-        margin: 0 auto;
-    }
-
-    .stats {
-        flex-direction: column;
     }
 }
 

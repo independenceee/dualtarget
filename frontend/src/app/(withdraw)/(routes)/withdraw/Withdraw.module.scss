@@ -109,6 +109,12 @@
 .form-wrapper {
     margin-bottom: 2.4rem;
 }
+.withdraw-mode-dropdown {
+    padding: 1.8rem 2.4rem !important;
+    &::before {
+        padding: 2px;
+    }
+}
 
 .withdraw-button {
     align-items: center;

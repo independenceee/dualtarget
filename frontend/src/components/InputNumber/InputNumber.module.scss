@@ -6,10 +6,6 @@
     padding-bottom: 8px;
     font-size: 1.4rem;
 }
-
-.eye-icon-wrapper {
-    padding: 2px 4px;
-}
 .input-wrapper {
     background: linear-gradient(101deg, #32375c 18%, #ab56c9 61%, #b275dc 102%);
     border-radius: 10px;
@@ -27,8 +23,8 @@
         border-radius: 10px;
         color: #fff;
         height: 100%;
-        padding-right: 3.2rem;
-        padding-left: 1.6rem;
+        padding-right: 16px;
+        padding-left: 16px;
         position: relative;
         font-size: 17px;
         width: 100%;
@@ -38,12 +34,7 @@
         }
     }
 }
-.toggle {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 1rem;
-}
+
 .error-message {
     display: block;
     font-size: 1.4rem;

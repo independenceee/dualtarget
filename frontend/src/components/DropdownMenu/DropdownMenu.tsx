@@ -31,9 +31,9 @@ const DropdownMenu = function ({ items, selectItem, currentItem, classNameItem, 
     };
 
     return (
-        <div className={cx("wrapper", classNameWrapper)}>
+        <div className={cx("wrapper")}>
             <div
-                className={cx("dropdown-menu", {
+                className={cx("dropdown-menu", classNameWrapper, {
                     active,
                 })}
                 onClick={handleToggleMenu}

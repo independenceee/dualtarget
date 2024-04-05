@@ -115,6 +115,7 @@ const Withdraw = function () {
                                         </div>
                                         <div className={cx("form-wrapper")}>
                                             <DropdownMenu
+                                                classNameWrapper={cx("withdraw-mode-dropdown")}
                                                 currentItem={currentWithdrawMode}
                                                 selectItem={setCurrentWithdrawMode}
                                                 items={WITHDRAW_MODES}
@@ -210,7 +211,7 @@ const Withdraw = function () {
                                                         }
                                                     >
                                                         <Image
-                                                            className={cx("icon-help-circle")}
+                                                              className={cx("icon-help-circle")}
                                                             src={icons.helpCircle}
                                                             width={12}
                                                             height={12}
