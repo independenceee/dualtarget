@@ -2,6 +2,7 @@
 
 import classNames from "classnames/bind";
 import React, { useContext, useEffect, useState } from "react";
+import { getKline, Kline } from "binance-historical";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders";
@@ -16,7 +17,6 @@ import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart"
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
-import Input from "~/components/Input";
 import ccxt, { binance } from "ccxt";
 import Loading from "~/components/Loading";
 import InputNumber from "~/components/InputNumber";
@@ -32,7 +32,7 @@ type DepositeType = {
     totalADA: string;
 };
 
-const Djed = function () {
+const Deposit = function () {
     const {
         handleSubmit,
         watch,
@@ -54,23 +54,37 @@ const Djed = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
 
+    // useEffect(() => {
+    //     const fetchADAData = async () => {
+    //         setLoading(true);
+    //         try {
+    //             const binance: binance = new ccxt.binance({
+    //                 apiKey: process.env.BINANCE_API_KEY as string,
+    //                 secret: process.env.BINANCE_API_SECRET as string,
+    //             });
+
+    //             binance.setSandboxMode(true);
+    //             const currentTime = new Date(Date.now());
+    //             const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
+    //             const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 10000);
+    //             if (prices.length > 0) {
+    //                 const _historyPrices = prices.map((price) => [price[0], price[4]]);
+    //                 setHistoryPrices(_historyPrices as ChartDataType);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching ADA data:", error);
+    //         }
+    //     };
+
+    //     fetchADAData().finally(() => {
+    //         setLoading(false);
+    //     });
+    // }, []);
+
     useEffect(() => {
         const fetchADAData = async () => {
             setLoading(true);
             try {
-                const binance: binance = new ccxt.binance({
-                    apiKey: process.env.BINANCE_API_KEY as string,
-                    secret: process.env.BINANCE_API_SECRET as string,
-                });
-
-                binance.setSandboxMode(true);
-                const currentTime = new Date(Date.now());
-                const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
-                const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 10000);
-                if (prices.length > 0) {
-                    const _historyPrices = prices.map((price) => [price[0], price[4]]);
-                    setHistoryPrices(_historyPrices as ChartDataType);
-                }
             } catch (error) {
                 console.error("Error fetching ADA data:", error);
             }
@@ -113,7 +127,7 @@ const Djed = function () {
                                             <div className={cx("row-wrapper")}>
                                                 <Controller
                                                     control={control}
-                                                    name="income"
+                                                    name="priceLow"
                                                     rules={{
                                                         required: {
                                                             value: true,
@@ -123,10 +137,30 @@ const Djed = function () {
                                                     render={({ field }) => (
                                                         <InputNumber
                                                             {...field}
-                                                            title="USDT amount"
+                                                            title="Min price"
                                                             className={cx("input")}
-                                                            placeholder="Enter the USD amount for a month"
-                                                            errorMessage={errors.income?.message}
+                                                            placeholder="Enter the lowest price"
+                                                            errorMessage={errors.priceLow?.message}
+                                                        />
+                                                    )}
+                                                />
+                                                <div className={cx("slash")}> - </div>
+                                                <Controller
+                                                    control={control}
+                                                    name="priceHight"
+                                                    rules={{
+                                                        required: {
+                                                            value: true,
+                                                            message: "This field is required",
+                                                        },
+                                                    }}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            {...field}
+                                                            title="Max price"
+                                                            className={cx("input")}
+                                                            placeholder="Enter the highest price"
+                                                            errorMessage={errors.priceHight?.message}
                                                         />
                                                     )}
                                                 />
@@ -172,27 +206,7 @@ const Djed = function () {
                                                     )}
                                                 />
                                             </div>
-                                            <div className={cx("row-wrapper")}>
-                                                <Controller
-                                                    control={control}
-                                                    name="stake"
-                                                    rules={{
-                                                        required: {
-                                                            value: true,
-                                                            message: "This field is required",
-                                                        },
-                                                    }}
-                                                    render={({ field }) => (
-                                                        <InputNumber
-                                                            {...field}
-                                                            title="Interest rate (%)"
-                                                            className={cx("input")}
-                                                            placeholder="Enter % stake for 1 year"
-                                                            errorMessage={errors.stake?.message}
-                                                        />
-                                                    )}
-                                                />
-                                            </div>
+
                                             <div className={cx("row-wrapper")}>
                                                 <Controller
                                                     control={control}
@@ -337,4 +351,4 @@ const Djed = function () {
     );
 };
 
-export default Djed;
+export default Deposit;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace } from "lucid-cardano";
+import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address } from "lucid-cardano";
 import React, { ReactNode, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
@@ -191,57 +191,20 @@ const SmartContractProvider = function ({ children }: Props) {
                 console.log("No utxo to claim!");
                 return;
             }
-            // const nftUtxo: any[] = [];
-            // let nonNftUtxo: UTxO = null!;
-            // const nonNftUtxoSpend: UTxO[] = [];
-            // const utxos: Array<UTxO> = await lucid.utxosAt(await lucid.wallet.address());
-            // console.log(utxos[0]);
-            // for (const utxo of utxos) {
-            //     console.log(utxo);
-            //     if (BigInt(utxo.assets.lovelace) >= BigInt(4000000) && BigInt(utxo.assets.lovelace) < BigInt(6000000)) {
-            //         nonNftUtxo = utxo;
-            //     } else if (!utxo.assets.lovelace) {
-            //         nonNftUtxoSpend.push(utxo);
-            //     } else {
-            //         nftUtxo.push(utxo);
-            //     }
-            // }
-            // if (!nonNftUtxo) {
-            //     console.log("No collateral UTxOs found!");
-            //     return;
-            // }
 
-            // const outputData: OutputData = {
-            //     inline: nonNftUtxo.datum!,
-            //     asHash: nonNftUtxo.datumHash!,
-            //     hash: nonNftUtxo.txHash,
-            //     scriptRef: nonNftUtxo.scriptRef!,
-            // };
             let tx: any = lucid.newTx().readFrom([smartcontractUtxo]);
-
             for (const utxoToSpend of claimableUtxos) {
-                console.log("Dây là Withdr");
                 tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer);
             }
-
-            // for (let i = 0; i < 15; i++) {
-            //     tx = await tx.collectFrom([claimableUtxos[i].utxo], refundRedeemer);
-            // }
-
             tx = await tx
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, { lovelace: BigInt(1500000) })
-
-                .addSigner(await lucid.wallet.address())
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, { lovelace: BigInt(1500000) as Lovelace })
+                .addSigner((await lucid.wallet.address()) as Address)
                 .complete();
 
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
             if (success) setTxHashWithdraw(txHash);
-
-            /////////////////////////////////////////////////////////////
-
-            /////////////////////////////////////////////////////////////
         } catch (error) {
             console.log(error);
         } finally {
