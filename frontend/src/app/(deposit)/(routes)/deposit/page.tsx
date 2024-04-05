@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { getKline, Kline } from "binance-historical";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
@@ -13,13 +13,17 @@ import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import PriceChart from "~/components/PriceChart";
-import { ChartDataType, dataChart, getChartData } from "~/constants/price-chart";
+import { ChartDataType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
 import ccxt, { binance } from "ccxt";
 import Loading from "~/components/Loading";
 import InputNumber from "~/components/InputNumber";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { ChartHistoryRecord } from "~/types/GenericsType";
+import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
 
 const cx = classNames.bind(styles);
 
@@ -48,52 +52,28 @@ const Deposit = function () {
             totalADA: "",
         },
     });
-
-    const [historyPrices, setHistoryPrices] = useState<ChartDataType | null>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const {
+        data: chartDataRecords,
+        isLoading: isGetChartRecordsLoading,
+        isSuccess: isGetChartRecordsSuccess,
+    } = useQuery({
+        queryKey: ["ChartData"],
+        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/chart"),
+        refetchInterval: 5 * 60 * 1000,
+        refetchIntervalInBackground: true,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+    });
+    const [currentChartPeriod, setCurrentChartPeriod] = useState<CHART_TIME_PERIOD>("ONE_DAY");
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
-
-    // useEffect(() => {
-    //     const fetchADAData = async () => {
-    //         setLoading(true);
-    //         try {
-    //             const binance: binance = new ccxt.binance({
-    //                 apiKey: process.env.BINANCE_API_KEY as string,
-    //                 secret: process.env.BINANCE_API_SECRET as string,
-    //             });
-
-    //             binance.setSandboxMode(true);
-    //             const currentTime = new Date(Date.now());
-    //             const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
-    //             const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 10000);
-    //             if (prices.length > 0) {
-    //                 const _historyPrices = prices.map((price) => [price[0], price[4]]);
-    //                 setHistoryPrices(_historyPrices as ChartDataType);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching ADA data:", error);
-    //         }
-    //     };
-
-    //     fetchADAData().finally(() => {
-    //         setLoading(false);
-    //     });
-    // }, []);
-
-    useEffect(() => {
-        const fetchADAData = async () => {
-            setLoading(true);
-            try {
-            } catch (error) {
-                console.error("Error fetching ADA data:", error);
-            }
-        };
-
-        fetchADAData().finally(() => {
-            setLoading(false);
-        });
-    }, []);
+    const historyPrices: ChartDataType = useMemo(() => {
+        if (isGetChartRecordsSuccess && chartDataRecords.data) {
+            const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
+            return prices as ChartDataType;
+        }
+        return [];
+    }, [chartDataRecords, isGetChartRecordsSuccess]);
 
     const onDeposite = handleSubmit((data) => {
         lucid &&
@@ -335,7 +315,12 @@ const Deposit = function () {
                                     </form>
                                 </Card>
                             </div>
-                            <PriceChart data={historyPrices} isLoading={loading} />
+                            <PriceChart
+                                period={currentChartPeriod}
+                                setPeriod={setCurrentChartPeriod}
+                                data={historyPrices}
+                                isLoading={isGetChartRecordsLoading}
+                            />
                         </div>
                     </div>
                 </div>

@@ -68,3 +68,20 @@ export interface ClaimableUTxO {
     minimumAmountOut: number;
     minimumAmountOutProfit: number;
 }
+
+export type ChartHistoryRecord = {
+    close: string;
+    closeTime: number;
+    high: string;
+    ignored: string;
+    low: string;
+    open: string;
+    openTime: number;
+    quoteAssetVolume: string;
+    takerBaseAssetVolume: string;
+    takerQuoteAssetVolume: string;
+    trades: number;
+    volume: string;
+};
+
+export type ChartDataType = [number, number][];

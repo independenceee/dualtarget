@@ -23,7 +23,7 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function InputNumberInne
             setLocalValue(value);
         }
     };
-
+    
     return (
         <section className={cx("input-field", className)}>
             <div className={cx("title")}>{title}</div>

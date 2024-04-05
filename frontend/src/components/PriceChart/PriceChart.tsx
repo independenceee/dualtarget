@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames/bind";
 import ReactApexChart, { Props as ChartProps } from "react-apexcharts";
 import styles from "./PriceChart.module.scss";
@@ -9,7 +9,7 @@ import Image from "next/image";
 import icons from "~/assets/icons";
 
 import Tippy from "../Tippy";
-import { ChartDataType } from "~/constants/price-chart";
+import { ChartDataType } from "~/types/GenericsType";
 import Loading from "../Loading";
 
 const cx = classNames.bind(styles);
@@ -17,14 +17,15 @@ const cx = classNames.bind(styles);
 type Props = {
     data: ChartDataType | null;
     isLoading: boolean;
+    period: CHART_TIME_PERIOD;
+    setPeriod: React.Dispatch<React.SetStateAction<CHART_TIME_PERIOD>>;
 };
 
-type CHART_TIME_OPTION = "ONE_DAY" | "ONE_WEEK" | "SIX_MONTHS" | "ONE_YEAR";
+export type CHART_TIME_PERIOD = "ONE_DAY" | "ONE_WEEK" | "ONE_MONTH" | "SIX_MONTHS" | "ONE_YEAR";
 
-const PriceChart = function ({ data, isLoading }: Props) {
+const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
     const [show, setShow] = useState<boolean>(true);
     const [timestamp, setTimestamp] = useState<{ start: number; end: number } | null>(null);
-
     const [chartConfigs, setChartConfigs] = useState<ChartProps>({
         series: [
             {
@@ -124,19 +125,19 @@ const PriceChart = function ({ data, isLoading }: Props) {
             },
         },
 
-        selection: "ONE_DAY" as CHART_TIME_OPTION,
+        selection: period,
     });
 
     useEffect(() => {
         if (data && data.length > 0) {
-            setChartConfigs({
-                ...chartConfigs,
+            setChartConfigs((prev) => ({
+                ...prev,
                 series: [
                     {
                         data,
                     },
                 ],
-            });
+            }));
             setTimestamp({
                 start: data[0][0],
                 end: data[data.length - 1][0],
@@ -146,7 +147,7 @@ const PriceChart = function ({ data, isLoading }: Props) {
 
     useEffect(() => {
         if (data && data.length > 0) {
-            handleUpdateChartData("ONE_DAY");
+            handleUpdateChartData(period);
         }
     }, [data]);
 
@@ -170,7 +171,8 @@ const PriceChart = function ({ data, isLoading }: Props) {
         setShow((prev) => !prev);
     };
 
-    const handleUpdateChartData = function (timeline: "ONE_DAY" | "ONE_WEEK" | "ONE_MONTH" | "SIX_MONTHS" | "ONE_YEAR") {
+    const handleUpdateChartData = function (timeline: CHART_TIME_PERIOD) {
+        setPeriod(timeline);
         setChartConfigs((prev) => ({
             ...prev,
             selection: timeline,
