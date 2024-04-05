@@ -2,12 +2,12 @@ import classNames from "classnames/bind";
 import Link from "next/link";
 import styles from "./Button.module.scss";
 import { IconType } from "react-icons";
-import { ReactNode } from "react";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 import { ClipLoader } from "react-spinners";
 
 const cx = classNames.bind(styles);
 
-export type ButtonProps = {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     loading?: boolean;
     to?: string;
     href?: string;
@@ -23,9 +23,10 @@ export type ButtonProps = {
     LeftIcon?: IconType;
     RightIcon?: IconType;
     onClick?: () => void;
-};
+}
 
 function Button({
+    type,
     to,
     href,
     primary = false,
@@ -37,6 +38,7 @@ function Button({
     large = false,
     children,
     className = "",
+
     LeftIcon,
     RightIcon,
     onClick,
@@ -46,6 +48,7 @@ function Button({
     let Component: any = "button";
     const props: any = {
         onClick,
+        type,
         ...passProps,
     };
 
