@@ -16,6 +16,7 @@ type ITransactionRepository interface {
 	FindById(transactionId string) (transaction models.Transaction, err error)
 	FindByTxHash(transactionHash string) (transaction models.Transaction, err error)
 	FindAll(count int, size int) ([]models.Transaction, int)
+	FindByAccountId(count int, size int, accountId string) ([]models.Transaction, int)
 }
 
 type TTransactionRepository struct {
@@ -44,20 +45,30 @@ func (transactionRepository *TTransactionRepository) FindByTxHash(transactionHas
 
 func (transactionRepository *TTransactionRepository) FindAll(count int, size int) ([]models.Transaction, int) {
 	var transactions []models.Transaction
-	result := transactionRepository.DB.Limit(size).Offset(count).Find(&transactions)
+	offset := (size - 1) * count
+	result := transactionRepository.DB.Limit(size).Offset(offset).Find(&transactions)
 	helpers.ErrorPanic(result.Error)
 	totalPage := len(transactions) / size
 	return transactions, totalPage
 }
 
-func (transactionRepository *TTransactionRepository) FindById(accountId string) (transaction models.Transaction, err error) {
+func (transactionRepository *TTransactionRepository) FindById(transactionId string) (transaction models.Transaction, err error) {
 	var transactionDto models.Transaction
-	result := transactionRepository.DB.Find(&transactionDto, accountId)
+	result := transactionRepository.DB.Find(&transactionDto, transactionId)
 	if result != nil {
 		return transactionDto, nil
 	} else {
 		return transactionDto, errors.New("transaction is not found")
 	}
+}
+
+func (transactionRepository *TTransactionRepository) FindByAccountId(count int, size int, accountId string) ([]models.Transaction, int) {
+	var transactions []models.Transaction
+	offset := (size - 1) * count
+	result := transactionRepository.DB.Limit(size).Offset(offset).Where("account_id = ?", accountId).Find(&transactions)
+	helpers.ErrorPanic(result.Error)
+	totalPage := len(transactions) / size
+	return transactions, totalPage
 }
 
 func (transactionRepository *TTransactionRepository) Save(transaction models.Transaction) (transactionDto models.Transaction, err error) {
@@ -66,16 +77,16 @@ func (transactionRepository *TTransactionRepository) Save(transaction models.Tra
 	return transaction, nil
 }
 
-func (transactionRepository *TTransactionRepository) Update(TransactionDto models.Transaction) {
+func (transactionRepository *TTransactionRepository) Update(transaction models.Transaction) {
 	var updateTransaction = dto.UpdateTransactionDto{
-		Id:        TransactionDto.Id,
-		Date:      TransactionDto.Date,
-		TxHash:    TransactionDto.TxHash,
-		Status:    TransactionDto.Status,
-		Action:    TransactionDto.Action,
-		Amount:    TransactionDto.Amount,
-		AccountId: TransactionDto.AccountId,
+		Id:        transaction.Id,
+		Date:      transaction.Date,
+		TxHash:    transaction.TxHash,
+		Status:    transaction.Status,
+		Action:    transaction.Action,
+		Amount:    transaction.Amount,
+		AccountId: transaction.AccountId,
 	}
-	result := transactionRepository.DB.Model(&updateTransaction).Updates(updateTransaction)
+	result := transactionRepository.DB.Model(&transaction).Where("id = ? AND account_id = ?", transaction.Id, transaction.AccountId).Updates(updateTransaction)
 	helpers.ErrorPanic(result.Error)
 }
