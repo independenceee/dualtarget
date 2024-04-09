@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dualtarget-backend/src/routers"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -8,7 +9,6 @@ import (
 )
 
 func main() {
-	// configs.Database()
 	var app *gin.Engine = gin.Default()
 
 	app.Use(cors.New(cors.Config{
@@ -23,7 +23,7 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	// routers.Routers(app)
+	routers.Routers(app)
 	app.Run(":8080")
 
 }

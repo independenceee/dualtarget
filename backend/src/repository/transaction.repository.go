@@ -46,9 +46,10 @@ func (transactionRepository *TTransactionRepository) FindByTxHash(transactionHas
 func (transactionRepository *TTransactionRepository) FindAll(count int, size int) ([]models.Transaction, int) {
 	var transactions []models.Transaction
 	offset := (size - 1) * count
+	totalTransactions := transactionRepository.DB.Find(&transactions)
 	result := transactionRepository.DB.Limit(size).Offset(offset).Find(&transactions)
 	helpers.ErrorPanic(result.Error)
-	totalPage := len(transactions) / size
+	totalPage := (int(totalTransactions.RowsAffected) + size - 1) / size
 	return transactions, totalPage
 }
 
@@ -65,9 +66,10 @@ func (transactionRepository *TTransactionRepository) FindById(transactionId stri
 func (transactionRepository *TTransactionRepository) FindByAccountId(count int, size int, accountId string) ([]models.Transaction, int) {
 	var transactions []models.Transaction
 	offset := (size - 1) * count
+	totalTransactions := transactionRepository.DB.Where("account_id = ?", accountId).Find(&transactions)
 	result := transactionRepository.DB.Limit(size).Offset(offset).Where("account_id = ?", accountId).Find(&transactions)
 	helpers.ErrorPanic(result.Error)
-	totalPage := len(transactions) / size
+	totalPage := (int(totalTransactions.RowsAffected) + size - 1) / size
 	return transactions, totalPage
 }
 
