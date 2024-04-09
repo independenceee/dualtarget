@@ -20,7 +20,7 @@ func Database() *gorm.DB {
 		log.Fatal("Error loading .env file")
 	}
 
-	sqlConnection := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", env.DATABASE_HOST, DATABASE_PORT, env.DATABASE_USER, env.DATABASE_PASSWORD, env.DATABASE_NAME)
+	sqlConnection := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", "172.17.0.1", DATABASE_PORT, env.DATABASE_USER, env.DATABASE_PASSWORD, env.DATABASE_NAME)
 	database, err := gorm.Open(postgres.Open(sqlConnection), &gorm.Config{})
 	helpers.ErrorPanic(err)
 
