@@ -44,12 +44,12 @@ const SmartContractProvider = function ({ children }: Props) {
             setWaitingDeposit(true);
 
             const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
-                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHigh: priceHight * 1000000, //  Giá thấp nhất =  2000000
-                priceLow: priceLow * 1000000, // Giá cao nhất = 1000000
-                stake: stake, //  ROI % stake theo năm = 5
-                step: step, // Bước nhảy theo giá (%) = 10
-                totalADA: totalADA * 1000000, // Tổng ada = 24000000
+                income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                priceHigh: 1.2 * 1000000, //  Giá thấp nhất =  2000000
+                priceLow: 1 * 1000000, // Giá cao nhất = 1000000
+                stake: 5, //  ROI % stake theo năm = 5
+                step: 10, // Bước nhảy theo giá (%) = 10
+                totalADA: 24 * 1000000, // Tổng ada = 24000000
             });
 
             console.log("Selling: ", sellingStrategies);
@@ -208,6 +208,10 @@ const SmartContractProvider = function ({ children }: Props) {
             setWaitingWithdraw(true);
         }
     };
+
+
+
+    
     return (
         <SmartContractContext.Provider value={{ deposit, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}>
             {children}

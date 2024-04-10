@@ -65,12 +65,12 @@ func (accountRepository *TAccountRepository) Save(account models.Account) (accou
 	return account, nil
 }
 
-func (accountRepository *TAccountRepository) Update(accountDto models.Account) {
+func (accountRepository *TAccountRepository) Update(account models.Account) {
 	var updateAccount = dto.UpdateAccountDto{
-		Id:            accountDto.Id,
-		WalletAddress: accountDto.WalletAddress,
-		StakeAddress:  accountDto.StakeAddress,
+		Id:            account.Id,
+		WalletAddress: account.WalletAddress,
+		StakeAddress:  account.StakeAddress,
 	}
-	result := accountRepository.DB.Model(&accountRepository).Updates(updateAccount)
+	result := accountRepository.DB.Model(&account).Updates(updateAccount)
 	helpers.ErrorPanic(result.Error)
 }

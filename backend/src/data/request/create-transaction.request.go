@@ -1,7 +1,7 @@
 package request
 
 type CreateTransaction struct {
-	TxHash    string `validate:"required" json:"ts_hash"`
+	TxHash    string `validate:"required" json:"tx_hash"`
 	Date      string `validate:"required" json:"date"`
 	Action    string `validate:"required" json:"action"`
 	Amount    string `validate:"required" json:"amount"`

@@ -23,7 +23,6 @@
 .stats {
     display: flex;
     gap: 2.8rem;
-    // flex-direction: column;
 }
 
 .stats-inner {
@@ -35,7 +34,7 @@
 }
 
 .card-wrapper {
-    max-width: 650px;
+    max-width: 450px;
     width: 100%;
     margin: 0 auto;
     position: relative;
@@ -154,6 +153,9 @@
 @media (max-width: 1024px) {
     .card-wrapper {
         width: 100%;
+    }
+    .stats {
+        flex-direction: column;
     }
 }
 

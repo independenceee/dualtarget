@@ -1,6 +1,12 @@
-FROM golang:1.22
+FROM golang:latest
+
 WORKDIR /app
-COPY go.mod .
-COPY ./src/main.go .
-RUN go build -o bin .
-ENTRYPOINT [ "/app/bin" ]
+
+COPY . .
+
+# Build ứng dụng Go
+RUN go build -o dualtarget-backend .
+
+EXPOSE 8080
+
+CMD ["./dualtarget-backend"]

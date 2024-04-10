@@ -29,6 +29,21 @@ export type HeaderTableType = {
     description?: string;
 };
 
+
+
+export type TransactionType = {
+    id?: string;
+    transactionHash: string;
+    createdAt?: string;
+    updatedAt?: string;
+
+    Date: string;
+    action: string;
+    amount: string;
+    status: string;
+    accountId: string;
+};
+
 // test
 export interface DaultargetParams {
     odOwner: Uint8Array;
@@ -68,3 +83,20 @@ export interface ClaimableUTxO {
     minimumAmountOut: number;
     minimumAmountOutProfit: number;
 }
+
+export type ChartHistoryRecord = {
+    close: string;
+    closeTime: number;
+    high: string;
+    ignored: string;
+    low: string;
+    open: string;
+    openTime: number;
+    quoteAssetVolume: string;
+    takerBaseAssetVolume: string;
+    takerQuoteAssetVolume: string;
+    trades: number;
+    volume: string;
+};
+
+export type ChartDataType = [number, number][];
