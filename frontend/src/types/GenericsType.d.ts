@@ -29,6 +29,21 @@ export type HeaderTableType = {
     description?: string;
 };
 
+
+
+export type TransactionType = {
+    id?: string;
+    transactionHash: string;
+    createdAt?: string;
+    updatedAt?: string;
+
+    Date: string;
+    action: string;
+    amount: string;
+    status: string;
+    accountId: string;
+};
+
 // test
 export interface DaultargetParams {
     odOwner: Uint8Array;

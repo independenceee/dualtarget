@@ -208,6 +208,10 @@ const SmartContractProvider = function ({ children }: Props) {
             setWaitingWithdraw(true);
         }
     };
+
+
+
+    
     return (
         <SmartContractContext.Provider value={{ deposit, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}>
             {children}
