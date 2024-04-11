@@ -24,13 +24,10 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChartHistoryRecord } from "~/types/GenericsType";
 import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
-<<<<<<< HEAD
 import CustomChart from "~/components/CustomChart";
-=======
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
 import { get } from "~/utils/http-requests";
->>>>>>> 58d7d9f7970fa8d8b7c1a9eb296f364fea050ff3
 
 const cx = classNames.bind(styles);
 
