@@ -13,7 +13,7 @@ import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import PriceChart from "~/components/PriceChart";
-import { ChartDataType } from "~/types/GenericsType";
+import { ChartDataType, TransactionType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -24,7 +24,13 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChartHistoryRecord } from "~/types/GenericsType";
 import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
+<<<<<<< HEAD
 import CustomChart from "~/components/CustomChart";
+=======
+import { AccountContextType } from "~/types/contexts/AccountContextType";
+import AccountContext from "~/contexts/components/AccountContext";
+import { get } from "~/utils/http-requests";
+>>>>>>> 58d7d9f7970fa8d8b7c1a9eb296f364fea050ff3
 
 const cx = classNames.bind(styles);
 
@@ -38,6 +44,23 @@ type DepositeType = {
 };
 
 const Deposit = function () {
+    const { account } = useContext<AccountContextType>(AccountContext);
+
+    const [count, setCount] = useState<number>(6);
+    const [page, setPage] = useState<number>(1);
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["transaction", page, count],
+        queryFn: async function () {
+            return await get("/transaction", {
+                account_id: account?.id,
+                page: page,
+                count: count,
+            });
+        },
+        enabled: !Boolean(account?.id),
+    });
+
     const {
         handleSubmit,
         watch,
@@ -336,7 +359,7 @@ const Deposit = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders className={cx("orders")} />
+                <Orders data={data} className={cx("orders")} />
             </section>
         </div>
     );

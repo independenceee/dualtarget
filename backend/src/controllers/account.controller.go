@@ -26,11 +26,9 @@ func (controller *TAccountController) Create(context *gin.Context) {
 	helpers.ErrorPanic(err)
 
 	existingAccount := controller.AccountService.FindByAddress(createAccountRequest.WalletAddress)
-	if existingAccount == (response.AccountResponse{}) {
+	if existingAccount.WalletAddress == createAccountRequest.WalletAddress {
 		result := response.Response{
-			Code:   http.StatusOK,
-			Status: "OK",
-			Data:   existingAccount,
+			Data: existingAccount,
 		}
 		context.Header("Content-Type", "application/json")
 		context.JSON(http.StatusOK, result)
@@ -39,9 +37,7 @@ func (controller *TAccountController) Create(context *gin.Context) {
 
 	account := controller.AccountService.Create(createAccountRequest)
 	result := response.Response{
-		Code:   http.StatusOK,
-		Status: "OK",
-		Data:   account,
+		Data: account,
 	}
 	context.Header("Content-Type", "application/json")
 	context.JSON(http.StatusOK, result)
@@ -59,13 +55,10 @@ func (controller *TAccountController) Update(context *gin.Context) {
 	controller.AccountService.Update(updateAccountRequest)
 
 	result := response.Response{
-		Code:   http.StatusOK,
-		Status: "OK",
-		Data:   nil,
+		Data: nil,
 	}
 	context.Header("Content-Type", "application/json")
 	context.JSON(http.StatusOK, result)
-
 }
 
 func (controller *TAccountController) Delete(context *gin.Context) {
@@ -73,9 +66,7 @@ func (controller *TAccountController) Delete(context *gin.Context) {
 	controller.AccountService.Delete(accountId)
 
 	result := response.Response{
-		Code:   http.StatusOK,
-		Status: "200",
-		Data:   nil,
+		Data: nil,
 	}
 
 	context.Header("Content-Type", "application/json")
@@ -83,26 +74,21 @@ func (controller *TAccountController) Delete(context *gin.Context) {
 }
 
 func (controller *TAccountController) FindById(context *gin.Context) {
-
 	accountId := context.Param("id")
 	account := controller.AccountService.FindById(accountId)
 
 	result := response.Response{
-		Code:   http.StatusOK,
-		Status: "200",
-		Data:   account,
+		Data: account,
 	}
 	context.Header("Content-Type", "application/json")
 	context.JSON(http.StatusOK, result)
 }
 
 func (controller *TAccountController) FindAll(context *gin.Context) {
-
 	accounts := controller.AccountService.FindAll()
 	webResponse := response.Response{
-		Code:   http.StatusOK,
-		Status: "200",
-		Data:   accounts,
+
+		Data: accounts,
 	}
 	context.Header("Content-Type", "application/json")
 	context.JSON(http.StatusOK, webResponse)

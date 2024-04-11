@@ -23,6 +23,10 @@ import InputRange from "~/components/InputRange";
 import DropdownMenu from "~/components/DropdownMenu";
 import { Item } from "~/components/DropdownMenu/DropdownMenu";
 import { ChartDataType } from "~/types/GenericsType";
+import { AccountContextType } from "~/types/contexts/AccountContextType";
+import AccountContext from "~/contexts/components/AccountContext";
+import { get } from "~/utils/http-requests";
+import { useQuery } from "@tanstack/react-query";
 
 const PriceChart = dynamic(() => import("~/components/PriceChart"), {
     ssr: false,
@@ -47,6 +51,22 @@ const WITHDRAW_MODES: Item[] = [
 ];
 
 const Withdraw = function () {
+    const { account } = useContext<AccountContextType>(AccountContext);
+
+    const [count, setCount] = useState<number>(6);
+    const [page, setPage] = useState<number>(1);
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["transaction", page, count],
+        queryFn: async function () {
+            return await get("/transaction", {
+                account_id: account?.id,
+                page: page,
+                count: count,
+            });
+        },
+        enabled: !Boolean(account?.id),
+    });
     const {
         register,
         handleSubmit,
@@ -239,7 +259,7 @@ const Withdraw = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders className={cx("orders")} />
+                <Orders data={data} className={cx("orders")} />
             </section>
         </div>
     );

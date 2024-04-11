@@ -18,6 +18,7 @@ type ITransactionService interface {
 	FindById(transactionId string) response.TransactionResponse
 	FindByTxHash(transactionHash string) response.TransactionResponse
 	FindAll(count int, take int) ([]response.TransactionResponse, int)
+	FindByAccountId(count int, size int, accountId string) ([]response.TransactionResponse, int)
 }
 
 type TTransactionService struct {
@@ -118,6 +119,28 @@ func (transactionService *TTransactionService) FindByTxHash(txHash string) respo
 
 func (transactionService *TTransactionService) FindAll(count int, size int) ([]response.TransactionResponse, int) {
 	result, totalPage := transactionService.TransactionRepository.FindAll(count, size)
+
+	var accounts []response.TransactionResponse
+	for _, value := range result {
+		account := response.TransactionResponse{
+			Id:        value.Id,
+			CreatedAt: value.CreatedAt.String(),
+			UpdatedAt: value.UpdatedAt.String(),
+			TxHash:    value.TxHash,
+			Date:      value.Date,
+			Action:    value.Action,
+			Amount:    value.Amount,
+			Status:    value.Status,
+			AccountId: value.AccountId,
+		}
+		accounts = append(accounts, account)
+	}
+
+	return accounts, totalPage
+}
+
+func (transactionService *TTransactionService) FindByAccountId(count int, size int, accountId string) ([]response.TransactionResponse, int) {
+	result, totalPage := transactionService.TransactionRepository.FindByAccountId(count, size, accountId)
 
 	var accounts []response.TransactionResponse
 	for _, value := range result {

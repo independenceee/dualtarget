@@ -21,3 +21,4 @@ const quantityDualTarget = function ({ stake, entry, income, step }: Props): [nu
 };
 
 export default quantityDualTarget;
+
