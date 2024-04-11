@@ -15,6 +15,7 @@
         "os": false
     },
     "dependencies": {
+        "@amcharts/amcharts5": "^5.9.1",
         "@blockfrost/blockfrost-js": "^5.5.0",
         "@hookform/resolvers": "^3.3.4",
         "@minswap/blockfrost-adapter": "^0.1.0",

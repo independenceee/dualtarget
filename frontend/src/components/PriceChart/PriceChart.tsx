@@ -29,11 +29,20 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
     const [chartConfigs, setChartConfigs] = useState<ChartProps>({
         series: [
             {
+                name: "Series 1",
+                type: "line",
+                data: [],
+            },
+            {
+                name: "Series 2",
+                type: "area",
                 data: [],
             },
         ],
+
         options: {
             colors: ["#7054d1", "#ab56c9", "#b275dc"],
+
             chart: {
                 foreColor: "#fff",
                 toolbar: {
@@ -52,6 +61,9 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
             },
             dataLabels: {
                 enabled: false,
+            },
+            legend: {
+                show: false,
             },
             markers: {
                 size: 0,
@@ -73,11 +85,31 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
                     show: false,
                 },
             },
-            yaxis: {
-                show: true,
-                opposite: true,
-            },
+            yaxis: [
+                {
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                    },
+                    tooltip: {
+                        enabled: false,
+                    },
+                },
+                {
+                    opposite: true,
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                    },
+                },
+            ],
             tooltip: {
+                shared: true,
+                intersect: false,
                 enabled: true,
                 style: {
                     fontSize: "16px",
@@ -98,7 +130,7 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
                     enabled: true,
                     position: "topLeft",
                     offsetX: 16,
-                    offsetY: -70,
+                    offsetY: -80,
                 },
                 marker: {
                     show: true,
@@ -134,10 +166,18 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
                 ...prev,
                 series: [
                     {
-                        data,
+                        name: "Series 1",
+                        type: "scatter",
+                        data: data,
+                    },
+                    {
+                        name: "Series 2",
+                        type: "area",
+                        data: data,
                     },
                 ],
             }));
+
             setTimestamp({
                 start: data[0][0],
                 end: data[data.length - 1][0],

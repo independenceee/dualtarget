@@ -38,9 +38,18 @@
     overflow: hidden;
 }
 
+.responsive {
+    display: none;
+}
 @media screen and (max-width: 1024px) {
     .wrapper {
         padding: 0;
         border-radius: 2.2rem;
+    }
+    .irresponsive {
+        display: none;
+    }
+    .responsive {
+        display: block;
     }
 }

@@ -29,11 +29,11 @@ const Orders = ({ className }: Props) => {
                 </div>
             ) : (
                 <div>
-                    <div className={cx("table-wrapper")}>
+                    <div className={cx("table-wrapper", "irresponsive")}>
                         <Table className={cx("order-table")} headerTables={historyTransactions} />
                         <Pagination pageSize={5} totalItems={20} />
                     </div>
-                    <div>
+                    <div className={cx("responsive")}>
                         <div className={cx("transaction-accordions")}>
                             {Array(5)
                                 .fill(0)
