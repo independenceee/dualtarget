@@ -44,7 +44,6 @@ const Deposit = function () {
 
     const [count, setCount] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
-
     const { data, isLoading, error } = useQuery({
         queryKey: ["transaction", page, count],
         queryFn: async function () {
