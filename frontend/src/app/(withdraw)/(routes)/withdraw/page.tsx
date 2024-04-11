@@ -6,7 +6,6 @@ import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders/Orders";
 import styles from "./Withdraw.module.scss";
-import Service from "~/components/Card/Service";
 import Image from "next/image";
 import images from "~/assets/images";
 import dynamic from "next/dynamic";
@@ -14,16 +13,16 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import ccxt, { OHLCV, binance } from "ccxt";
+import ccxt, { binance } from "ccxt";
 import Button from "~/components/Button";
 import Loading from "~/components/Loading";
 import Tippy from "~/components/Tippy";
 import Input from "~/components/Input";
 import { useForm } from "react-hook-form";
-import { ChartDataType } from "~/constants/price-chart";
 import InputRange from "~/components/InputRange";
 import DropdownMenu from "~/components/DropdownMenu";
 import { Item } from "~/components/DropdownMenu/DropdownMenu";
+import { ChartDataType } from "~/types/GenericsType";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
 import { get } from "~/utils/http-requests";
@@ -251,7 +250,7 @@ const Withdraw = function () {
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>
 
-                            <PriceChart data={historyPrices} isLoading={loading} />
+                            {/* <PriceChart data={historyPrices} isLoading={loading} /> */}
                         </div>
                     </div>
                 </div>

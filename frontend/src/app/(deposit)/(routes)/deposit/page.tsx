@@ -24,6 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChartHistoryRecord } from "~/types/GenericsType";
 import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
+import CustomChart from "~/components/CustomChart";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
 import { get } from "~/utils/http-requests";
@@ -71,6 +72,7 @@ const Deposit = function () {
             totalADA: "",
         },
     });
+
     const {
         data: chartDataRecords,
         isLoading: isGetChartRecordsLoading,
@@ -83,6 +85,8 @@ const Deposit = function () {
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
     });
+    // Logger
+    console.log(chartDataRecords);
     const [currentChartPeriod, setCurrentChartPeriod] = useState<CHART_TIME_PERIOD>("ONE_DAY");
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
@@ -343,6 +347,9 @@ const Deposit = function () {
                         </div>
                     </div>
                 </div>
+            </section>
+            <section>
+                <CustomChart />
             </section>
             <section>
                 <div className={cx("header-order")}>
