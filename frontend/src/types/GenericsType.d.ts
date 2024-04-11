@@ -1,5 +1,8 @@
 import { Network } from "lucid-cardano";
 
+
+
+
 export type AccountType = {
     id?: string;
     createdAt?: string;
@@ -29,19 +32,17 @@ export type HeaderTableType = {
     description?: string;
 };
 
-
-
 export type TransactionType = {
     id?: string;
-    transactionHash: string;
-    createdAt?: string;
-    updatedAt?: string;
+    tx_hash: string;
+    created_at?: string;
+    updated_at?: string;
 
-    Date: string;
+    date: string;
     action: string;
     amount: string;
     status: string;
-    accountId: string;
+    account_id: string;
 };
 
 // test
