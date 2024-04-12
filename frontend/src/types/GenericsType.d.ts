@@ -1,8 +1,5 @@
 import { Network } from "lucid-cardano";
 
-
-
-
 export type AccountType = {
     id?: string;
     createdAt?: string;

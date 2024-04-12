@@ -56,7 +56,7 @@ const SmartContractProvider = function ({ children }: Props) {
 
             const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
                 income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHigh: 1.2 * 1000000, //  Giá thấp nhất =  2000000
+                priceHight: 1.2 * 1000000, //  Giá thấp nhất =  2000000
                 priceLow: 1 * 1000000, // Giá cao nhất = 1000000
                 stake: 5, //  ROI % stake theo năm = 5
                 step: 10, // Bước nhảy theo giá (%) = 10

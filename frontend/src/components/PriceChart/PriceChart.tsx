@@ -29,13 +29,6 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
     const [chartConfigs, setChartConfigs] = useState<ChartProps>({
         series: [
             {
-                name: "Series 1",
-                type: "line",
-                data: [],
-            },
-            {
-                name: "Series 2",
-                type: "area",
                 data: [],
             },
         ],
@@ -85,28 +78,18 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
                     show: false,
                 },
             },
-            yaxis: [
-                {
-                    axisTicks: {
-                        show: true,
-                    },
-                    axisBorder: {
-                        show: true,
-                    },
-                    tooltip: {
-                        enabled: false,
-                    },
+            yaxis: {
+                axisTicks: {
+                    show: true,
                 },
-                {
-                    opposite: true,
-                    axisTicks: {
-                        show: true,
-                    },
-                    axisBorder: {
-                        show: true,
-                    },
+                axisBorder: {
+                    show: true,
                 },
-            ],
+                tooltip: {
+                    enabled: false,
+                },
+            },
+
             tooltip: {
                 shared: true,
                 intersect: false,
@@ -166,13 +149,6 @@ const PriceChart = function ({ data, isLoading, period, setPeriod }: Props) {
                 ...prev,
                 series: [
                     {
-                        name: "Series 1",
-                        type: "scatter",
-                        data: data,
-                    },
-                    {
-                        name: "Series 2",
-                        type: "area",
                         data: data,
                     },
                 ],
