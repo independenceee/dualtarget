@@ -18,12 +18,13 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function InputNumberInne
     const [localValue, setLocalValue] = useState<string>("");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        if ((/^\d+$/.test(value) || value === "") && onChange) {
+        // /^\d*(\.\d+)?$/.test(value)
+        if ((!isNaN(+value) || value === "") && onChange) {
             onChange(e);
             setLocalValue(value);
         }
     };
-    
+
     return (
         <section className={cx("input-field", className)}>
             <div className={cx("title")}>{title}</div>

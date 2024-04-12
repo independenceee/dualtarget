@@ -25,6 +25,7 @@ type DataType = {
     value: number;
     date: number;
 };
+
 const CustomChart = function ({ data, preview, isLoading }: Props) {
     const [show, setShow] = useState<boolean>(true);
     const [currentHoveredValue, setCurrentHoveredValue] = useState<DataType>({ date: 0, value: 0 });
@@ -42,12 +43,17 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
     const previewStepsChartData = useMemo(() => {
         if (!preview) return [];
         if (preview.length > 0) {
-            const previewObject = preview.map((record) => [
-                { value: record.buyPrice / 1000000, date: new Date().getTime() },
-                { value: record.sellPrice / 1000000, date: new Date().getTime() },
-            ]);
+            const datetime = new Date(Date.now());
+            const previewObject = preview.map((record) => {
+                const oneMonthAgo = datetime.setDate(datetime.getDate() - 10);
 
-            const convertedObject: { date: number; value: number }[] = [];
+                return [
+                    { value: record.buyPrice / 1000000, date: oneMonthAgo },
+                    { value: record.sellPrice / 1000000, date: oneMonthAgo },
+                ];
+            });
+
+            const convertedObject: DataType[] = [];
             previewObject.forEach((record) => {
                 convertedObject.push(...record);
             });
@@ -74,7 +80,7 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         // Set Theme
         root.setThemes([am5themes_Animated.new(root), customTheme]);
 
-        //  Initialize Chart
+        // Initialize Chart
         const chart = root.container.children.push(
             am5xy.XYChart.new(root, {
                 panX: true,
@@ -90,7 +96,6 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         // Create Axes
         const xAxis = chart.xAxes.push(
             am5xy.DateAxis.new(root, {
-                // groupData: false,
                 baseInterval: { timeUnit: "day", count: 1 },
                 renderer: am5xy.AxisRendererX.new(root, {
                     minorGridEnabled: false,
@@ -213,10 +218,14 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
                 valueXField: "date",
                 valueYField: "value",
                 noRisers: true,
-                stepWidth: am5.percent(100),
+                stepWidth: am5.percent(200),
                 tooltipText: "{valueY}",
                 locationX: 0.5,
-                minWidth: 500,
+                tooltip: am5.Tooltip.new(root, {
+                    forceHidden: true,
+                    labelText: undefined,
+                    animationDuration: 0,
+                }),
             }),
         );
 
@@ -235,8 +244,11 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         }
         if (previewStepsChartData && previewStepsChartData.length > 0) {
             adaSeries.data.setAll(previewStepsChartData);
+            const datetime = new Date();
+            const now = new Date();
+            const oneMonthAgo = datetime.setDate(datetime.getDate() - 1);
+            // xAxis.zoomToDates(new Date(now.setDate(now.getDate() - previewStepsChartData.length - 1)), new Date(oneMonthAgo));        }
         }
-
         // Pre-zooming
         series.events.once("datavalidated", function (ev) {
             ev.target.get("xAxis").zoom(0, 1);

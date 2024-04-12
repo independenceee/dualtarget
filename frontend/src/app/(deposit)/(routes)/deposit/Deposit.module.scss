@@ -71,6 +71,16 @@
     z-index: 6;
 }
 
+.preview-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: var(--background-button-linear);
+    font-size: 1.4rem;
+    text-align: right;
+}
 // Service card section
 .balance {
     font-size: 1.4rem;
