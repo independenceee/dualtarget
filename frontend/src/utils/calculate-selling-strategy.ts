@@ -2,7 +2,7 @@ import quantityDualTarget from "./quantity-dual-target";
 import { CalculateSellingStrategy } from "~/types/GenericsType";
 
 function calculateSellingStrategy({
-    priceHigh,
+    priceHight,
     priceLow,
     step,
     income,
@@ -10,7 +10,7 @@ function calculateSellingStrategy({
     totalADA,
 }: {
     priceLow: number;
-    priceHigh: number;
+    priceHight: number;
     step: number;
     income: number;
     totalADA: number;
@@ -25,7 +25,7 @@ function calculateSellingStrategy({
 
     const result: Array<CalculateSellingStrategy> = [];
 
-    while (price <= priceHigh) {
+    while (price <= priceHight) {
         const [quantityBuy, quantitySell, quantityEntry] = quantityDualTarget({
             step: step,
             income: income,
@@ -40,8 +40,6 @@ function calculateSellingStrategy({
         const minimumAmountOutProfit: number = Math.floor(((step / 100) * sellPrice * amountIn) / DECIMAL_PLACES);
         const amountSend: number = amountIn + BATCHER_FEE + OUTPUT_ADA;
         sumADA += amountSend;
-
-
 
         result.push({
             buyPrice: buyPrice,
@@ -59,8 +57,8 @@ function calculateSellingStrategy({
         price *= 1 + step / 100;
     }
 
-    console.log(result[result.length-1].sumADA)
-    
+    console.log(result[result.length - 1].sumADA);
+
     return result;
 }
 

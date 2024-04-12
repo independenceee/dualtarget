@@ -13,11 +13,10 @@ import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import PriceChart from "~/components/PriceChart";
-import { ChartDataType, TransactionType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
-import ccxt, { binance } from "ccxt";
 import Loading from "~/components/Loading";
 import InputNumber from "~/components/InputNumber";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +27,7 @@ import CustomChart from "~/components/CustomChart";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
 import { get } from "~/utils/http-requests";
+import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 
 const cx = classNames.bind(styles);
 
@@ -45,6 +45,8 @@ const Deposit = function () {
 
     const [count, setCount] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
+    const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
+
     const { data, isLoading, error } = useQuery({
         queryKey: ["transaction", page, count],
         queryFn: async function () {
@@ -61,6 +63,7 @@ const Deposit = function () {
         handleSubmit,
         watch,
         control,
+        getValues,
         formState: { errors },
     } = useForm<DepositeType>({
         defaultValues: {
@@ -85,11 +88,11 @@ const Deposit = function () {
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
     });
-    // Logger
-    console.log(chartDataRecords);
+
     const [currentChartPeriod, setCurrentChartPeriod] = useState<CHART_TIME_PERIOD>("ONE_DAY");
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
+
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
@@ -110,6 +113,50 @@ const Deposit = function () {
                 totalADA: +data.totalADA,
             }).catch((error) => {});
     });
+
+    const previewSellingStrategies = function () {
+        const { income, priceHight, priceLow, stake, step, totalADA } = getValues();
+        if (income && priceHight && priceLow && stake && step && totalADA) {
+            const result = calculateSellingStrategy({
+                income: +income,
+                priceHight: +priceHight,
+                priceLow: +priceLow,
+                stake: +stake,
+                step: +step,
+                totalADA: +totalADA,
+            });
+
+            setSellingStrategies([
+                {
+                    buyPrice: 1000000,
+                    sellPrice: 1100000,
+                    amountSend: 116590909,
+                    minimumAmountOut: 109090909,
+                    minimumAmountOutProfit: 11999999,
+                    amountSell: 109090909,
+                    amountBuy: 133333333,
+                    amountEntry: 1200000000,
+                    USDTPool: 1200,
+                    sumADA: 116590909,
+                },
+                {
+                    buyPrice: 1100000,
+                    sellPrice: 1210000,
+                    amountSend: 106673553,
+                    minimumAmountOut: 109090908,
+                    minimumAmountOutProfit: 11999999,
+                    amountSell: 99173553,
+                    amountBuy: 121212121,
+                    amountEntry: 1090909090,
+                    USDTPool: 1199,
+                    sumADA: 223264462,
+                },
+            ]);
+        } else {
+            console.log("Please enter data");
+        }
+    };
+
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -121,6 +168,7 @@ const Deposit = function () {
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
                                 <Card title="Deposite DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
+                                    <button onClick={previewSellingStrategies}>Preview</button>
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>Balance: {0} ₳</span>
@@ -170,7 +218,7 @@ const Deposit = function () {
                                             <div className={cx("row-wrapper")}>
                                                 <Controller
                                                     control={control}
-                                                    name="priceLow"
+                                                    name="income"
                                                     rules={{
                                                         required: {
                                                             value: true,
@@ -180,17 +228,17 @@ const Deposit = function () {
                                                     render={({ field }) => (
                                                         <InputNumber
                                                             {...field}
-                                                            title="Min price"
+                                                            title="Desired income"
                                                             className={cx("input")}
                                                             placeholder="Enter the lowest price"
-                                                            errorMessage={errors.priceLow?.message}
+                                                            errorMessage={errors.income?.message}
                                                         />
                                                     )}
                                                 />
                                                 <div className={cx("slash")}> - </div>
                                                 <Controller
                                                     control={control}
-                                                    name="priceHight"
+                                                    name="stake"
                                                     rules={{
                                                         required: {
                                                             value: true,
@@ -200,9 +248,9 @@ const Deposit = function () {
                                                     render={({ field }) => (
                                                         <InputNumber
                                                             {...field}
-                                                            title="Max price"
+                                                            title="Stake (%)"
                                                             className={cx("input")}
-                                                            placeholder="Enter the highest price"
+                                                            placeholder="Enter the stake percentage"
                                                             errorMessage={errors.priceHight?.message}
                                                         />
                                                     )}
@@ -338,19 +386,13 @@ const Deposit = function () {
                                     </form>
                                 </Card>
                             </div>
-                            <PriceChart
-                                period={currentChartPeriod}
-                                setPeriod={setCurrentChartPeriod}
-                                data={historyPrices}
-                                isLoading={isGetChartRecordsLoading}
-                            />
+                            <CustomChart isLoading={isGetChartRecordsLoading} data={historyPrices} preview={sellingStrategies} />
                         </div>
                     </div>
                 </div>
             </section>
-            <section>
-                <CustomChart />
-            </section>
+
+            <PriceChart period={currentChartPeriod} setPeriod={setCurrentChartPeriod} data={historyPrices} isLoading={isGetChartRecordsLoading} />
             <section>
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>

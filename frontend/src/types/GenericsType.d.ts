@@ -1,10 +1,13 @@
 import { Network } from "lucid-cardano";
 
+<<<<<<< HEAD
 export type ToastType = {
     icon: string | any;
     message?: string;
 };
 
+=======
+>>>>>>> d85588f75a072d22e6ee6efcfd8d8f25924b8ef4
 export type AccountType = {
     id?: string;
     createdAt?: string;
