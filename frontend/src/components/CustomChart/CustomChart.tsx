@@ -17,9 +17,9 @@ type DataType = {
 
 const CustomChart = function () {
     useLayoutEffect(() => {
-        const root = am5.Root.new("chartdiv");
+        const root: any = am5.Root.new("chartdiv");
 
-        const myTheme = am5.Theme.new(root);
+        const myTheme: any = am5.Theme.new(root);
 
         myTheme.rule("Label").setAll({
             fill: am5.color(0xffffff),

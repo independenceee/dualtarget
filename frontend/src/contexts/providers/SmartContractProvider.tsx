@@ -64,6 +64,8 @@ const SmartContractProvider = function ({ children }: Props) {
             });
 
             console.log("Selling: ", sellingStrategies);
+
+
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
 
@@ -120,6 +122,8 @@ const SmartContractProvider = function ({ children }: Props) {
                     status: "",
                 });
             }
+
+            
         } catch (error) {
             console.log(error);
         } finally {

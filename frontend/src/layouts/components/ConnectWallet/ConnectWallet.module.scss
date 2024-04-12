@@ -1,3 +1,7 @@
+.wrapper {
+    position: relative;
+}
+
 .connect-wallet-button {
     align-items: center;
     background: transparent;
@@ -40,6 +44,7 @@
 .connected-wallet-icon {
     transition: all 0.5s;
 }
+
 .tippy-wallet {
     border-radius: 0 !important;
     padding: 0 !important;
@@ -47,6 +52,7 @@
     max-width: auto !important;
     border: none !important;
     background: unset !important;
+    position: relative !important;
 }
 
 /* connected wallet begin */

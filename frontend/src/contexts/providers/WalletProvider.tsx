@@ -13,6 +13,8 @@ import { networks } from "~/constants/networks";
 import checkNetwork from "~/helpers/check-network";
 import { ModalContextType } from "~/types/contexts/ModalContextType";
 import ModalContext from "../components/ModalContext";
+import { ToastContextType } from "~/types/contexts/ToastContextType";
+import ToastContext from "../components/ToastContext";
 
 type Props = {
     children: ReactNode;
@@ -22,7 +24,7 @@ const WalletProvider = function ({ children }: Props) {
     const { lucid, setLucid } = useContext<LucidContextType>(LucidContext);
     const { toogleErrorNetwork, isShowingErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
         useContext<ModalContextType>(ModalContext);
-
+    const { toast } = useContext<ToastContextType>(ToastContext);
     const [wallet, setWallet] = useState<WalletType>(null!);
     const [loading, setLoading] = useState<boolean>(false);
     const { network } = useContext<NetworkContextType>(NetworkContext);
@@ -101,6 +103,7 @@ const WalletProvider = function ({ children }: Props) {
                 };
             });
             setLucid(lucid);
+            toast.success("Wallet connected !")
         } catch (error) {
             console.log(error);
         } finally {
