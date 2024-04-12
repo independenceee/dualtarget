@@ -411,7 +411,7 @@ const Deposit = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders data={data} className={cx("orders")} />
+                <Orders data={data} isLoading={isLoading} className={cx("orders")} />
             </section>
         </div>
     );

@@ -14,13 +14,14 @@ const cx = classNames.bind(styles);
 
 type Props = {
     className?: string;
+    isLoading?: boolean;
     data?: any[];
 };
 
-const Orders = ({ className }: Props) => {
+const Orders = ({ className, isLoading }: Props) => {
     return (
         <div className={cx("wrapper", className)}>
-            {false ? (
+            {isLoading ? (
                 <div className={cx("no-data")}>
                     <div className={cx("icon-wrapper")}>
                         <Image src={icons.glass} className={cx("icon")} alt="search-icon" />
