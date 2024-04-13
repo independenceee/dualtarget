@@ -5,6 +5,13 @@
 .title {
     padding-bottom: 8px;
     font-size: 1.4rem;
+    display: flex;
+}
+
+.icon-help-circle {
+    margin-top: 5px;
+    margin-left: 4px;
+    transform: translateY(-4px);
 }
 .input-wrapper {
     background: linear-gradient(101deg, #32375c 18%, #ab56c9 61%, #b275dc 102%);
