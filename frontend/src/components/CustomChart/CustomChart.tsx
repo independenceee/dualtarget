@@ -12,6 +12,7 @@ import icons from "~/assets/icons";
 import Tippy from "../Tippy";
 import Loading from "../Loading";
 import { convertTimestampToDateObject } from "~/utils/utils";
+import { max } from "lodash";
 
 const cx = classNames.bind(styles);
 
@@ -50,6 +51,19 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
             });
         }
     }, [preview]);
+
+    const maxPreviewStepsChartData: number | undefined = useMemo(() => {
+        if (!previewStepsChartData) return undefined;
+        if (previewStepsChartData.length > 0) {
+            return (
+                Math.max(
+                    ...previewStepsChartData.map(({ value }) => {
+                        return value;
+                    }),
+                ) + 0.5
+            );
+        }
+    }, [previewStepsChartData]);
 
     useLayoutEffect(() => {
         let root = am5.Root.new(`price-chart-${chartId}`);
@@ -102,6 +116,9 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         // Y axis for ADA - DJED
         const yAxis = chart.yAxes.push(
             am5xy.ValueAxis.new(root, {
+                maxDeviation: 1,
+                max: maxPreviewStepsChartData,
+                min: 0,
                 renderer: am5xy.AxisRendererY.new(root, {
                     opposite: true,
                 }),
@@ -109,14 +126,6 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         );
 
         yAxis.set("numberFormatter", am5.NumberFormatter.new(root, { numberFormat: "#.####" }));
-
-        // Y axis for ADA amount
-        const adaYAxis = chart.yAxes.push(
-            am5xy.ValueAxis.new(root, {
-                maxDeviation: 1,
-                renderer: am5xy.AxisRendererY.new(root, {}),
-            }),
-        );
 
         // Add Cursor
         const cursor = chart.set(
@@ -199,30 +208,6 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
             strokeWidth: 1,
         });
 
-        const adaSeries = chart.series.push(
-            am5xy.StepLineSeries.new(root, {
-                name: "Series",
-                xAxis: xAxis,
-                yAxis: adaYAxis,
-                valueXField: "date",
-                valueYField: "value",
-                noRisers: true,
-                stepWidth: am5.percent(0),
-                tooltipText: "{valueY}",
-                locationX: 0,
-                tooltip: am5.Tooltip.new(root, {
-                    forceHidden: true,
-                    labelText: undefined,
-                    animationDuration: 0,
-                }),
-            }),
-        );
-
-        adaSeries.strokes.template.setAll({
-            strokeWidth: 2,
-            centerX: am5.percent(50),
-        });
-
         //  Add data
         series.data.setAll(dataObject);
         if (dataObject && dataObject.length > 0) {
@@ -234,12 +219,12 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
 
         // Create axis ranges
         function createRange({ value, endValue, color }: { value?: number; endValue?: number; color: am5.Color }) {
-            const rangeDataItem = adaYAxis.makeDataItem({
+            const rangeDataItem = yAxis.makeDataItem({
                 value: value,
                 endValue: endValue,
             });
 
-            const range = adaYAxis.createAxisRange(rangeDataItem);
+            const range = yAxis.createAxisRange(rangeDataItem);
 
             if (endValue) {
                 range.get("axisFill")?.setAll({
@@ -265,7 +250,7 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
                     text: String(value),
                     paddingLeft: 16,
                     paddingRight: 16,
-                    minWidth: 40,
+                    minWidth: 60,
                     background: am5.RoundedRectangle.new(root, {
                         fill: color,
                     }),
@@ -281,7 +266,6 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         }
 
         if (previewStepsChartData && previewStepsChartData.length > 0) {
-            adaSeries.data.setAll(previewStepsChartData);
             previewStepsChartData.forEach(({ value }) => {
                 createRange({ value: value, endValue: undefined, color: am5.color(0x297373) });
             });
@@ -322,7 +306,7 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
             });
         }
         return () => root.dispose();
-    }, [chartId, dataObject, previewStepsChartData]);
+    }, [chartId, dataObject, previewStepsChartData, maxPreviewStepsChartData]);
 
     const handleToggleChart = function () {
         setShow((prev) => !prev);
