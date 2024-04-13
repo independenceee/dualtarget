@@ -14,10 +14,10 @@ interface Props {
     className?: string;
     onChange?: (...event: any[]) => void;
     value: string;
-    healper?: string;
+    description?: string;
 }
 const InputNumber = forwardRef<HTMLInputElement, Props>(function InputNumberInner(
-    { errorMessage, title, placeholder, className, onChange, value = "", healper }: Props,
+    { errorMessage, title, placeholder, className, onChange, value = "", description }: Props,
     ref,
 ) {
     const [localValue, setLocalValue] = useState<string>("");
@@ -33,8 +33,8 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function InputNumberInne
         <section className={cx("input-field", className)}>
             <div className={cx("title")}>
                 {title}
-                {healper && (
-                    <Tippy render={<div>{healper}</div>}>
+                {description && (
+                    <Tippy render={<div>{description}</div>}>
                         <Image className={cx("icon-help-circle")} src={icons.helpCircle} width={12} height={12} alt="" />
                     </Tippy>
                 )}

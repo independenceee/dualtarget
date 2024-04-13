@@ -44,20 +44,10 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         if (!preview) return [];
         if (preview.length > 0) {
             const datetime = new Date(Date.now());
-            const previewObject = preview.map((record) => {
-                const oneMonthAgo = datetime.setDate(datetime.getDate() - 10);
-
-                return [
-                    { value: record.buyPrice / 1000000, date: oneMonthAgo },
-                    { value: record.sellPrice / 1000000, date: oneMonthAgo },
-                ];
+            return preview.map((record) => {
+                const oneMonthAgo = datetime.setDate(datetime.getDate() - 1);
+                return { value: record.buyPrice / 1000000, date: oneMonthAgo };
             });
-
-            const convertedObject: DataType[] = [];
-            previewObject.forEach((record) => {
-                convertedObject.push(...record);
-            });
-            return convertedObject;
         }
     }, [preview]);
 
@@ -84,7 +74,7 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         const chart = root.container.children.push(
             am5xy.XYChart.new(root, {
                 panX: true,
-                panY: false,
+                panY: true,
                 wheelX: "panX",
                 wheelY: "zoomX",
                 paddingLeft: 0,
@@ -124,9 +114,7 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
         const adaYAxis = chart.yAxes.push(
             am5xy.ValueAxis.new(root, {
                 maxDeviation: 1,
-                renderer: am5xy.AxisRendererY.new(root, {
-                    pan: "zoom",
-                }),
+                renderer: am5xy.AxisRendererY.new(root, {}),
             }),
         );
 
@@ -178,6 +166,7 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
                 rotation: 90,
             }),
         );
+
         series.bullets.push(function () {
             var circle = am5.Circle.new(root, {
                 radius: 6,
@@ -218,9 +207,9 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
                 valueXField: "date",
                 valueYField: "value",
                 noRisers: true,
-                stepWidth: am5.percent(200),
+                stepWidth: am5.percent(0),
                 tooltipText: "{valueY}",
-                locationX: 0.5,
+                locationX: 0,
                 tooltip: am5.Tooltip.new(root, {
                     forceHidden: true,
                     labelText: undefined,
@@ -242,12 +231,60 @@ const CustomChart = function ({ data, preview, isLoading }: Props) {
                 date: dataObject[dataObject.length - 1].date,
             });
         }
+
+        // Create axis ranges
+        function createRange({ value, endValue, color }: { value?: number; endValue?: number; color: am5.Color }) {
+            const rangeDataItem = adaYAxis.makeDataItem({
+                value: value,
+                endValue: endValue,
+            });
+
+            const range = adaYAxis.createAxisRange(rangeDataItem);
+
+            if (endValue) {
+                range.get("axisFill")?.setAll({
+                    fill: color,
+                    fillOpacity: 0.2,
+                    visible: true,
+                });
+
+                range.get("label")?.setAll({
+                    fill: am5.color(0xffffff),
+                    text: value + "-" + endValue,
+                    location: 1,
+                    background: am5.RoundedRectangle.new(root, {
+                        fill: color,
+                    }),
+                    tooltip: am5.Tooltip.new(root, {
+                        labelText: "Test",
+                    }),
+                });
+            } else {
+                range.get("label")?.setAll({
+                    fill: am5.color(0xffffff),
+                    text: String(value),
+                    paddingLeft: 16,
+                    paddingRight: 16,
+                    minWidth: 40,
+                    background: am5.RoundedRectangle.new(root, {
+                        fill: color,
+                    }),
+                });
+            }
+
+            range.get("grid")?.setAll({
+                stroke: color,
+                strokeWidth: 2,
+                strokeOpacity: 1,
+                location: 1,
+            });
+        }
+
         if (previewStepsChartData && previewStepsChartData.length > 0) {
             adaSeries.data.setAll(previewStepsChartData);
-            const datetime = new Date();
-            const now = new Date();
-            const oneMonthAgo = datetime.setDate(datetime.getDate() - 1);
-            // xAxis.zoomToDates(new Date(now.setDate(now.getDate() - previewStepsChartData.length - 1)), new Date(oneMonthAgo));        }
+            previewStepsChartData.forEach(({ value }) => {
+                createRange({ value: value, endValue: undefined, color: am5.color(0x297373) });
+            });
         }
         // Pre-zooming
         series.events.once("datavalidated", function (ev) {
