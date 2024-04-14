@@ -21,23 +21,13 @@ export async function GET(request: NextRequest) {
         }),
     );
 
-    let foundObjects: any[] = [];
-
     const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
 
-    results.forEach((transaction) => {
-        transaction.inputs.forEach((input) => {
-            if (input.address === addressToFind) {
-                foundObjects.push({ ...input, type: "input" });
-            }
-        });
-
-        transaction.outputs.forEach((output) => {
-            if (output.address === addressToFind) {
-                foundObjects.push({ ...output, type: "output" });
-            }
-        });
+    const transactionsWithTargetAddress = results.filter((transaction) => {
+        const hasInput = transaction.inputs.some((input) => input.address === addressToFind);
+        const hasOutput = transaction.outputs.some((output) => output.address === addressToFind);
+        return hasInput || hasOutput;
     });
 
-    return Response.json(results);
+    return Response.json(transactionsWithTargetAddress);
 }
