@@ -44,21 +44,22 @@ type DepositeType = {
 const Deposit = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
-    const [count, setCount] = useState<number>(6);
+    const [pageSize, setPageSize] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
+    // TODO: DATA => Transfer
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transaction", page, count],
-        queryFn: async function () {
-            return await get("/transaction", {
-                account_id: account?.id,
-                page: page,
-                count: count,
-            });
-        },
+        queryKey: ["Transaction", page, pageSize],
+        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/history/transaction"),
+        refetchInterval: 5 * 60 * 1000,
+        refetchIntervalInBackground: true,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
         enabled: !Boolean(account?.id),
     });
+
+    console.log(data);
 
     const {
         handleSubmit,
