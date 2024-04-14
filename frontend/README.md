@@ -454,3 +454,16 @@ min utxos max
 ```js
 
 ```
+
+
+
+
+
+
+
+
+
+
+- Không được góp ý cho design 
+- Đi hỏi smartcontract để update thêm datum
+- Bọn m có ý tưởng gì về frontend và backend không

@@ -3,13 +3,17 @@
 import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address } from "lucid-cardano";
 import React, { ReactNode, useContext, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
+import { useMutation } from "@tanstack/react-query";
+import { ClaimableUTxO, CalculateSellingStrategy, TransactionType } from "~/types/GenericsType";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
 import { refundRedeemer } from "~/constants/redeemer";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "../components/WalletContext";
+import { post } from "~/utils/http-requests";
+import { AccountContextType } from "~/types/contexts/AccountContextType";
+import AccountContext from "../components/AccountContext";
 
 type Props = {
     children: ReactNode;
@@ -17,6 +21,13 @@ type Props = {
 
 const SmartContractProvider = function ({ children }: Props) {
     const { refresh } = useContext<WalletContextType>(WalletContext);
+    const { account } = useContext<AccountContextType>(AccountContext);
+
+    const transactionMutation = useMutation({
+        mutationFn: function (body: TransactionType) {
+            return post("/transaction", { body });
+        },
+    }); //
 
     const [txHashDeposit, setTxHashDeposit] = useState<TxHash>("");
     const [txHashWithdraw, setTxHashWithdraw] = useState<TxHash>("");
@@ -45,7 +56,7 @@ const SmartContractProvider = function ({ children }: Props) {
 
             const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
                 income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHigh: 1.2 * 1000000, //  Giá thấp nhất =  2000000
+                priceHight: 1.2 * 1000000, //  Giá thấp nhất =  2000000
                 priceLow: 1 * 1000000, // Giá cao nhất = 1000000
                 stake: 5, //  ROI % stake theo năm = 5
                 step: 10, // Bước nhảy theo giá (%) = 10
@@ -53,6 +64,8 @@ const SmartContractProvider = function ({ children }: Props) {
             });
 
             console.log("Selling: ", sellingStrategies);
+
+
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
 
@@ -89,15 +102,7 @@ const SmartContractProvider = function ({ children }: Props) {
             let tx: any = lucid.newTx();
 
             sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
-                tx = await tx.payToContract(
-                    contractAddress,
-                    {
-                        inline: datums[index],
-                    },
-                    {
-                        lovelace: BigInt(sellingStrategy.amountSend),
-                    },
-                );
+                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend) });
             });
 
             tx = await tx.complete();
@@ -105,7 +110,20 @@ const SmartContractProvider = function ({ children }: Props) {
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
-            if (success) setTxHashDeposit(txHash);
+            if (success) {
+                setTxHashDeposit(txHash);
+                await refresh();
+                transactionMutation.mutate({
+                    tx_hash: txHash,
+                    account_id: account?.id!,
+                    action: "Withdraw",
+                    amount: "",
+                    date: "",
+                    status: "",
+                });
+            }
+
+            
         } catch (error) {
             console.log(error);
         } finally {
@@ -194,14 +212,25 @@ const SmartContractProvider = function ({ children }: Props) {
                 tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer);
             }
             tx = await tx
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, { lovelace: BigInt(1500000) as Lovelace })
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, { lovelace: BigInt(claimableUtxos[0].fee) as Lovelace })
                 .addSigner((await lucid.wallet.address()) as Address)
                 .complete();
 
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);
-            if (success) setTxHashWithdraw(txHash);
+            if (success) {
+                setTxHashWithdraw(txHash);
+                await refresh();
+                transactionMutation.mutate({
+                    tx_hash: txHash,
+                    account_id: account?.id!,
+                    action: "Withdraw",
+                    amount: "",
+                    date: "",
+                    status: "",
+                });
+            }
         } catch (error) {
             console.log(error);
         } finally {
@@ -209,9 +238,6 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-
-
-    
     return (
         <SmartContractContext.Provider value={{ deposit, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}>
             {children}

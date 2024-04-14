@@ -1,4 +1,23 @@
-import { Network } from "lucid-cardano";
+import { Network, TxHash } from "lucid-cardano";
+
+export type DelegationRewardType = {
+    epoch: number;
+    txHash: TxHash;
+};
+
+export type TransactionHistoryType = {
+    date: string;
+    txHash: TxHash;
+    action: string;
+    amount: string;
+    status: string;
+    fee: string;
+};
+
+export type ToastType = {
+    icon: string | any;
+    message?: string;
+};
 
 export type AccountType = {
     id?: string;
@@ -29,19 +48,17 @@ export type HeaderTableType = {
     description?: string;
 };
 
-
-
 export type TransactionType = {
     id?: string;
-    transactionHash: string;
-    createdAt?: string;
-    updatedAt?: string;
+    tx_hash: string;
+    created_at?: string;
+    updated_at?: string;
 
-    Date: string;
+    date: string;
     action: string;
     amount: string;
     status: string;
-    accountId: string;
+    account_id: string;
 };
 
 // test

@@ -15,6 +15,7 @@
         "os": false
     },
     "dependencies": {
+        "@amcharts/amcharts5": "^5.9.1",
         "@blockfrost/blockfrost-js": "^5.5.0",
         "@hookform/resolvers": "^3.3.4",
         "@minswap/blockfrost-adapter": "^0.1.0",
@@ -38,6 +39,7 @@
         "react": "^18",
         "react-apexcharts": "^1.4.1",
         "react-copy-to-clipboard": "^5.1.0",
+        "react-countup": "^6.5.3",
         "react-detect-offline": "^2.4.5",
         "react-dom": "^18",
         "react-hook-form": "^7.50.1",

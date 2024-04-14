@@ -10,7 +10,7 @@ import icons from "~/assets/icons";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
 import wallets from "~/constants/wallets";
-import { WalletType } from "~/types/GenericsType";
+import { ToastType, WalletType } from "~/types/GenericsType";
 import WalletItem from "~/components/WalletItem";
 import Button from "~/components/Button";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
@@ -24,6 +24,9 @@ import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
 import { ModalContextType } from "~/types/contexts/ModalContextType";
 import ModalContext from "~/contexts/components/ModalContext";
+import Toast from "~/components/Toast";
+import { ToastContextType } from "~/types/contexts/ToastContextType";
+import ToastContext from "~/contexts/components/ToastContext";
 
 const cx = classNames.bind(styles);
 type Props = {
@@ -33,6 +36,7 @@ type Props = {
 const ConnectWallet = function ({ className }: Props) {
     const { isShowingErrorNetwork, toogleErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
         useContext<ModalContextType>(ModalContext);
+    const { toasts } = useContext<ToastContextType>(ToastContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
@@ -154,7 +158,10 @@ const ConnectWallet = function ({ className }: Props) {
                     )}
                 </Button>
             </Tippy>
-            {/* <Notification /> */}
+
+            {toasts.map(function (toast: ToastType, index: number) {
+                return <Toast key={index} message={toast.message} icon={toast.icon} />;
+            })}
 
             {!lucid && (
                 <Modal isShowing={isShowingWallet} toggle={toggleShowingWallet}>
@@ -185,10 +192,6 @@ const ConnectWallet = function ({ className }: Props) {
                     </div>
                 </Modal>
             )}
-
-            {/* <Modal isShowing={isShowingTestNetwork} toggle={toggleTestNetwork}>
-                123
-            </Modal> */}
 
             <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>

@@ -14,13 +14,14 @@ const cx = classNames.bind(styles);
 
 type Props = {
     className?: string;
+    isLoading?: boolean;
     data?: any[];
 };
 
-const Orders = ({ className }: Props) => {
+const Orders = ({ className, isLoading }: Props) => {
     return (
         <div className={cx("wrapper", className)}>
-            {false ? (
+            {isLoading ? (
                 <div className={cx("no-data")}>
                     <div className={cx("icon-wrapper")}>
                         <Image src={icons.glass} className={cx("icon")} alt="search-icon" />
@@ -29,11 +30,11 @@ const Orders = ({ className }: Props) => {
                 </div>
             ) : (
                 <div>
-                    <div className={cx("table-wrapper")}>
+                    <div className={cx("table-wrapper", "irresponsive")}>
                         <Table className={cx("order-table")} headerTables={historyTransactions} />
                         <Pagination pageSize={5} totalItems={20} />
                     </div>
-                    <div>
+                    <div className={cx("responsive")}>
                         <div className={cx("transaction-accordions")}>
                             {Array(5)
                                 .fill(0)

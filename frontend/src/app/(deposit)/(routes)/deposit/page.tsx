@@ -1,8 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { getKline, Kline } from "binance-historical";
+import React, { useContext, useMemo, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders";
@@ -12,21 +11,24 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import PriceChart from "~/components/PriceChart";
-import { ChartDataType, TransactionType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
-import ccxt, { binance } from "ccxt";
 import Loading from "~/components/Loading";
 import InputNumber from "~/components/InputNumber";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChartHistoryRecord } from "~/types/GenericsType";
 import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
+import CustomChart from "~/components/CustomChart";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
 import { get } from "~/utils/http-requests";
+import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
+import { WalletContextType } from "~/types/contexts/WalletContextType";
+import WalletContext from "~/contexts/components/WalletContext";
+import CountUp from "react-countup";
 
 const cx = classNames.bind(styles);
 
@@ -41,9 +43,10 @@ type DepositeType = {
 
 const Deposit = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
-
+    const { wallet } = useContext<WalletContextType>(WalletContext);
     const [count, setCount] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
+    const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["transaction", page, count],
@@ -61,6 +64,7 @@ const Deposit = function () {
         handleSubmit,
         watch,
         control,
+        getValues,
         formState: { errors },
     } = useForm<DepositeType>({
         defaultValues: {
@@ -72,6 +76,7 @@ const Deposit = function () {
             totalADA: "",
         },
     });
+
     const {
         data: chartDataRecords,
         isLoading: isGetChartRecordsLoading,
@@ -84,9 +89,11 @@ const Deposit = function () {
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
     });
+
     const [currentChartPeriod, setCurrentChartPeriod] = useState<CHART_TIME_PERIOD>("ONE_DAY");
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
+
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
@@ -107,6 +114,50 @@ const Deposit = function () {
                 totalADA: +data.totalADA,
             }).catch((error) => {});
     });
+
+    const previewSellingStrategies = function () {
+        const { income, priceHight, priceLow, stake, step, totalADA } = getValues();
+        if (income && priceHight && priceLow && stake && step && totalADA) {
+            const result = calculateSellingStrategy({
+                income: +income,
+                priceHight: +priceHight,
+                priceLow: +priceLow,
+                stake: +stake,
+                step: +step,
+                totalADA: +totalADA,
+            });
+
+            setSellingStrategies([
+                {
+                    buyPrice: 1210000,
+                    sellPrice: 1331000,
+                    amountSend: 97657776,
+                    minimumAmountOut: 109090908,
+                    minimumAmountOutProfit: 11999999,
+                    amountSell: 90157776,
+                    amountBuy: 110192837,
+                    amountEntry: 991735537,
+                    USDTPool: 1200,
+                    sumADA: 320922238,
+                },
+                {
+                    buyPrice: 1100000,
+                    sellPrice: 1210000,
+                    amountSend: 106673553,
+                    minimumAmountOut: 109090908,
+                    minimumAmountOutProfit: 11999999,
+                    amountSell: 99173553,
+                    amountBuy: 121212121,
+                    amountEntry: 1090909090,
+                    USDTPool: 1199,
+                    sumADA: 223264462,
+                },
+            ]);
+        } else {
+            console.log("Please enter data");
+        }
+    };
+
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -118,9 +169,14 @@ const Deposit = function () {
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
                                 <Card title="Deposite DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
+                                    <button className={cx("preview-button")} onClick={previewSellingStrategies}>
+                                        Preview
+                                    </button>
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
-                                            <span>Balance: {0} ₳</span>
+                                            <span>
+                                                Balance: <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                            </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
                                             <div className={cx("row-wrapper")}>
@@ -167,7 +223,7 @@ const Deposit = function () {
                                             <div className={cx("row-wrapper")}>
                                                 <Controller
                                                     control={control}
-                                                    name="priceLow"
+                                                    name="income"
                                                     rules={{
                                                         required: {
                                                             value: true,
@@ -177,17 +233,17 @@ const Deposit = function () {
                                                     render={({ field }) => (
                                                         <InputNumber
                                                             {...field}
-                                                            title="Min price"
+                                                            title="Desired income"
                                                             className={cx("input")}
                                                             placeholder="Enter the lowest price"
-                                                            errorMessage={errors.priceLow?.message}
+                                                            errorMessage={errors.income?.message}
                                                         />
                                                     )}
                                                 />
                                                 <div className={cx("slash")}> - </div>
                                                 <Controller
                                                     control={control}
-                                                    name="priceHight"
+                                                    name="stake"
                                                     rules={{
                                                         required: {
                                                             value: true,
@@ -197,9 +253,9 @@ const Deposit = function () {
                                                     render={({ field }) => (
                                                         <InputNumber
                                                             {...field}
-                                                            title="Max price"
+                                                            title="Stake (%)"
                                                             className={cx("input")}
-                                                            placeholder="Enter the highest price"
+                                                            placeholder="Enter the stake percentage"
                                                             errorMessage={errors.priceHight?.message}
                                                         />
                                                     )}
@@ -335,21 +391,17 @@ const Deposit = function () {
                                     </form>
                                 </Card>
                             </div>
-                            <PriceChart
-                                period={currentChartPeriod}
-                                setPeriod={setCurrentChartPeriod}
-                                data={historyPrices}
-                                isLoading={isGetChartRecordsLoading}
-                            />
+                            <CustomChart isLoading={isGetChartRecordsLoading} data={historyPrices} preview={sellingStrategies} />
                         </div>
                     </div>
                 </div>
             </section>
+
             <section>
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders data={data} className={cx("orders")} />
+                <Orders data={data} isLoading={isLoading} className={cx("orders")} />
             </section>
         </div>
     );
