@@ -6,12 +6,14 @@ export type DelegationRewardType = {
 };
 
 export type TransactionHistoryType = {
-    date: string;
-    txHash: TxHash;
-    action: string;
-    amount: string;
-    status: string;
-    fee: string;
+   {
+      "type": "Withdraw",
+      "txHash": "c6de33045a5c0459e181216697e2c04313959a7fa09b5b433d3ba550eed2e930",
+      "amount": 1317645409,
+      "status": "complete",
+      "fee": 1.5,
+      "blockTime": "5 Apr, 2024 20:57"
+    },
 };
 
 export type ToastType = {

@@ -11,7 +11,7 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import { CalculateSellingStrategy, ChartDataType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType, TransactionHistoryType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -44,22 +44,20 @@ type DepositeType = {
 const Deposit = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
-    const [pageSize, setPageSize] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
     // TODO: DATA => Transfer
     const { data, isLoading, error } = useQuery({
-        queryKey: ["Transaction", page, pageSize],
-        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/history/transaction"),
-        refetchInterval: 5 * 60 * 1000,
-        refetchIntervalInBackground: true,
-        refetchOnWindowFocus: true,
-        refetchOnReconnect: true,
+        queryKey: ["Transaction", page],
+        queryFn: (page) =>
+            axios.get<TransactionHistoryType[] | null>(
+                `http://localhost:3000/history/transaction?wallet_address=addr_test1qzwu6jcqk8f96fxq02pvq2h4a927ggn35f2gzdklfte4kwx0sd5zdvsat2chsyyjxkjxcg6uz2y46avd46mzqdgdy3dsckqxs4&page=1&page_size=5`,
+            ),
         enabled: !Boolean(account?.id),
     });
 
-    console.log(data);
+    console.log(data?.data);
 
     const {
         handleSubmit,

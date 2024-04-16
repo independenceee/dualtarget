@@ -181,6 +181,7 @@
 @media (max-width: 1024px) {
     .card-wrapper {
         width: 100%;
+        max-width: 100%;
     }
     .stats {
         flex-direction: column;
