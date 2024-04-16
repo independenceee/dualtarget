@@ -11,7 +11,7 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import { CalculateSellingStrategy, ChartDataType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType, TransactionHistoryType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -44,21 +44,20 @@ type DepositeType = {
 const Deposit = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
-    const [count, setCount] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
+    // TODO: DATA => Transfer
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transaction", page, count],
-        queryFn: async function () {
-            return await get("/transaction", {
-                account_id: account?.id,
-                page: page,
-                count: count,
-            });
-        },
+        queryKey: ["Transaction", page],
+        queryFn: (page) =>
+            axios.get<TransactionHistoryType[] | null>(
+                `http://localhost:3000/history/transaction?wallet_address=addr_test1qzwu6jcqk8f96fxq02pvq2h4a927ggn35f2gzdklfte4kwx0sd5zdvsat2chsyyjxkjxcg6uz2y46avd46mzqdgdy3dsckqxs4&page=1&page_size=5`,
+            ),
         enabled: !Boolean(account?.id),
     });
+
+    console.log(data?.data);
 
     const {
         handleSubmit,
@@ -106,53 +105,28 @@ const Deposit = function () {
         lucid &&
             deposit({
                 lucid,
-                income: +data.income,
-                priceHight: +data.priceHight,
-                priceLow: +data.priceLow,
-                stake: +data.stake,
-                step: +data.step,
-                totalADA: +data.totalADA,
+                income: Number(data.income),
+                priceHight: Number(data.priceHight),
+                priceLow: Number(data.priceLow),
+                stake: Number(data.stake),
+                step: Number(data.step),
+                totalADA: Number(data.totalADA),
             }).catch((error) => {});
     });
 
     const previewSellingStrategies = function () {
         const { income, priceHight, priceLow, stake, step, totalADA } = getValues();
         if (income && priceHight && priceLow && stake && step && totalADA) {
-            const result = calculateSellingStrategy({
-                income: +income,
-                priceHight: +priceHight,
-                priceLow: +priceLow,
-                stake: +stake,
-                step: +step,
-                totalADA: +totalADA,
+            const result: CalculateSellingStrategy[] = calculateSellingStrategy({
+                income: Number(income), // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                priceHight: Number(priceHight) * 1000000, //  Giá thấp nhất =  2000000
+                priceLow: Number(priceLow) * 1000000, // Giá cao nhất = 1000000
+                stake: Number(stake), //  ROI % stake theo năm = 5
+                step: Number(step), // Bước nhảy theo giá (%) = 10
+                totalADA: Number(totalADA) * 1000000, // Tổng ada = 24000000
             });
 
-            setSellingStrategies([
-                {
-                    buyPrice: 1210000,
-                    sellPrice: 1331000,
-                    amountSend: 97657776,
-                    minimumAmountOut: 109090908,
-                    minimumAmountOutProfit: 11999999,
-                    amountSell: 90157776,
-                    amountBuy: 110192837,
-                    amountEntry: 991735537,
-                    USDTPool: 1200,
-                    sumADA: 320922238,
-                },
-                {
-                    buyPrice: 1100000,
-                    sellPrice: 1210000,
-                    amountSend: 106673553,
-                    minimumAmountOut: 109090908,
-                    minimumAmountOutProfit: 11999999,
-                    amountSell: 99173553,
-                    amountBuy: 121212121,
-                    amountEntry: 1090909090,
-                    USDTPool: 1199,
-                    sumADA: 223264462,
-                },
-            ]);
+            setSellingStrategies(result);
         } else {
             console.log("Please enter data");
         }
@@ -191,6 +165,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            description="Hello"
                                                             {...field}
                                                             title="Min price"
                                                             className={cx("input")}
@@ -211,6 +186,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            description="Hello"
                                                             {...field}
                                                             title="Max price"
                                                             className={cx("input")}
@@ -232,6 +208,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            description="Hello"
                                                             {...field}
                                                             title="Desired income"
                                                             className={cx("input")}
@@ -252,6 +229,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            description="Hello"
                                                             {...field}
                                                             title="Stake (%)"
                                                             className={cx("input")}
@@ -274,6 +252,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            description="Hello"
                                                             {...field}
                                                             title="Step"
                                                             className={cx("input")}
@@ -295,6 +274,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            description="Hello"
                                                             {...field}
                                                             title="Total ADA"
                                                             className={cx("input")}

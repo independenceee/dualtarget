@@ -55,16 +55,15 @@ const SmartContractProvider = function ({ children }: Props) {
             setWaitingDeposit(true);
 
             const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
-                income: 5, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHight: 1.2 * 1000000, //  Giá thấp nhất =  2000000
-                priceLow: 1 * 1000000, // Giá cao nhất = 1000000
-                stake: 5, //  ROI % stake theo năm = 5
-                step: 10, // Bước nhảy theo giá (%) = 10
-                totalADA: 24 * 1000000, // Tổng ada = 24000000
+                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
+                priceHight: priceHight * 1000000, //  Giá thấp nhất =  2000000
+                priceLow: priceLow * 1000000, // Giá cao nhất = 1000000
+                stake: stake, //  ROI % stake theo năm = 5
+                step: step, // Bước nhảy theo giá (%) = 10
+                totalADA: totalADA * 1000000, // Tổng ada = 24000000
             });
 
             console.log("Selling: ", sellingStrategies);
-
 
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
@@ -98,7 +97,6 @@ const SmartContractProvider = function ({ children }: Props) {
 
             console.log("datum " + datums);
 
-            /////////////////////////////////////////////////////////
             let tx: any = lucid.newTx();
 
             sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
@@ -122,8 +120,6 @@ const SmartContractProvider = function ({ children }: Props) {
                     status: "",
                 });
             }
-
-            
         } catch (error) {
             console.log(error);
         } finally {
