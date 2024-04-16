@@ -51,7 +51,10 @@ const Deposit = function () {
     // TODO: DATA => Transfer
     const { data, isLoading, error } = useQuery({
         queryKey: ["Transaction", page, pageSize],
-        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/history/transaction"),
+        queryFn: () =>
+            axios.get<ChartHistoryRecord[] | null>(
+                "http://localhost:3000/history/transaction?wallet_address=addr_test1qzwu6jcqk8f96fxq02pvq2h4a927ggn35f2gzdklfte4kwx0sd5zdvsat2chsyyjxkjxcg6uz2y46avd46mzqdgdy3dsckqxs4&page=1&page_size=5&network=Preprod",
+            ),
         refetchInterval: 5 * 60 * 1000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: true,
@@ -134,6 +137,7 @@ const Deposit = function () {
         }
     };
 
+    console.log(data?.data);
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -383,7 +387,7 @@ const Deposit = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders data={data} isLoading={isLoading} className={cx("orders")} />
+                <Orders data={data?.data as any[]} isLoading={isLoading} className={cx("orders")} />
             </section>
         </div>
     );
