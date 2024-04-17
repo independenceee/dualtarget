@@ -29,68 +29,70 @@ export async function GET(request: NextRequest) {
 
     const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
 
-    const transactionsWithTargetAddress = results
-        .map((transaction) => {
-            const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
+    const transactionsWithTargetAddress = await Promise.all(
+        results
+            .map((transaction) => {
+                const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
 
-            const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
-            if (hasInput) {
-                let amount: number = 0;
-                transaction.utxos.inputs.forEach(function (input) {
-                    if (input.address === addressToFind) {
-                        const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
-                            if (unit === "lovelace") {
-                                return total + Number(quantity);
-                            }
+                const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
+                if (hasInput) {
+                    let amount: number = 0;
+                    transaction.utxos.inputs.forEach(function (input) {
+                        if (input.address === addressToFind) {
+                            const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
+                                if (unit === "lovelace") {
+                                    return total + Number(quantity);
+                                }
 
-                            return total;
-                        }, 0);
+                                return total;
+                            }, 0);
 
-                        amount += quantity;
-                    }
-                }, 0);
-                return {
-                    type: "Withdraw",
-                    txHash: transaction.utxos.hash,
-                    amount: amount,
-                    status: "complete",
-                    fee: 1.5,
-                    blockTime: transaction.block_time,
-                };
-            }
+                            amount += quantity;
+                        }
+                    }, 0);
+                    return {
+                        type: "Withdraw",
+                        txHash: transaction.utxos.hash,
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
+                        fee: 1.5,
+                        blockTime: transaction.block_time,
+                    };
+                }
 
-            if (hasOutput) {
-                let amount: number = 0;
-                transaction.utxos.outputs.forEach(function (output) {
-                    if (output.address === addressToFind) {
-                        const quantity = output.amount.reduce(function (total: number, { unit, quantity }) {
-                            if (unit === "lovelace") {
-                                return total + Number(quantity);
-                            }
+                if (hasOutput) {
+                    let amount: number = 0;
+                    transaction.utxos.outputs.forEach(function (output) {
+                        if (output.address === addressToFind) {
+                            const quantity = output.amount.reduce(function (total: number, { unit, quantity }) {
+                                if (unit === "lovelace") {
+                                    return total + Number(quantity);
+                                }
 
-                            return total;
-                        }, 0);
+                                return total;
+                            }, 0);
 
-                        amount += quantity;
-                    }
-                }, 0);
-                return {
-                    blockTime: transaction.block_time,
-                    txHash: transaction.utxos.hash,
-                    type: "Deposit",
-                    amount: amount,
-                    status: "complete",
-                    fee: 1.5,
-                };
-            }
-        })
-        .filter((output) => output != null);
-
+                            amount += quantity;
+                        }
+                    }, 0);
+                    return {
+                        blockTime: transaction.block_time,
+                        txHash: transaction.utxos.hash,
+                        type: "Deposit",
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
+                        fee: 1.5,
+                    };
+                }
+            })
+            .filter((output) => output != null),
+    );
     const totalPage = Math.ceil(transactionsWithTargetAddress.length / Number(pageSize));
+    const histories = [...transactionsWithTargetAddress].slice((Number(page) - 1) * Number(pageSize), Number(page) * Number(pageSize));
 
-    const histories = transactionsWithTargetAddress.slice(Number(page) * Number(pageSize), (Number(page) + 1) * Number(pageSize));
     return Response.json({
         totalPage: totalPage,
-        histories: histories,
+        histories,
+        totalItems: transactionsWithTargetAddress.length,
     });
 }

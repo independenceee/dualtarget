@@ -53,57 +53,27 @@ const WITHDRAW_MODES: Item[] = [
 const Withdraw = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
 
-    const [count, setCount] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transaction", page, count],
-        queryFn: async function () {
-            return await get("/transaction", {
+        queryKey: ["transaction", page],
+        queryFn: function () {
+            return get("/transaction", {
                 account_id: account?.id,
                 page: page,
-                count: count,
             });
         },
         enabled: !Boolean(account?.id),
     });
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<WithdrawType>();
-    const [historyPrices, setHistoryPrices] = useState<ChartDataType | null>([]);
-    const [loading, setLoading] = useState<boolean>(false);
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
-
-    useEffect(() => {
-        const fetchADAData = async () => {
-            setLoading(true);
-            try {
-                const binance: binance = new ccxt.binance({
-                    apiKey: process.env.BINANCE_API_KEY! as string,
-                    secret: process.env.BINANCE_API_SECRET! as string,
-                });
-                binance.setSandboxMode(true);
-                const currentTime = new Date(Date.now());
-                const oneYearAgo = currentTime.setFullYear(currentTime.getFullYear() - 1);
-                const prices = await binance.fetchOHLCV("ADA/USDT", "1h", oneYearAgo, 1000);
-                console.log(prices);
-                if (prices.length > 0) {
-                    const _historyPrices = prices.map((price) => [price[0], price[4]]);
-                    setHistoryPrices(_historyPrices as ChartDataType);
-                }
-            } catch (error) {
-                console.error("Error fetching ADA data:", error);
-            }
-        };
-
-        fetchADAData().finally(() => {
-            setLoading(false);
-        });
-    }, []);
 
     const onWithdraw = handleSubmit(async (data) => {
         try {
@@ -114,7 +84,6 @@ const Withdraw = function () {
         } catch (error) {
             console.warn("Error: ", error);
         }
-        console.log(data);
     });
 
     return (
@@ -249,8 +218,6 @@ const Withdraw = function () {
                                 </Card>
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>
-
-                            {/* <PriceChart data={historyPrices} isLoading={loading} /> */}
                         </div>
                     </div>
                 </div>

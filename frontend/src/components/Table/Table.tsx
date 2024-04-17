@@ -1,68 +1,42 @@
-import React from "react";
+import React, { useMemo } from "react";
 import classNames from "classnames/bind";
 import styles from "./Table.module.scss";
 import Link from "next/link";
-import { HeaderTableType } from "~/types/GenericsType";
+import { HeaderTableType, TransactionHistoryType } from "~/types/GenericsType";
 
 const cx = classNames.bind(styles);
 type Props = {
     className?: string;
-    headerTables: HeaderTableType[];
+    data: TransactionHistoryType[];
 };
-const Table = function ({ className, headerTables }: Props) {
+const Table = function ({ className, data }: Props) {
     return (
         <div className={cx("wrapper", className)}>
             <table className={cx("table")}>
                 <tr className={cx("table-header")}>
-                    {headerTables.map(function (headerTable: HeaderTableType, index: number) {
-                        return (
-                            <td key={index} className={cx("table-header-item")}>
-                                {headerTable.title}
-                            </td>
-                        );
-                    })}
+                    <td className={cx("table-header-item")}>Block Time</td>
+                    <td className={cx("table-header-item")}>Transaction Hash</td>
+                    <td className={cx("table-header-item")}>Action</td>
+                    <td className={cx("table-header-item")}>Amount</td>
+                    <td className={cx("table-header-item")}>Fees</td>
+                    <td className={cx("table-header-item")}>Status</td>
                 </tr>
                 <tbody className={cx("rows")}>
-                    <tr className={cx("row")}>
-                        <td className={cx("row-item", "date")}>07 Mar, 2024 03:24</td>
-                        <td className={cx("row-item", "txhash")}>
-                            <Link href={""} target="_blanke">
-                                e59c....9b46e59c
-                            </Link>
-                        </td>
-                        <td className={cx("row-item", "action")}>Mint</td>
-                        <td className={cx("row-item", "amount")}>Amount</td>
-                    </tr>
-                    <tr className={cx("row")}>
-                        <td className={cx("row-item", "date")}>07 Mar, 2024 03:24</td>
-                        <td className={cx("row-item", "txhash")}>
-                            <Link href={""} target="_blanke">
-                                e59c....9b46e59c
-                            </Link>
-                        </td>
-                        <td className={cx("row-item", "action")}>Mint</td>
-                        <td className={cx("row-item", "amount")}>Amount</td>
-                    </tr>
-                    <tr className={cx("row")}>
-                        <td className={cx("row-item", "date")}>07 Mar, 2024 03:24</td>
-                        <td className={cx("row-item", "txhash")}>
-                            <Link href={""} target="_blanke">
-                                e59c....9b46e59c
-                            </Link>
-                        </td>
-                        <td className={cx("row-item", "action")}>Mint</td>
-                        <td className={cx("row-item", "amount")}>Amount</td>
-                    </tr>
-                    <tr className={cx("row")}>
-                        <td className={cx("row-item", "date")}>07 Mar, 2024 03:24</td>
-                        <td className={cx("row-item", "txhash")}>
-                            <Link href={""} target="_blanke">
-                                e59c....9b46e59c
-                            </Link>
-                        </td>
-                        <td className={cx("row-item", "action")}>Mint</td>
-                        <td className={cx("row-item", "amount")}>Amount</td>
-                    </tr>
+                    {data &&
+                        data.map((item, index) => (
+                            <tr className={cx("row")} key={index}>
+                                <td className={cx("row-item", "dae")}>{item.blockTime}</td>
+                                <td className={cx("row-item", "txhash")}>
+                                    <Link href={""} target="_blanke">
+                                        {item.txHash}
+                                    </Link>
+                                </td>
+                                <td className={cx("row-item", "action")}>{item.type}</td>
+                                <td className={cx("row-item", "amount")}>{item.amount}</td>
+                                <td className={cx("row-item", "amount")}>{item.fee}</td>
+                                <td className={cx("row-item", "amount")}>{item.status}</td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
         </div>

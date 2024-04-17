@@ -11,7 +11,7 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import { CalculateSellingStrategy, ChartDataType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType, TransactionHistoryType, TransactionResponseType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -24,7 +24,6 @@ import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
 import CustomChart from "~/components/CustomChart";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
-import { get } from "~/utils/http-requests";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
@@ -44,26 +43,23 @@ type DepositeType = {
 const Deposit = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
-    const [pageSize, setPageSize] = useState<number>(6);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
     // TODO: DATA => Transfer
-    const { data, isLoading, error } = useQuery({
-        queryKey: ["Transaction", page, pageSize],
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["Transactions", page],
         queryFn: () =>
-            axios.get<ChartHistoryRecord[] | null>(
-                "http://localhost:3000/history/transaction?wallet_address=addr_test1qzwu6jcqk8f96fxq02pvq2h4a927ggn35f2gzdklfte4kwx0sd5zdvsat2chsyyjxkjxcg6uz2y46avd46mzqdgdy3dsckqxs4&page=1&page_size=5&network=Preprod",
+            axios.get<TransactionResponseType>(
+                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                {
+                    timeout: 5000,
+                },
             ),
-        refetchInterval: 5 * 60 * 1000,
-        refetchIntervalInBackground: true,
-        refetchOnWindowFocus: true,
-        refetchOnReconnect: true,
-        enabled: !Boolean(account?.id),
+        enabled: !Boolean(account?.id) && !Boolean(wallet?.address),
     });
 
-    console.log(data);
-
+    console.log(data?.data);
     const {
         handleSubmit,
         watch,
@@ -137,7 +133,6 @@ const Deposit = function () {
         }
     };
 
-    console.log(data?.data);
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -387,7 +382,7 @@ const Deposit = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders data={data?.data as any[]} isLoading={isLoading} className={cx("orders")} />
+                <Orders page={page} setPage={setPage} data={data?.data} isError={isError} isLoading={isLoading} className={cx("orders")} />
             </section>
         </div>
     );
