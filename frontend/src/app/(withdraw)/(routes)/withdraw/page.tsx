@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders/Orders";
@@ -13,7 +13,6 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import ccxt, { binance } from "ccxt";
 import Button from "~/components/Button";
 import Loading from "~/components/Loading";
 import Tippy from "~/components/Tippy";
@@ -22,15 +21,14 @@ import { useForm } from "react-hook-form";
 import InputRange from "~/components/InputRange";
 import DropdownMenu from "~/components/DropdownMenu";
 import { Item } from "~/components/DropdownMenu/DropdownMenu";
-import { ChartDataType } from "~/types/GenericsType";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
-import { get } from "~/utils/http-requests";
 import { useQuery } from "@tanstack/react-query";
-
-const PriceChart = dynamic(() => import("~/components/PriceChart"), {
-    ssr: false,
-});
+import { WalletContextType } from "~/types/contexts/WalletContextType";
+import WalletContext from "~/contexts/components/WalletContext";
+import { ChartDataType, ChartHistoryRecord, TransactionResponseType } from "~/types/GenericsType";
+import axios from "axios";
+import CustomChart from "~/components/CustomChart";
 
 type WithdrawType = {
     amount: number;
@@ -52,18 +50,20 @@ const WITHDRAW_MODES: Item[] = [
 
 const Withdraw = function () {
     const { account } = useContext<AccountContextType>(AccountContext);
-
+    const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
 
-    const { data, isLoading, error } = useQuery({
-        queryKey: ["transaction", page],
-        queryFn: function () {
-            return get("/transaction", {
-                account_id: account?.id,
-                page: page,
-            });
-        },
-        enabled: !Boolean(account?.id),
+    // TODO: DATA => Transfer
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["Transactions", page],
+        queryFn: () =>
+            axios.get<TransactionResponseType>(
+                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                {
+                    timeout: 5000,
+                },
+            ),
+        enabled: !Boolean(account?.id) && !Boolean(wallet?.address),
     });
 
     const {
@@ -85,6 +85,27 @@ const Withdraw = function () {
             console.warn("Error: ", error);
         }
     });
+
+    const {
+        data: chartDataRecords,
+        isLoading: isGetChartRecordsLoading,
+        isSuccess: isGetChartRecordsSuccess,
+    } = useQuery({
+        queryKey: ["ChartData"],
+        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/chart"),
+        refetchInterval: 5 * 60 * 1000,
+        refetchIntervalInBackground: true,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+    });
+
+    const historyPrices: ChartDataType = useMemo(() => {
+        if (isGetChartRecordsSuccess && chartDataRecords.data) {
+            const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
+            return prices as ChartDataType;
+        }
+        return [];
+    }, [chartDataRecords, isGetChartRecordsSuccess]);
 
     return (
         <div className={cx("wrapper")}>
@@ -218,6 +239,7 @@ const Withdraw = function () {
                                 </Card>
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>
+                            <CustomChart isLoading={isGetChartRecordsLoading} data={historyPrices} />
                         </div>
                     </div>
                 </div>
@@ -226,7 +248,7 @@ const Withdraw = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>Orders</h2>
                 </div>
-                <Orders data={data} className={cx("orders")} />
+                <Orders page={page} setPage={setPage} data={data?.data} isError={isError} isLoading={isLoading} className={cx("orders")} />
             </section>
         </div>
     );

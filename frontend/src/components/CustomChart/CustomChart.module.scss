@@ -94,6 +94,8 @@
 .header-inner {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 .exchange-icon-wrapper {
     flex-shrink: 0;
@@ -150,6 +152,27 @@
     margin-left: 16px;
 }
 
+.refresh-button {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.1);
+
+    &:hover {
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+.refresh-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--white-color);
+}
 @media screen and (max-width: 1024px) {
     .button-toggle-chart-visibility {
         display: flex;

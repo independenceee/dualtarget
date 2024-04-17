@@ -2,6 +2,7 @@ import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
 import convertDatetime from "~/helpers/convert-datetime";
+import transactionHistory from "~/services/transaction-history";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);

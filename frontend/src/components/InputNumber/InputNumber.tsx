@@ -20,7 +20,7 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function InputNumberInne
     { errorMessage, title, placeholder, className, onChange, value = "", description }: Props,
     ref,
 ) {
-    const [localValue, setLocalValue] = useState<string>("");
+    const [localValue, setLocalValue] = useState<string>(value);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         if ((!isNaN(+value) || value === "") && onChange) {
@@ -40,7 +40,7 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function InputNumberInne
                 )}
             </div>
             <div className={cx("input-wrapper")}>
-                <input ref={ref} value={value || localValue} onChange={handleChange} placeholder={placeholder} className={cx("input", classNames)} />
+                <input ref={ref} value={value} onChange={handleChange} placeholder={placeholder} className={cx("input", classNames)} />
             </div>
             <span className={cx("error-message")}>{errorMessage}</span>
         </section>

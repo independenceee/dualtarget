@@ -13,14 +13,16 @@ const Table = function ({ className, data }: Props) {
     return (
         <div className={cx("wrapper", className)}>
             <table className={cx("table")}>
-                <tr className={cx("table-header")}>
-                    <td className={cx("table-header-item")}>Block Time</td>
-                    <td className={cx("table-header-item")}>Transaction Hash</td>
-                    <td className={cx("table-header-item")}>Action</td>
-                    <td className={cx("table-header-item")}>Amount</td>
-                    <td className={cx("table-header-item")}>Fees</td>
-                    <td className={cx("table-header-item")}>Status</td>
-                </tr>
+                <thead>
+                    <tr className={cx("table-header")}>
+                        <td className={cx("table-header-item")}>Block Time</td>
+                        <td className={cx("table-header-item")}>Transaction Hash</td>
+                        <td className={cx("table-header-item")}>Action</td>
+                        <td className={cx("table-header-item")}>Amount</td>
+                        <td className={cx("table-header-item")}>Fees</td>
+                        <td className={cx("table-header-item")}>Status</td>
+                    </tr>
+                </thead>
                 <tbody className={cx("rows")}>
                     {data &&
                         data.map((item, index) => (

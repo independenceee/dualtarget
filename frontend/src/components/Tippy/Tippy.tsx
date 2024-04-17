@@ -14,6 +14,7 @@ type Props = {
     render: React.ReactNode;
     placement?: Placement;
     interactive?: boolean;
+    hideOnClick?: boolean;
     trigger?: string;
     className?: string;
     offset?: [number, number];
@@ -30,10 +31,12 @@ const Tippy = function ({
     className,
     trigger = "mouseenter",
     placement = "top-start",
+    hideOnClick = true,
     interactive = true,
 }: Props) {
     return (
         <HeadlessTippy
+            hideOnClick={hideOnClick}
             onShow={onShow}
             onHide={onHide}
             offset={offset}
