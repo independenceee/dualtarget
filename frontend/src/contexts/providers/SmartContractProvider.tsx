@@ -114,7 +114,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const withdraw = async function ({ lucid }: { lucid: Lucid }) {
+    const withdraw = async function ({ lucid,  }: { lucid: Lucid }) {
         try {
             setWaitingWithdraw(false);
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
@@ -162,9 +162,9 @@ const SmartContractProvider = function ({ children }: Props) {
                      */
 
                     if (
-                        String(params.odOwner) === String(paymentAddress) // Lấy tất cả =  Djed + Profit
-                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed
-                        // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
+                        String(params.odOwner) === String(paymentAddress) // ! Lấy tất cả =  Djed + Profit
+                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
+                        // Number(params.isLimitOrder) === 0 // UTXO profit (chua co) // Lấy Profit
                     ) {
                         let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                         const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);

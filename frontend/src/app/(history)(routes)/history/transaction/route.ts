@@ -18,9 +18,7 @@ export async function GET(request: NextRequest) {
     });
 
     const results = await Promise.all(
-        (
-            await API.addressesTransactions(walletAddress)
-        ).map(async function ({ tx_hash, block_time }) {
+        (await API.addressesTransactions(walletAddress)).reverse().map(async function ({ tx_hash, block_time }) {
             return {
                 block_time: convertDatetime(block_time),
                 utxos: await API.txsUtxos(tx_hash),
@@ -37,7 +35,8 @@ export async function GET(request: NextRequest) {
 
                 const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
                 if (hasInput) {
-                    let amount: number = 0;
+                    let amount: number = -39000000;
+
                     transaction.utxos.inputs.forEach(function (input) {
                         if (input.address === addressToFind) {
                             const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
