@@ -9,13 +9,14 @@ import Pagination from "~/components/Pagination";
 import Image from "next/image";
 import icons from "~/assets/icons";
 import { historyTransactions } from "~/constants/header-table";
+import { TransactionHistoryType } from "~/types/GenericsType";
 
 const cx = classNames.bind(styles);
 
 type Props = {
     className?: string;
     isLoading?: boolean;
-    data?: any[];
+    data: TransactionHistoryType[];
 };
 
 const Orders = ({ className, isLoading }: Props) => {
