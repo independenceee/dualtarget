@@ -29,12 +29,8 @@ export async function GET(request: NextRequest) {
 
     const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
 
-    const totalPage = Math.ceil(results.length / Number(pageSize));
-
-    const histories = results.slice(Number(page) * Number(pageSize), (Number(page) + 1) * Number(pageSize));
-    console.log(results);
     const transactionsWithTargetAddress = await Promise.all(
-        histories
+        results
             .map((transaction) => {
                 const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
 
@@ -57,8 +53,8 @@ export async function GET(request: NextRequest) {
                     return {
                         type: "Withdraw",
                         txHash: transaction.utxos.hash,
-                        amount: amount,
-                        status: "complete",
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
                         fee: 1.5,
                         blockTime: transaction.block_time,
                     };
@@ -83,17 +79,20 @@ export async function GET(request: NextRequest) {
                         blockTime: transaction.block_time,
                         txHash: transaction.utxos.hash,
                         type: "Deposit",
-                        amount: amount,
-                        status: "complete",
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
                         fee: 1.5,
                     };
                 }
             })
             .filter((output) => output != null),
     );
+    const totalPage = Math.ceil(transactionsWithTargetAddress.length / Number(pageSize));
+    const histories = [...transactionsWithTargetAddress].slice((Number(page) - 1) * Number(pageSize), Number(page) * Number(pageSize));
 
     return Response.json({
         totalPage: totalPage,
-        histories: transactionsWithTargetAddress,
+        histories,
+        totalItems: transactionsWithTargetAddress.length,
     });
 }

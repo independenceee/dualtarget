@@ -1,3 +1,5 @@
+"use client";
+
 import configs from "~/configs";
 import images from "~/assets/images";
 import { WalletType } from "~/types/GenericsType";
@@ -12,9 +14,7 @@ const wallets: Array<WalletType> = [
             return await window.cardano.nami.enable();
         },
         checkApi: async function () {
-            return (await window.cardano.nami).catch((e: unknown) => {
-                console.log(e);
-            });
+            return await window.cardano.nami;
         },
         downloadApi: configs.wallets.nami,
     },
