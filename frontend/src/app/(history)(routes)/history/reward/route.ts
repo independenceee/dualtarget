@@ -16,5 +16,17 @@ export async function GET(request: NextRequest) {
     const blockfrost = new Blockfrost(process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!, network);
     const koios = new Koios(process.env.KOIOS_RPC_URL_PREPROD!);
 
-    return Response.json({});
+    const poolId = "pool1mvgpsafktxs883p66awp7fplj73cj6j9hqdxzvqw494f7f0v2dp";
+
+    const totalReward: number = 0;
+    const totalPendingReward: number = 0;
+
+    const currentEpoch: number = (await blockfrost.epochsLatest()).epoch;
+
+    
+    return Response.json({
+        currentEpoch,
+        totalReward,
+        totalPendingReward,
+    });
 }
