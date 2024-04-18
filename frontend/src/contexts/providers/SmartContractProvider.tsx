@@ -3,7 +3,7 @@
 import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address } from "lucid-cardano";
 import React, { ReactNode, useContext, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { ClaimableUTxO, CalculateSellingStrategy, TransactionType } from "~/types/GenericsType";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { DualtargetDatum } from "~/constants/datum";
@@ -20,14 +20,9 @@ type Props = {
 };
 
 const SmartContractProvider = function ({ children }: Props) {
+    const queryClient = useQueryClient();
     const { refresh } = useContext<WalletContextType>(WalletContext);
     const { account } = useContext<AccountContextType>(AccountContext);
-
-    const transactionMutation = useMutation({
-        mutationFn: function (body: TransactionType) {
-            return post("/transaction", { body });
-        },
-    }); //
 
     const [txHashDeposit, setTxHashDeposit] = useState<TxHash>("");
     const [txHashWithdraw, setTxHashWithdraw] = useState<TxHash>("");
@@ -111,14 +106,6 @@ const SmartContractProvider = function ({ children }: Props) {
             if (success) {
                 setTxHashDeposit(txHash);
                 await refresh();
-                transactionMutation.mutate({
-                    tx_hash: txHash,
-                    account_id: account?.id!,
-                    action: "Withdraw",
-                    amount: "",
-                    date: "",
-                    status: "",
-                });
             }
         } catch (error) {
             console.log(error);
@@ -127,7 +114,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const withdraw = async function ({ lucid }: { lucid: Lucid }) {
+    const withdraw = async function ({ lucid,  }: { lucid: Lucid }) {
         try {
             setWaitingWithdraw(false);
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
@@ -175,9 +162,9 @@ const SmartContractProvider = function ({ children }: Props) {
                      */
 
                     if (
-                        String(params.odOwner) === String(paymentAddress) // Lấy tất cả =  Djed + Profit
-                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed
-                        // Number(params.isLimitOrder) === 0 // UTXO profit (chua co)
+                        String(params.odOwner) === String(paymentAddress) // ! Lấy tất cả =  Djed + Profit
+                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
+                        // Number(params.isLimitOrder) === 0 // UTXO profit (chua co) // Lấy Profit
                     ) {
                         let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                         const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
@@ -218,14 +205,6 @@ const SmartContractProvider = function ({ children }: Props) {
             if (success) {
                 setTxHashWithdraw(txHash);
                 await refresh();
-                transactionMutation.mutate({
-                    tx_hash: txHash,
-                    account_id: account?.id!,
-                    action: "Withdraw",
-                    amount: "",
-                    date: "",
-                    status: "",
-                });
             }
         } catch (error) {
             console.log(error);

@@ -2,7 +2,7 @@
 
 import React, { ReactNode, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const SmartContractProvider = lazy(() => import("~/contexts/providers/SmartContractProvider"));
 const WalletProvider = lazy(() => import("~/contexts/providers/WalletProvider"));
 const LucidProvider = lazy(() => import("~/contexts/providers/LucidProvider"));
@@ -21,6 +21,7 @@ const queryClient = new QueryClient();
 const ContextProvider = function ({ children }: Props) {
     return (
         <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools initialIsOpen={false} />
             <TranslateProvider>
                 <ToastProvider>
                     <ModalProvider>

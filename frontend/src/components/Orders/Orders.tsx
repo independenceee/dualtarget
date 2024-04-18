@@ -1,27 +1,34 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./Orders.module.scss";
 import Table from "~/components/Table";
 import Expand from "~/components/Expand/Expand";
 import Pagination from "~/components/Pagination";
 import Image from "next/image";
 import icons from "~/assets/icons";
-import { historyTransactions } from "~/constants/header-table";
+import { TransactionHistoryType, TransactionResponseType } from "~/types/GenericsType";
+import WalletContext from "~/contexts/components/WalletContext";
+import Loading from "../Loading";
 
 const cx = classNames.bind(styles);
 
 type Props = {
     className?: string;
     isLoading?: boolean;
-    data?: any[];
+    isError?: boolean;
+    data?: TransactionResponseType;
+    page: number;
+    setPage: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const Orders = ({ className, isLoading }: Props) => {
+const Orders = ({ className, isLoading, data, isError, page, setPage }: Props) => {
+    const { wallet } = useContext(WalletContext);
+
     return (
         <div className={cx("wrapper", className)}>
-            {isLoading ? (
+            {!Boolean(wallet?.address) ? (
                 <div className={cx("no-data")}>
                     <div className={cx("icon-wrapper")}>
                         <Image src={icons.glass} className={cx("icon")} alt="search-icon" />
@@ -30,20 +37,43 @@ const Orders = ({ className, isLoading }: Props) => {
                 </div>
             ) : (
                 <div>
-                    <div className={cx("table-wrapper", "irresponsive")}>
-                        <Table className={cx("order-table")} headerTables={historyTransactions} />
-                        <Pagination pageSize={5} totalItems={20} />
-                    </div>
-                    <div className={cx("responsive")}>
-                        <div className={cx("transaction-accordions")}>
-                            {Array(5)
-                                .fill(0)
-                                .map((_, index) => (
-                                    <Expand key={index} className={cx("accordion-item")} />
-                                ))}
+                    {isLoading && (
+                        <div className={cx("no-data")}>
+                            <p className={cx("notification")}>
+                                <Loading className={cx("order-loading")} />
+                            </p>
                         </div>
-                        <Pagination pageSize={5} totalItems={20} />
-                    </div>
+                    )}
+                    {isError && (
+                        <div className={cx("no-data")}>
+                            <div className={cx("icon-wrapper")}>
+                                <Image src={icons.glass} className={cx("icon")} alt="search-icon" />
+                            </div>
+                            <p className={cx("notification")}>There was an error fetching data</p>
+                        </div>
+                    )}
+                    {data && data.histories.length === 0 && (
+                        <div className={cx("no-data")}>
+                            <div className={cx("icon-wrapper")}>
+                                <Image src={icons.glass} className={cx("icon")} alt="search-icon" />
+                            </div>
+                            <p className={cx("notification")}>No data available</p>
+                        </div>
+                    )}
+                    {data && data.histories.length > 0 && (
+                        <>
+                            <div className={cx("table-wrapper", "irresponsive")}>
+                                <Table className={cx("order-table")} data={data?.histories as TransactionHistoryType[]} />
+                                <Pagination setPage={setPage} page={page} totalItems={data.totalItems} totalPages={data.totalPage} />
+                            </div>
+                            <div className={cx("responsive")}>
+                                <div className={cx("transaction-accordions")}>
+                                    {data && data.histories.map((item, index) => <Expand data={item} key={index} className={cx("accordion-item")} />)}
+                                </div>
+                                <Pagination setPage={setPage} page={page} totalItems={data.totalItems} totalPages={data.totalPage} />
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
         </div>

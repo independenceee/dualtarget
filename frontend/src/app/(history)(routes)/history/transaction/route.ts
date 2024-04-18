@@ -2,6 +2,7 @@ import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
 import convertDatetime from "~/helpers/convert-datetime";
+import transactionHistory from "~/services/transaction-history";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -17,9 +18,7 @@ export async function GET(request: NextRequest) {
     });
 
     const results = await Promise.all(
-        (
-            await API.addressesTransactions(walletAddress)
-        ).map(async function ({ tx_hash, block_time }) {
+        (await API.addressesTransactions(walletAddress)).reverse().map(async function ({ tx_hash, block_time }) {
             return {
                 block_time: convertDatetime(block_time),
                 utxos: await API.txsUtxos(tx_hash),
@@ -29,18 +28,15 @@ export async function GET(request: NextRequest) {
 
     const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
 
-    const totalPage = Math.ceil(results.length / Number(pageSize));
-
-    const histories = results.slice(Number(page) * Number(pageSize), (Number(page) + 1) * Number(pageSize));
-    console.log(results);
     const transactionsWithTargetAddress = await Promise.all(
-        histories
+        results
             .map((transaction) => {
                 const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
 
                 const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
                 if (hasInput) {
-                    let amount: number = 0;
+                    let amount: number = -39000000;
+
                     transaction.utxos.inputs.forEach(function (input) {
                         if (input.address === addressToFind) {
                             const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
@@ -57,8 +53,8 @@ export async function GET(request: NextRequest) {
                     return {
                         type: "Withdraw",
                         txHash: transaction.utxos.hash,
-                        amount: amount,
-                        status: "complete",
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
                         fee: 1.5,
                         blockTime: transaction.block_time,
                     };
@@ -83,17 +79,20 @@ export async function GET(request: NextRequest) {
                         blockTime: transaction.block_time,
                         txHash: transaction.utxos.hash,
                         type: "Deposit",
-                        amount: amount,
-                        status: "complete",
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
                         fee: 1.5,
                     };
                 }
             })
             .filter((output) => output != null),
     );
+    const totalPage = Math.ceil(transactionsWithTargetAddress.length / Number(pageSize));
+    const histories = [...transactionsWithTargetAddress].slice((Number(page) - 1) * Number(pageSize), Number(page) * Number(pageSize));
 
     return Response.json({
         totalPage: totalPage,
-        histories: transactionsWithTargetAddress,
+        histories,
+        totalItems: transactionsWithTargetAddress.length,
     });
 }

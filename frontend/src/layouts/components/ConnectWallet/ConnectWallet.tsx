@@ -76,7 +76,11 @@ const ConnectWallet = function ({ className }: Props) {
                                         </div>
                                         <div className={cx("data-wallet-address")}>
                                             {convertString({ inputString: String(wallet.address), numberOfFirstChar: 13, numberOfLastChar: -16 })}
-                                            <Tippy placement={"top-end"} render={isCopied ? <div>Copied.</div> : <div>Copy to clipboard.</div>}>
+                                            <Tippy
+                                                hideOnClick={false}
+                                                placement={"top-end"}
+                                                render={isCopied ? <div>Copied.</div> : <div>Copy to clipboard.</div>}
+                                            >
                                                 <CopyToClipboard onCopy={() => setIsCopied(true)} text={wallet?.address as string}>
                                                     <Image className={cx("icon-help-circle")} src={icons.copy} width={18} height={18} alt="" />
                                                 </CopyToClipboard>

@@ -21,6 +21,7 @@
         "@minswap/blockfrost-adapter": "^0.1.0",
         "@minswap/sdk": "^0.2.2-beta",
         "@tanstack/react-query": "^5.28.9",
+        "@tanstack/react-query-devtools": "^5.29.2",
         "@tippyjs/react": "^4.2.6",
         "@types/react-copy-to-clipboard": "^5.0.7",
         "@types/react-detect-offline": "^2.4.5",

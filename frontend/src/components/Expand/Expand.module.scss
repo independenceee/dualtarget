@@ -17,6 +17,18 @@
     }
 }
 
+.action-type {
+    text-transform: capitalize;
+}
+
+.link {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 32px;
+}
+
 .header {
     -webkit-padding-end: 64px;
     align-items: center;
