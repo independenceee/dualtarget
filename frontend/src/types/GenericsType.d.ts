@@ -1,4 +1,4 @@
-import { Network, TxHash } from "lucid-cardano";
+import { Network, TxHash, UTxO } from "lucid-cardano";
 
 export type DelegationRewardType = {
     epoch: number;
@@ -108,8 +108,9 @@ export type CalculateSellingStrategy = {
     USDTPool: number;
     sumADA: number;
 };
+
 export interface ClaimableUTxO {
-    utxo: any;
+    utxo: UTxO;
     BatcherFee_addr: string;
     fee: number;
     minimumAmountOut: number;
