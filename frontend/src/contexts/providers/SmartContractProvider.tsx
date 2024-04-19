@@ -58,8 +58,6 @@ const SmartContractProvider = function ({ children }: Props) {
                 totalADA: totalADA * 1000000, // Tổng ada = 24000000
             });
 
-            console.log("Selling: ", sellingStrategies);
-
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
 
@@ -90,8 +88,6 @@ const SmartContractProvider = function ({ children }: Props) {
                 );
             });
 
-            console.log("datum " + datums);
-
             let tx: any = lucid.newTx();
 
             sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
@@ -114,7 +110,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const withdraw = async function ({ lucid,  }: { lucid: Lucid }) {
+    const withdraw = async function ({ lucid, mode }: { lucid: Lucid; mode: number }) {
         try {
             setWaitingWithdraw(false);
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
@@ -161,21 +157,53 @@ const SmartContractProvider = function ({ children }: Props) {
                      * 3. Lấy UTXO Profit
                      */
 
-                    if (
-                        String(params.odOwner) === String(paymentAddress) // ! Lấy tất cả =  Djed + Profit
-                        // Number(scriptUtxo.assets.lovelace) => 113590909 && Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
-                        // Number(params.isLimitOrder) === 0 // UTXO profit (chua co) // Lấy Profit
-                    ) {
-                        let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
-                        const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+                    switch (mode) {
+                        case 0:
+                            if (String(params.odOwner) === String(paymentAddress)) {
+                                let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
+                                const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
 
-                        claimableUtxos.push({
-                            utxo: scriptUtxo,
-                            BatcherFee_addr: String(freeAddress1),
-                            fee: params.batcherFee,
-                            minimumAmountOut: params.minimumAmountOut, // Số lượng profit
-                            minimumAmountOutProfit: params.minimumAmountOutProfit,
-                        });
+                                claimableUtxos.push({
+                                    utxo: scriptUtxo,
+                                    BatcherFee_addr: String(freeAddress1),
+                                    fee: params.batcherFee,
+                                    minimumAmountOut: params.minimumAmountOut, // Số lượng profit
+                                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                });
+                                break;
+                            }
+                        case 1:
+                            // UTXO profit (chua co) // Lấy Profit)
+                            if (Number(params.isLimitOrder) === 0) {
+                                let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
+                                const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+
+                                claimableUtxos.push({
+                                    utxo: scriptUtxo,
+                                    BatcherFee_addr: String(freeAddress1),
+                                    fee: params.batcherFee,
+                                    minimumAmountOut: params.minimumAmountOut, // Số lượng profit
+                                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                });
+                            }
+                            break;
+
+                        case 2:
+                            if (
+                                Number(scriptUtxo.assets.lovelace) >= 113590909 &&
+                                Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
+                            ) {
+                                let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
+                                const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+
+                                claimableUtxos.push({
+                                    utxo: scriptUtxo,
+                                    BatcherFee_addr: String(freeAddress1),
+                                    fee: params.batcherFee,
+                                    minimumAmountOut: params.minimumAmountOut, // Số lượng profit
+                                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                });
+                            }
                     }
                 }
             }
@@ -213,8 +241,113 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
+    const calcualateClaimEutxo = async function ({ lucid, mode }: { lucid: Lucid; mode: number }) {
+        try {
+            const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
+            const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
+            const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
+
+            let smartcontractUtxo: UTxO | undefined = scriptUtxos.find(function (scriptUtxo: UTxO) {
+                return scriptUtxo.scriptRef?.script;
+            });
+
+            if (!smartcontractUtxo) throw new Error("Cound not find smart contract utxo");
+            const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
+            const claimableUtxos: ClaimableUTxO[] = [];
+            for (const scriptUtxo of scriptUtxos) {
+                if (scriptUtxo.scriptRef?.script) {
+                    smartcontractUtxo = scriptUtxo;
+                    const outputDatum: any = Data.from(scriptUtxo.datum!);
+                    console.log(outputDatum.fields[2]);
+                } else if (scriptUtxo.datum) {
+                    const outputDatum: any = Data.from(scriptUtxo.datum!);
+                    console.log(outputDatum);
+                    const params = {
+                        odOwner: outputDatum.fields[0],
+                        odBeneficiary: outputDatum.fields[1],
+                        assetADA: { policyId: datumParams.assetAda.policyId, assetName: datumParams.assetAda.assetName },
+                        amountA: outputDatum.fields[3],
+                        assetOut: { policyId: datumParams.assetOut.policyId, assetName: datumParams.assetOut.assetName },
+                        minimumAmountOut: outputDatum.fields[5],
+                        minimumAmountOutProfit: outputDatum.fields[6],
+                        buyPrice: outputDatum.fields[7],
+                        sellPrice: outputDatum.fields[8],
+                        odStrategy: datumParams.odStrategy,
+                        batcherFee: datumParams.batcherFee,
+                        outputADA: datumParams.outputADA,
+                        feeAddress: datumParams.feeAddress,
+                        validatorAddress: datumParams.validatorAddress,
+                        deadline: outputDatum.fields[14],
+                        isLimitOrder: outputDatum.fields[15],
+                    };
+
+                    /**
+                     * 1. Lấy tất cả
+                     * 2. Lấy UTXO DJED
+                     * 3. Lấy UTXO Profit
+                     */
+
+                    switch (mode) {
+                        case 0:
+                            if (String(params.odOwner) === String(paymentAddress)) {
+                                let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
+                                const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+
+                                claimableUtxos.push({
+                                    utxo: scriptUtxo,
+                                    BatcherFee_addr: String(freeAddress1),
+                                    fee: params.batcherFee,
+                                    minimumAmountOut: params.minimumAmountOut, // Số lượng profit
+                                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                });
+                                break;
+                            }
+                        case 1:
+                            // UTXO profit (chua co) // Lấy Profit)
+                            if (Number(params.isLimitOrder) === 0) {
+                                let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
+                                const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+
+                                claimableUtxos.push({
+                                    utxo: scriptUtxo,
+                                    BatcherFee_addr: String(freeAddress1),
+                                    fee: params.batcherFee,
+                                    minimumAmountOut: params.minimumAmountOut, // Số lượng profit
+                                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                });
+                            }
+                            break;
+
+                        case 2:
+                            if (
+                                Number(scriptUtxo.assets.lovelace) >= 113590909 &&
+                                Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
+                            ) {
+                                let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
+                                const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+
+                                claimableUtxos.push({
+                                    utxo: scriptUtxo,
+                                    BatcherFee_addr: String(freeAddress1),
+                                    fee: params.batcherFee,
+                                    minimumAmountOut: params.minimumAmountOut, // Số lượng profit
+                                    minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                });
+                            }
+                    }
+                }
+            }
+            return claimableUtxos;
+        } catch (error) {
+            console.log(error);
+            return [];
+        }
+    };
+
     return (
-        <SmartContractContext.Provider value={{ deposit, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}>
+        <SmartContractContext.Provider
+            value={{ deposit, calcualateClaimEutxo, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}
+        >
             {children}
         </SmartContractContext.Provider>
     );

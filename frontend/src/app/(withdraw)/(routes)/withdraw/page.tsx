@@ -1,14 +1,13 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders/Orders";
 import styles from "./Withdraw.module.scss";
 import Image from "next/image";
 import images from "~/assets/images";
-import dynamic from "next/dynamic";
 import { SmartContractContextType } from "~/types/contexts/SmartContractContextType";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
@@ -26,7 +25,7 @@ import AccountContext from "~/contexts/components/AccountContext";
 import { useQuery } from "@tanstack/react-query";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
-import { ChartDataType, ChartHistoryRecord, TransactionResponseType } from "~/types/GenericsType";
+import { ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
 
@@ -49,9 +48,13 @@ const WITHDRAW_MODES: Item[] = [
 ];
 
 const Withdraw = function () {
+    const { lucid } = useContext<LucidContextType>(LucidContext);
+    const { waitingWithdraw, withdraw, calcualateClaimEutxo } = useContext<SmartContractContextType>(SmartContractContext);
     const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
+    const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
+    const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([]);
 
     // TODO: DATA => Transfer
     const { data, isLoading, isError } = useQuery({
@@ -68,23 +71,34 @@ const Withdraw = function () {
 
     const {
         register,
+        setValue,
         handleSubmit,
         formState: { errors },
     } = useForm<WithdrawType>();
-    const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
-    const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { waitingWithdraw, withdraw } = useContext<SmartContractContextType>(SmartContractContext);
 
-    const onWithdraw = handleSubmit(async (data) => {
-        try {
-            lucid &&
-                withdraw({
-                    lucid,
-                });
-        } catch (error) {
-            console.warn("Error: ", error);
-        }
-    });
+    useEffect(() => {
+        calcualateClaimEutxo({
+            lucid,
+            mode: currentWithdrawMode.id,
+        }).then((res) => {
+            if (currentWithdrawMode.id !== WithdrawMode.Part) {
+                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
+                setValue("amount", amount / 1000000);
+            } else {
+                const withdrawableParts = (res as ClaimableUTxO[]).map((claim) => Number(claim.utxo.assets.lovelace) / 1000000);
+                const result: number[] = [...withdrawableParts];
+                console.log(withdrawableParts);
+                for (let i = 0; i < withdrawableParts.length - 1; i++) {
+                    for (let j = i + 1; j < withdrawableParts.length; j++) {
+                        result.push(withdrawableParts[i] + withdrawableParts[j]);
+                    }
+                }
+
+                setWithdrawableProfit([...Array.from(new Set(result))]);
+                setValue("amount", 0);
+            }
+        });
+    }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue]);
 
     const {
         data: chartDataRecords,
@@ -107,6 +121,19 @@ const Withdraw = function () {
         return [];
     }, [chartDataRecords, isGetChartRecordsSuccess]);
 
+    const onWithdraw = handleSubmit(async (data) => {
+        try {
+            lucid &&
+                withdraw({
+                    lucid,
+                    mode: currentWithdrawMode.id,
+                });
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    });
+
+    const onRangeChange = function () {};
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -135,6 +162,7 @@ const Withdraw = function () {
                                                 placeholder="Enter the total number of ada"
                                                 register={register}
                                                 errorMessage={errors.amount?.message}
+                                                disabled={true}
                                                 rules={{
                                                     required: {
                                                         value: true,
@@ -151,21 +179,6 @@ const Withdraw = function () {
                                         </div>
 
                                         <div className={cx("info")}>
-                                            <div className={cx("service-stats")}>
-                                                <div className={cx("title-wrapper")}>
-                                                    <span>Cost</span>
-                                                    <Tippy render={<div>Amount includes a 1.5% mint fee</div>}>
-                                                        <Image
-                                                            className={cx("icon-help-circle")}
-                                                            src={icons.helpCircle}
-                                                            width={12}
-                                                            height={12}
-                                                            alt=""
-                                                        />
-                                                    </Tippy>
-                                                </div>
-                                                {waitingWithdraw ? <Loading /> : "-"}
-                                            </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
                                                     <span>Fees</span>
@@ -196,39 +209,9 @@ const Withdraw = function () {
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
-                                                    <span>You will pay</span>
+                                                    <span>You will receive</span>
                                                 </div>
                                                 {waitingWithdraw ? <Loading /> : "-"}
-                                            </div>
-                                            <div className={cx("service-stats")}>
-                                                <div className={cx("title-wrapper")}>
-                                                    <span>Minimal ADA requirement</span>
-                                                    <Tippy
-                                                        placement="top"
-                                                        render={
-                                                            <div>
-                                                                This amount will be reimbursed once the order is processed, irrespective of whether
-                                                                the order is a success or not.
-                                                                <a
-                                                                    className={cx("tippy-content-link")}
-                                                                    href="https://docs.cardano.org/native-tokens/minimum-ada-value-requirement/"
-                                                                    target="_blank"
-                                                                >
-                                                                    Why is it required?
-                                                                </a>
-                                                            </div>
-                                                        }
-                                                    >
-                                                        <Image
-                                                            className={cx("icon-help-circle")}
-                                                            src={icons.helpCircle}
-                                                            width={12}
-                                                            height={12}
-                                                            alt=""
-                                                        />
-                                                    </Tippy>
-                                                </div>
-                                                -
                                             </div>
                                         </div>
 

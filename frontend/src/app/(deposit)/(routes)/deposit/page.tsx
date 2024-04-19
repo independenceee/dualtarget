@@ -50,15 +50,13 @@ const Deposit = function () {
         queryKey: ["Transactions", page],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                `http://localhost:3000/history/transaction?wallet_address=addr_test1qzwu6jcqk8f96fxq02pvq2h4a927ggn35f2gzdklfte4kwx0sd5zdvsat2chsyyjxkjxcg6uz2y46avd46mzqdgdy3dsckqxs4&page=${page}&page_size=5`,
                 {
                     timeout: 5000,
                 },
             ),
         enabled: !Boolean(account?.id),
     });
-
-    console.table(data?.data);
 
     const {
         handleSubmit,
