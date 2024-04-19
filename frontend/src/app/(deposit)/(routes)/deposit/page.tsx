@@ -28,6 +28,7 @@ import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
 import CountUp from "react-countup";
+import images from "~/assets/images";
 
 const cx = classNames.bind(styles);
 
@@ -50,9 +51,9 @@ const Deposit = function () {
         queryKey: ["Transactions", page],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `http://localhost:3000/history/transaction?wallet_address=addr_test1qzwu6jcqk8f96fxq02pvq2h4a927ggn35f2gzdklfte4kwx0sd5zdvsat2chsyyjxkjxcg6uz2y46avd46mzqdgdy3dsckqxs4&page=${page}&page_size=5`,
+                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 {
-                    timeout: 5000,
+                    timeout: 7000,
                 },
             ),
         enabled: !Boolean(account?.id),
@@ -144,16 +145,13 @@ const Deposit = function () {
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")}>Mint or Burn DJED</h2>
+                    <h2 className={cx("title")}>Deposit pool</h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
-                                <Card title="Deposite DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
-                                    {/* <button className={cx("preview-button")} onClick={previewSellingStrategies}>
-                                        Preview
-                                    </button> */}
+                                <Card title="Deposite" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>
@@ -176,10 +174,10 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
-                                                            description="Hello"
+                                                            description="You can hold min price for strategy"
                                                             {...field}
                                                             value={watch("priceLow")}
-                                                            title="Min price"
+                                                            title="Min price ($)"
                                                             className={cx("input")}
                                                             placeholder="Enter the lowest price"
                                                             errorMessage={errors.priceLow?.message}
@@ -201,7 +199,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
-                                                            description="Hello"
+                                                            description="You can hold min price for strategy"
                                                             {...field}
                                                             onChange={(e) => {
                                                                 field.onChange(e);
@@ -227,9 +225,9 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
-                                                            description="Hello"
+                                                            description="Money recive for month"
                                                             {...field}
-                                                            title="Desired income"
+                                                            title="Desired income  (USD)"
                                                             className={cx("input")}
                                                             placeholder="Enter the lowest price"
                                                             errorMessage={errors.income?.message}
@@ -248,7 +246,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
-                                                            description="Hello"
+                                                            description="Stake reward for year"
                                                             {...field}
                                                             title="Stake (%)"
                                                             className={cx("input")}
@@ -271,9 +269,9 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
-                                                            description="Hello"
+                                                            description="Step for ₳/DJED"
                                                             {...field}
-                                                            title="Step"
+                                                            title="Step (%)"
                                                             className={cx("input")}
                                                             placeholder="Enter the price jump"
                                                             errorMessage={errors.step?.message}
@@ -293,7 +291,7 @@ const Deposit = function () {
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
-                                                            description="Hello"
+                                                            description="Total ADA hold"
                                                             {...field}
                                                             title="Total ADA"
                                                             className={cx("input")}
@@ -369,7 +367,7 @@ const Deposit = function () {
 
             <section>
                 <div className={cx("header-order")}>
-                    <h2 className={cx("title")}>Orders</h2>
+                    <h2 className={cx("title")}>History</h2>
                 </div>
                 <Orders page={page} setPage={setPage} data={data?.data} isError={isError} isLoading={isLoading} className={cx("orders")} />
             </section>

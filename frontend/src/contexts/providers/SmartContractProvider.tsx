@@ -10,10 +10,9 @@ import { DualtargetDatum } from "~/constants/datum";
 import { refundRedeemer } from "~/constants/redeemer";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
-import WalletContext from "../components/WalletContext";
-import { post } from "~/utils/http-requests";
+import WalletContext from "~/contexts/components/WalletContext";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
-import AccountContext from "../components/AccountContext";
+import AccountContext from "~/contexts/components/AccountContext";
 
 type Props = {
     children: ReactNode;
