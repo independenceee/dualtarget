@@ -41,7 +41,6 @@ type DepositeType = {
 };
 
 const Deposit = function () {
-    const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
@@ -51,9 +50,7 @@ const Deposit = function () {
         queryFn: () =>
             axios.get<TransactionResponseType>(
                 `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
-                {
-                    timeout: 7000,
-                },
+                { timeout: 7000 },
             ),
         enabled: !Boolean(wallet?.address),
     });

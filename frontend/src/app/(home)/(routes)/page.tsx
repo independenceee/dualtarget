@@ -110,10 +110,19 @@ export default function Home() {
                             ></iframe>
                         </div>
                         <div className={cx("about-content-wrapper")}>
+                            <h2 className={cx("about-title")}>About dualtarget</h2>
+                            <p className={cx("about-description")}>Staking and increasing assets with a decentralized</p>
                             <span className={cx("about-content")}>
                                 We will develop a platform that enables users to choose dual targets and trading methods directly within their
                                 wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
                             </span>
+                            <span className={cx("about-content")}>
+                                We will develop a platform that enables users to choose dual targets and trading methods directly within their
+                                wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
+                            </span>
+                            <Button className={cx("stat-button")} href={routes.withdraw}>
+                                Contact us
+                            </Button>
                         </div>
                     </div>
                 </div>

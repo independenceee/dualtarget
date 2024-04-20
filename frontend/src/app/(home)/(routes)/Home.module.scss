@@ -118,7 +118,6 @@
 .sub-stats {
     text-align: center;
     margin-top: 1.6rem;
-
     font-size: 1.6rem;
 }
 
@@ -306,12 +305,23 @@
 .about-content-wrapper {
     width: 40%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .about-content {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
+}
+
+.about-title {
+    text-align: left;
+    font-size: 2.5rem;
+}
+
+.about-description {
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 1366px) {
