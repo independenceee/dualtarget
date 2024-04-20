@@ -44,12 +44,12 @@ const SmartContractProvider = function ({ children }: Props) {
                         odOwner: vkeyOwnerHash,
                         odBeneficiary: vkeyBeneficiaryHash,
                         assetADA: { policyId: datumParams.assetAda.policyId, assetName: datumParams.assetAda.assetName },
-                        amountADA: BigInt(sellingStrategy.amountSend),
+                        amountADA: BigInt(sellingStrategy.amountSend!),
                         assetOut: { policyId: datumParams.assetOut.policyId, assetName: datumParams.assetOut.assetName },
-                        minimumAmountOut: BigInt(sellingStrategy.minimumAmountOut),
-                        minimumAmountOutProfit: BigInt(sellingStrategy.minimumAmountOutProfit),
-                        buyPrice: BigInt(sellingStrategy.buyPrice),
-                        sellPrice: BigInt(sellingStrategy.sellPrice),
+                        minimumAmountOut: BigInt(sellingStrategy.minimumAmountOut!),
+                        minimumAmountOutProfit: BigInt(sellingStrategy.minimumAmountOutProfit!),
+                        buyPrice: BigInt(sellingStrategy.buyPrice!),
+                        sellPrice: BigInt(sellingStrategy.sellPrice!),
                         odStrategy: datumParams.odStrategy,
                         batcherFee: datumParams.batcherFee,
                         outputADA: datumParams.outputADA,
@@ -65,7 +65,7 @@ const SmartContractProvider = function ({ children }: Props) {
             let tx: any = lucid.newTx();
 
             sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
-                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend) });
+                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend!) });
             });
 
             tx = await tx.complete();
@@ -179,8 +179,6 @@ const SmartContractProvider = function ({ children }: Props) {
                     }
                 }
             }
-
-            console.table(claimableUtxos);
 
             if (!smartcontractUtxo) {
                 console.log("Reference UTxO not found!");
@@ -318,9 +316,40 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
+    const previewWithdraw = async function ({ lucid }: { lucid: Lucid }): Promise<CalculateSellingStrategy[]> {
+        const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
+        const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
+        const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
+
+        const sellingStrategies: CalculateSellingStrategy[] = [];
+        for (const scriptUtxo of scriptUtxos) {
+            if (scriptUtxo.datum) {
+                const outputDatum: any = Data.from(scriptUtxo.datum!);
+                const params = {
+                    odOwner: outputDatum.fields[0],
+                    minimumAmountOut: outputDatum.fields[5],
+                    minimumAmountOutProfit: outputDatum.fields[6],
+                    buyPrice: outputDatum.fields[7],
+                    sellPrice: outputDatum.fields[8],
+                };
+
+                if (String(params.odOwner) === String(paymentAddress)) {
+                    sellingStrategies.push({
+                        minimumAmountOut: Number(params.minimumAmountOut),
+                        minimumAmountOutProfit: Number(params.minimumAmountOutProfit),
+                        buyPrice: Number(params.buyPrice),
+                        sellPrice: Number(params.sellPrice),
+                    });
+                }
+            }
+        }
+
+        return sellingStrategies;
+    };
+
     return (
         <SmartContractContext.Provider
-            value={{ deposit, calcualateClaimEutxo, withdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}
+            value={{ deposit, calcualateClaimEutxo, withdraw, previewWithdraw, txHashDeposit, txHashWithdraw, waitingDeposit, waitingWithdraw }}
         >
             {children}
         </SmartContractContext.Provider>

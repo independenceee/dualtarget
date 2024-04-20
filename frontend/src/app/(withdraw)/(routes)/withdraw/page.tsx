@@ -25,21 +25,17 @@ import AccountContext from "~/contexts/components/AccountContext";
 import { useQuery } from "@tanstack/react-query";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
-import { ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
+import { Credential, Data, UTxO } from "lucid-cardano";
+import readDatum from "~/utils/read-datum";
 
 type WithdrawType = {
     amount: number;
 };
 
 const cx = classNames.bind(styles);
-
-// export enum WithdrawMode {
-//     All,
-//     Profit,
-//     Part,
-// }
 
 const WITHDRAW_MODES: Item[] = [
     { name: "All", id: 0 },
@@ -51,14 +47,14 @@ type Props = {};
 
 const Withdraw = function ({}: Props) {
     const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { waitingWithdraw, withdraw, calcualateClaimEutxo } = useContext<SmartContractContextType>(SmartContractContext);
+    const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
     const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
+    const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
     const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([]);
 
-    // TODO: DATA => Transfer
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page],
         queryFn: () =>
@@ -68,8 +64,18 @@ const Withdraw = function ({}: Props) {
                     timeout: 5000,
                 },
             ),
-        enabled: !Boolean(account?.id) && !Boolean(wallet?.address),
+        enabled: !Boolean(wallet?.address),
     });
+
+    useEffect(() => {
+        if (lucid) {
+            previewWithdraw({ lucid }).then((response) => {
+                setSellingStrategies(response);
+            });
+        }
+    }, [lucid]);
+
+    console.log(sellingStrategies);
 
     const {
         register,
@@ -220,7 +226,7 @@ const Withdraw = function ({}: Props) {
                                 </Card>
                                 <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
                             </div>
-                            <CustomChart isLoading={isGetChartRecordsLoading} data={historyPrices} />
+                            <CustomChart isLoading={isGetChartRecordsLoading} data={historyPrices} preview={sellingStrategies} />
                         </div>
                     </div>
                 </div>
