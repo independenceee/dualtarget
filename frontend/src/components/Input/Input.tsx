@@ -13,7 +13,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
     rules?: RegisterOptions;
 }
 
-const Input = function ({ name, register, rules, errorMessage, title, placeholder, className, type }: Props) {
+const Input = function ({ name, register, rules, errorMessage, title, placeholder, className, type, disabled }: Props) {
     const [toggle, setToggle] = useState<boolean>(type === "password");
     const [inputType, setInputType] = useState<string>(type || "text");
 
@@ -25,8 +25,14 @@ const Input = function ({ name, register, rules, errorMessage, title, placeholde
     return (
         <section className={cx("input-field", className)}>
             <div className={cx("title")}>{title}</div>
-            <div className={cx("input-wrapper")}>
-                <input {...register(name, rules)} type={inputType} placeholder={placeholder} className={cx("input", classNames)} />
+            <div className={cx("input-wrapper", { disabled })}>
+                <input
+                    {...register(name, rules)}
+                    disabled={disabled}
+                    type={inputType}
+                    placeholder={placeholder}
+                    className={cx("input", classNames)}
+                />
                 {type === "password" && (
                     <div onClick={handleTogglePassword} className={cx("toggle")}>
                         {inputType === "text" ? (

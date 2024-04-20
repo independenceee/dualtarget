@@ -1,5 +1,7 @@
+"use client";
+
 import classNames from "classnames/bind";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import styles from "./DelegationRewards.module.scss";
 import Tippy from "~/components/Tippy";
@@ -11,10 +13,11 @@ import Pagination from "~/components/Pagination";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
+    const [page, setPage] = useState<number>(1);
     return (
         <div className={cx("wrapper")}>
             <div className={cx("container")}>
-                <h1 className={cx("title")}>Delegation Rewards for $SHEN holders</h1>
+                <h1 className={cx("title")}>Delegation Rewards for ADA holders</h1>
                 <h2 className={cx("sub-title")}>Check your ADA rewards</h2>
                 <form className={cx("form")}>
                     <section className={cx("label")}>
@@ -73,8 +76,8 @@ const DelegationRewards = function () {
                     </section>
                 ) : (
                     <div>
-                        <Table headerTables={historyRewards} />
-                        <Pagination pageSize={5} totalItems={20} />
+                        <Table data={[]} />
+                        <Pagination totalPages={5} page={1} setPage={setPage} totalItems={20} />
                     </div>
                 )}
             </div>

@@ -41,41 +41,41 @@ export default function Home() {
                     </div>
                     <div className={cx("introduction-description")}>
                         <div className={cx("description-child")}>
-                            Cardano&apos;s native overcollateralized stablecoin, developed by IOG and powered by COTI.
+                            Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot
                         </div>
-                        <div className={cx("description-child")}>DJED is backed by ADA and uses SHEN as a reserve coin.</div>
+                        {/* <div className={cx("description-child")}>DJED is backed by ADA and uses SHEN as a reserve coin.</div> */}
                     </div>
                 </div>
             </section>
             <section className={cx("stats")}>
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
-                        <Card title="Deposit Stablecoin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                        <Card title="Pool" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                             <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
                             <Button className={cx("stat-button")} href={routes.deposit}>
                                 Deposit
                             </Button>
                         </Card>
-                        <Card title="Withdraw Stablecoin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                        <Card title="Profit margin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                             <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
                             <Button className={cx("stat-button")} href={routes.withdraw}>
                                 Withdraw
                             </Button>
                         </Card>
                     </div>
-                    <div className={cx("sub-stats")}>*Buy\Sell price includes base fee, and does not include operator fee</div>
+                    <div className={cx("sub-stats")}>*Deposit\Withdraw includes base fee and operator fee</div>
                 </div>
             </section>
             <section className={cx("reverse-wrapper")}>
                 <div className={cx("reverse-inner")}>
                     <Gutter className={cx("reverse-card")}>
                         <div>
-                            <Title icon={icons.reserves} title="Reserve" />
+                            <Title icon={icons.reserves} title="Profit margin" />
 
                             <div className={cx("reserves")}>
                                 <div className={cx("reserve-ratio")}>
                                     <div className={cx("title-wrapper")}>
-                                        <h2>Ratio</h2>
+                                        <h2>ROS</h2>
                                     </div>
                                     <div className={cx("reserves-value-ratio")}>
                                         615<span className="suffix">%</span>
@@ -94,6 +94,37 @@ export default function Home() {
                             <div className={cx("last-updated-mobile")}>Last updated: 22 Feb, 2024 17:06 UTC</div>
                         </div>
                     </Gutter>
+                </div>
+            </section>
+
+            <section className={cx("about")}>
+                <div className={cx("stats-inner")}>
+                    <div className={cx("about-inner")}>
+                        <div className={cx("video-iframe-wrapper")}>
+                            <iframe
+                                className={cx("video-iframe")}
+                                src="https://www.youtube.com/embed/DCWY93O_QAU"
+                                title="Daultarget - Mục Tiêu Kép"
+                                frameBorder={"none"}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            ></iframe>
+                        </div>
+                        <div className={cx("about-content-wrapper")}>
+                            <h2 className={cx("about-title")}>About dualtarget</h2>
+                            <p className={cx("about-description")}>Staking and increasing assets with a decentralized</p>
+                            <span className={cx("about-content")}>
+                                We will develop a platform that enables users to choose dual targets and trading methods directly within their
+                                wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
+                            </span>
+                            <span className={cx("about-content")}>
+                                We will develop a platform that enables users to choose dual targets and trading methods directly within their
+                                wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
+                            </span>
+                            <Button className={cx("stat-button")} href={routes.withdraw}>
+                                Contact us
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>

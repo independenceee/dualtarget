@@ -1,24 +1,12 @@
+import { CalculateSellingStrategy } from "../GenericsType";
+
 export type SmartContractContextType = {
     waitingDeposit: boolean;
     txHashDeposit: string;
     txHashWithdraw: string;
     waitingWithdraw: boolean;
-    deposit: ({
-        lucid,
-        income,
-        priceHight,
-        priceLow,
-        stake,
-        step,
-        totalADA,
-    }: {
-        lucid: Lucid;
-        income: number;
-        priceHight: number;
-        priceLow: number;
-        stake: number;
-        step: number;
-        totalADA: number;
-    }) => Promise<void>;
-    withdraw: ({ lucid }: { lucid: Lucid }) => Promise<void>;
+    previewWithdraw: ({ lucid }: { lucid: Lucid }) => Promise<CalculateSellingStrategy[]>;
+    calcualateClaimEutxo: ({ lucid, mode }: { lucid: Lucid; mode: number }) => Promise<ClaimableUTxO[]>;
+    deposit: ({ lucid, sellingStrategies }: { lucid: Lucid; sellingStrategies: CalculateSellingStrategy[] }) => Promise<void>;
+    withdraw: ({ lucid, mode, output }: { lucid: Lucid; mode: number; output: number }) => Promise<void>;
 };

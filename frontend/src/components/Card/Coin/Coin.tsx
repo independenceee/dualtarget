@@ -17,27 +17,27 @@ const Coin = function ({ buyPrice, circulatingSupply, mintableAmount, sellPrice,
     return (
         <div className={cx("body", className)}>
             <div className={cx("buy-price")}>
-                <h2 className={cx("title")}>Buy Price</h2>
+                <h2 className={cx("title")}>Total wallet</h2>
                 <div className={cx("amount")}>
                     <span>{convertNumberToSocialType(buyPrice)}</span>
                     <span className={cx("suffix")}>₳</span>
                 </div>
             </div>
             <div className={cx("sell-price")}>
-                <h2 className={cx("title")}>Sell Price</h2>
+                <h2 className={cx("title")}>Total UTxO</h2>
                 <div className={cx("amount")}>
                     <span>{convertNumberToSocialType(sellPrice)}</span>
                     <span className={cx("suffix")}>₳</span>
                 </div>
             </div>
             <div className={cx("circulating-supply")}>
-                <h2 className={cx("title")}>Circulating Supply</h2>
+                <h2 className={cx("title")}>Total Volume Lock</h2>
                 <div className={cx("amount")}>
                     <span>{convertNumberToSocialType(circulatingSupply)}</span>
                 </div>
             </div>
             <div className={cx("mintable-amount")}>
-                <h2 className={cx("title")}>Mintable Amount</h2>
+                <h2 className={cx("title")}>Total DJED</h2>
                 <div className={cx("amount")}>
                     <span>{convertNumberToSocialType(mintableAmount)}</span>
                 </div>

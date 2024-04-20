@@ -11,7 +11,10 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
     currentValue?: number;
 }
 
-const InputRange = function ({ disabled, min = 0, max = 100, currentValue=0 }: Props) {
+const InputRange = function ({ disabled, min = 0, max = 100, currentValue = 0, onChange }: Props) {
+    const handleOnChange = function (e: React.ChangeEvent<HTMLInputElement>) {
+        
+    };
     return (
         <div className={cx("amount-slider-container")}>
             <div className={cx("percentage")}>
@@ -30,6 +33,7 @@ const InputRange = function ({ disabled, min = 0, max = 100, currentValue=0 }: P
             </div>
             <div className={cx("slider-input-group")}>
                 <input
+                    onChange={handleOnChange}
                     disabled={disabled}
                     className={cx("slider-input")}
                     type="range"

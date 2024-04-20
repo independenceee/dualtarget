@@ -45,7 +45,7 @@ const CustomChart = function ({ data, preview, isLoading, onRefresh }: Props) {
         if (!preview) return [];
         if (preview.length > 0) {
             const datetime = new Date(Date.now());
-            return preview.map((record) => {
+            return preview.map((record: any) => {
                 const oneMonthAgo = datetime.setDate(datetime.getDate() - 1);
                 return { value: record.buyPrice / 1000000, date: oneMonthAgo };
             });

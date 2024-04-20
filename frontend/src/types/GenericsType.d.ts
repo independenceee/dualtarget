@@ -1,4 +1,4 @@
-import { Network, TxHash } from "lucid-cardano";
+import { Network, TxHash, UTxO } from "lucid-cardano";
 
 export type DelegationRewardType = {
     epoch: number;
@@ -97,19 +97,20 @@ export interface DaultargetParams {
 }
 
 export type CalculateSellingStrategy = {
-    buyPrice: number;
-    sellPrice: number;
-    amountSend: number;
-    minimumAmountOut: number;
-    minimumAmountOutProfit: number;
-    amountSell: number;
-    amountBuy: number;
-    amountEntry: number;
-    USDTPool: number;
-    sumADA: number;
+    buyPrice?: number;
+    sellPrice?: number;
+    amountSend?: number;
+    minimumAmountOut?: number;
+    minimumAmountOutProfit?: number;
+    amountSell?: number;
+    amountBuy?: number;
+    amountEntry?: number;
+    USDTPool?: number;
+    sumADA?: number;
 };
+
 export interface ClaimableUTxO {
-    utxo: any;
+    utxo: UTxO;
     BatcherFee_addr: string;
     fee: number;
     minimumAmountOut: number;

@@ -6,11 +6,8 @@ import { PublicLayout } from "~/layouts";
 import NetworkConnectionStatus from "~/components/NetworkConnectionStatus";
 
 export const metadata: Metadata = {
-    title: { default: "Dualtarget", template: "%s - Dualtarget" },
+    title: "Dualtarget",
     description: "Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot",
-    twitter: {
-        card: "summary_large_image",
-    },
 };
 
 type Props = {

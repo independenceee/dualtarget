@@ -57,8 +57,6 @@ function calculateSellingStrategy({
         price *= 1 + step / 100;
     }
 
-    console.log(result[result.length - 1].sumADA);
-
     return result;
 }
 
