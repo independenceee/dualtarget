@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const API = new BlockFrostAPI({
         projectId: process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!,
-        network: network!,
+        network: "preprod",
     });
 
     const results = await Promise.all(

@@ -1,13 +1,11 @@
 "use client";
 
-import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address } from "lucid-cardano";
+import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address, Constr } from "lucid-cardano";
 import React, { ReactNode, useContext, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
-import { ClaimableUTxO, CalculateSellingStrategy, TransactionType } from "~/types/GenericsType";
-import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
+import { useQueryClient } from "@tanstack/react-query";
+import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
 import { DualtargetDatum } from "~/constants/datum";
-import { refundRedeemer } from "~/constants/redeemer";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
@@ -87,6 +85,7 @@ const SmartContractProvider = function ({ children }: Props) {
     const withdraw = async function ({ lucid, mode, output }: { lucid: Lucid; mode: number; output: number }) {
         try {
             setWaitingWithdraw(false);
+            const refundRedeemer = Data.to(new Constr(1, []));
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);

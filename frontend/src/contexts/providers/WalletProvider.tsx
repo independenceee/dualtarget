@@ -45,6 +45,7 @@ const WalletProvider = function ({ children }: Props) {
                 }
             });
         }
+        //  react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -57,6 +58,7 @@ const WalletProvider = function ({ children }: Props) {
                 }),
             );
         }
+        // react-hooks/exhaustive-deps
     }, [wallet]);
 
     const connect = async function ({ name, api, image }: WalletType) {
@@ -103,7 +105,7 @@ const WalletProvider = function ({ children }: Props) {
                 };
             });
             setLucid(lucid);
-            toast.success("Wallet connected !")
+            toast.success("Wallet connected !");
         } catch (error) {
             console.log(error);
         } finally {
