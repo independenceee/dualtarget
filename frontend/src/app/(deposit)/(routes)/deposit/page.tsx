@@ -11,7 +11,7 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import { CalculateSellingStrategy, ChartDataType, TransactionHistoryType, TransactionResponseType } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType, TransactionResponseType } from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -20,7 +20,6 @@ import InputNumber from "~/components/InputNumber";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChartHistoryRecord } from "~/types/GenericsType";
-import { CHART_TIME_PERIOD } from "~/components/PriceChart/PriceChart";
 import CustomChart from "~/components/CustomChart";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
 import AccountContext from "~/contexts/components/AccountContext";
@@ -46,7 +45,7 @@ const Deposit = function () {
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
-    // TODO: DATA => Transfer
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page],
         queryFn: () =>
@@ -56,7 +55,7 @@ const Deposit = function () {
                     timeout: 7000,
                 },
             ),
-        enabled: !Boolean(account?.id),
+        enabled: !Boolean(wallet?.address),
     });
 
     const {
@@ -333,7 +332,7 @@ const Deposit = function () {
                                                 {waitingDeposit ? (
                                                     <Loading />
                                                 ) : sellingStrategies.length > 0 ? (
-                                                    `${sellingStrategies[sellingStrategies.length - 1].sumADA / 1000000} ₳`
+                                                    `${sellingStrategies[sellingStrategies.length - 1].sumADA! / 1000000} ₳`
                                                 ) : (
                                                     "-"
                                                 )}

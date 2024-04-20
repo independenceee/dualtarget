@@ -97,16 +97,16 @@ export interface DaultargetParams {
 }
 
 export type CalculateSellingStrategy = {
-    buyPrice: number;
-    sellPrice: number;
-    amountSend: number;
-    minimumAmountOut: number;
-    minimumAmountOutProfit: number;
-    amountSell: number;
-    amountBuy: number;
-    amountEntry: number;
-    USDTPool: number;
-    sumADA: number;
+    buyPrice?: number;
+    sellPrice?: number;
+    amountSend?: number;
+    minimumAmountOut?: number;
+    minimumAmountOutProfit?: number;
+    amountSell?: number;
+    amountBuy?: number;
+    amountEntry?: number;
+    USDTPool?: number;
+    sumADA?: number;
 };
 
 export interface ClaimableUTxO {

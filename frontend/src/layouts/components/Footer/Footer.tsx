@@ -13,17 +13,17 @@ const Footer = function () {
         <footer className={cx("wrapper")}>
             <div className={cx("wrapper-inner")}>
                 <div className={cx("term-and-whitepaper")}>
-                    <Link href={routes.term} className={cx("term")}>
+                    <Link href={routes.term} target="_blank" className={cx("term")}>
                         Term of Use
                     </Link>
-                    {/* <a href="https://eprint.iacr.org/2021/1069.pdf" className={cx("whitepaper")}>
-                        Whitepaper
-                    </a> */}
+                    <Link target="_blank" href="https://www.cardano2vn.io" className={cx("whitepaper")}>
+                        Cardano2vn
+                    </Link>
                 </div>
                 <div className={cx("corporation")}>
                     <span>Powered by</span>
                     <span className={cx("corporation-logo")}>
-                        <Image className={cx("logo")} width={80} src={icons.c2vn} alt="c2vn" />
+                        <Image className={cx("logo")} src={icons.c2vn} alt="c2vn" />
                     </span>
                 </div>
             </div>
