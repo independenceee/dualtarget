@@ -97,21 +97,24 @@ export default function Home() {
                 </div>
             </section>
 
-            <section className={cx("stats")}>
+            <section className={cx("about")}>
                 <div className={cx("stats-inner")}>
-                    <div className={cx("stats")}>
-                        <iframe
-                            width="600"
-                            height="350"
-                            src="https://www.youtube.com/embed/DCWY93O_QAU"
-                            title="Daultarget - Mục Tiêu Kép"
-                            frameBorder={"none"}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        ></iframe>
-                        <p>
-                            We will develop a platform that enables users to choose dual targets and trading methods directly within their wallets.
-                            Simultaneously, we'll create automated trading bots on decentralized exchanges
-                        </p>
+                    <div className={cx("about-inner")}>
+                        <div className={cx("video-iframe-wrapper")}>
+                            <iframe
+                                className={cx("video-iframe")}
+                                src="https://www.youtube.com/embed/DCWY93O_QAU"
+                                title="Daultarget - Mục Tiêu Kép"
+                                frameBorder={"none"}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            ></iframe>
+                        </div>
+                        <div className={cx("about-content-wrapper")}>
+                            <span className={cx("about-content")}>
+                                We will develop a platform that enables users to choose dual targets and trading methods directly within their
+                                wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>

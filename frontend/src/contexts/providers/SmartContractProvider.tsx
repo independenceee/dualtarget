@@ -84,7 +84,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const withdraw = async function ({ lucid, mode, output }: { lucid: Lucid; mode: number; ouput?: number }) {
+    const withdraw = async function ({ lucid, mode, output }: { lucid: Lucid; mode: number; output: number }) {
         try {
             setWaitingWithdraw(false);
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;

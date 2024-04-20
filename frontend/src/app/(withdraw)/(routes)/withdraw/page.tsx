@@ -129,6 +129,7 @@ const Withdraw = function ({}: Props) {
                 withdraw({
                     lucid,
                     mode: currentWithdrawMode.id,
+                    output: 10,
                 });
         } catch (error) {
             console.warn("Error: ", error);
