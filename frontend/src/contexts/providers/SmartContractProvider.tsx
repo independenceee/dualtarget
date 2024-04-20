@@ -110,7 +110,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const withdraw = async function ({ lucid, mode }: { lucid: Lucid; mode: number }) {
+    const withdraw = async function ({ lucid, mode, output }: { lucid: Lucid; mode: number; ouput?: number }) {
         try {
             setWaitingWithdraw(false);
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
@@ -189,10 +189,7 @@ const SmartContractProvider = function ({ children }: Props) {
                             break;
 
                         case 2:
-                            if (
-                                Number(scriptUtxo.assets.lovelace) >= 113590909 &&
-                                Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
-                            ) {
+                            if (Number(scriptUtxo.assets.lovelace) === Number(output * 1000000)) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
 
