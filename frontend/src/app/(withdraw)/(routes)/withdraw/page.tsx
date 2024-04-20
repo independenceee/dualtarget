@@ -35,19 +35,21 @@ type WithdrawType = {
 
 const cx = classNames.bind(styles);
 
-export enum WithdrawMode {
-    All,
-    Profit,
-    Part,
-}
+// export enum WithdrawMode {
+//     All,
+//     Profit,
+//     Part,
+// }
 
 const WITHDRAW_MODES: Item[] = [
-    { name: "Withdraw profit + staked money", id: WithdrawMode.All },
-    { name: "Withdraw all profit", id: WithdrawMode.Profit },
-    { name: "Withdraw in parts", id: WithdrawMode.Part },
+    { name: "All", id: 0 },
+    { name: "Only profit", id: 1 },
+    { name: "Select parts", id: 2 },
 ];
 
-const Withdraw = function () {
+type Props = {};
+
+const Withdraw = function ({}: Props) {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw, calcualateClaimEutxo } = useContext<SmartContractContextType>(SmartContractContext);
     const { account } = useContext<AccountContextType>(AccountContext);
@@ -81,7 +83,7 @@ const Withdraw = function () {
             lucid,
             mode: currentWithdrawMode.id,
         }).then((res) => {
-            if (currentWithdrawMode.id !== WithdrawMode.Part) {
+            if (currentWithdrawMode.id !== 0) {
                 const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
                 setValue("amount", amount / 1000000);
             } else {
@@ -138,13 +140,13 @@ const Withdraw = function () {
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")}>Mint or Burn DJED</h2>
+                    <h2 className={cx("title")}>Withdraw asset</h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
-                                <Card title="Mint DJED" icon={icons.djed} className={cx("stat-djed-stablecoin")}>
+                                <Card title="Withdraw" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onWithdraw} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>Balance: {0} ₳</span>
@@ -171,11 +173,7 @@ const Withdraw = function () {
                                                 }}
                                             />
 
-                                            <InputRange
-                                                disabled={
-                                                    currentWithdrawMode.id === WithdrawMode.All || currentWithdrawMode.id === WithdrawMode.Profit
-                                                }
-                                            />
+                                            <InputRange disabled={currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1} />
                                         </div>
 
                                         <div className={cx("info")}>

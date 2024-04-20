@@ -10,10 +10,9 @@ import { DualtargetDatum } from "~/constants/datum";
 import { refundRedeemer } from "~/constants/redeemer";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
-import WalletContext from "../components/WalletContext";
-import { post } from "~/utils/http-requests";
+import WalletContext from "~/contexts/components/WalletContext";
 import { AccountContextType } from "~/types/contexts/AccountContextType";
-import AccountContext from "../components/AccountContext";
+import AccountContext from "~/contexts/components/AccountContext";
 
 type Props = {
     children: ReactNode;
@@ -29,34 +28,9 @@ const SmartContractProvider = function ({ children }: Props) {
     const [waitingDeposit, setWaitingDeposit] = useState<boolean>(false);
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
 
-    const deposit = async function ({
-        lucid,
-        income,
-        priceHight,
-        priceLow,
-        stake,
-        step,
-        totalADA,
-    }: {
-        lucid: Lucid;
-        income: number;
-        priceHight: number;
-        priceLow: number;
-        stake: number;
-        step: number;
-        totalADA: number;
-    }) {
+    const deposit = async function ({ lucid, sellingStrategies }: { lucid: Lucid; sellingStrategies: CalculateSellingStrategy[] }) {
         try {
             setWaitingDeposit(true);
-
-            const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
-                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHight: priceHight * 1000000, //  Giá thấp nhất =  2000000
-                priceLow: priceLow * 1000000, // Giá cao nhất = 1000000
-                stake: stake, //  ROI % stake theo năm = 5
-                step: step, // Bước nhảy theo giá (%) = 10
-                totalADA: totalADA * 1000000, // Tổng ada = 24000000
-            });
 
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
@@ -127,11 +101,9 @@ const SmartContractProvider = function ({ children }: Props) {
             for (const scriptUtxo of scriptUtxos) {
                 if (scriptUtxo.scriptRef?.script) {
                     smartcontractUtxo = scriptUtxo;
-                    const outputDatum: any = Data.from(scriptUtxo.datum!);
-                    console.log(outputDatum.fields[2]);
                 } else if (scriptUtxo.datum) {
                     const outputDatum: any = Data.from(scriptUtxo.datum!);
-                    console.log(outputDatum);
+
                     const params = {
                         odOwner: outputDatum.fields[0],
                         odBeneficiary: outputDatum.fields[1],
@@ -204,6 +176,8 @@ const SmartContractProvider = function ({ children }: Props) {
                     }
                 }
             }
+
+            console.table(claimableUtxos);
 
             if (!smartcontractUtxo) {
                 console.log("Reference UTxO not found!");

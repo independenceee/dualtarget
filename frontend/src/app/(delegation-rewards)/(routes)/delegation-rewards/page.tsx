@@ -17,7 +17,7 @@ const DelegationRewards = function () {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("container")}>
-                <h1 className={cx("title")}>Delegation Rewards for $SHEN holders</h1>
+                <h1 className={cx("title")}>Delegation Rewards for ADA holders</h1>
                 <h2 className={cx("sub-title")}>Check your ADA rewards</h2>
                 <form className={cx("form")}>
                     <section className={cx("label")}>

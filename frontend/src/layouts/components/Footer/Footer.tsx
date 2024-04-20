@@ -16,14 +16,14 @@ const Footer = function () {
                     <Link href={routes.term} className={cx("term")}>
                         Term of Use
                     </Link>
-                    <a href="https://eprint.iacr.org/2021/1069.pdf" className={cx("whitepaper")}>
+                    {/* <a href="https://eprint.iacr.org/2021/1069.pdf" className={cx("whitepaper")}>
                         Whitepaper
-                    </a>
+                    </a> */}
                 </div>
                 <div className={cx("corporation")}>
                     <span>Powered by</span>
                     <span className={cx("corporation-logo")}>
-                        <Image src={icons.corporation} alt="coti" />
+                        <Image className={cx("logo")} width={80} src={icons.c2vn} alt="c2vn" />
                     </span>
                 </div>
             </div>
