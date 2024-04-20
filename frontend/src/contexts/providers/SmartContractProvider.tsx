@@ -28,34 +28,9 @@ const SmartContractProvider = function ({ children }: Props) {
     const [waitingDeposit, setWaitingDeposit] = useState<boolean>(false);
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
 
-    const deposit = async function ({
-        lucid,
-        income,
-        priceHight,
-        priceLow,
-        stake,
-        step,
-        totalADA,
-    }: {
-        lucid: Lucid;
-        income: number;
-        priceHight: number;
-        priceLow: number;
-        stake: number;
-        step: number;
-        totalADA: number;
-    }) {
+    const deposit = async function ({ lucid, sellingStrategies }: { lucid: Lucid; sellingStrategies: CalculateSellingStrategy[] }) {
         try {
             setWaitingDeposit(true);
-
-            const sellingStrategies: CalculateSellingStrategy[] = calculateSellingStrategy({
-                income: income, // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
-                priceHight: priceHight * 1000000, //  Giá thấp nhất =  2000000
-                priceLow: priceLow * 1000000, // Giá cao nhất = 1000000
-                stake: stake, //  ROI % stake theo năm = 5
-                step: step, // Bước nhảy theo giá (%) = 10
-                totalADA: totalADA * 1000000, // Tổng ada = 24000000
-            });
 
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });

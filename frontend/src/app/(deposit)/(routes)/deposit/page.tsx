@@ -92,7 +92,6 @@ const Deposit = function () {
         refetchOnReconnect: true,
     });
 
-    const [currentChartPeriod, setCurrentChartPeriod] = useState<CHART_TIME_PERIOD>("ONE_DAY");
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
 
@@ -108,12 +107,7 @@ const Deposit = function () {
         lucid &&
             deposit({
                 lucid,
-                income: Number(data.income),
-                priceHight: Number(data.priceHight),
-                priceLow: Number(data.priceLow),
-                stake: Number(data.stake),
-                step: Number(data.step),
-                totalADA: Number(data.totalADA),
+                sellingStrategies,
             }).catch((error) => {});
     });
 
