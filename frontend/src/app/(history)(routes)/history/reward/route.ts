@@ -67,19 +67,109 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     const walletAddress: string = searchParams.get("wallet_address") as string;
+
     const page: string = searchParams.get("page") as string;
     const pageSize: string = searchParams.get("page_size") as string;
     const network: CardanoNetwork = searchParams.get("network") as CardanoNetwork;
     const poolId: string = process.env.HADA_POOL_ID!;
-    const stakeAddress: string = "stake1uyxnzh6wtdhtyxlyyjs4mmqrtfs52zzurdvczn9p23na0ccn824kf";
-
-    const blockfrost = new Blockfrost(process.env.BLOCKFROST_PROJECT_API_KEY_MAINNET!, network);
     const koios = new Koios(process.env.KOIOS_RPC_URL_MAINNET!);
+    const stakeAddress: string = "stake1uyxnzh6wtdhtyxlyyjs4mmqrtfs52zzurdvczn9p23na0ccn824kf";
+    const { data } = await koios.get(`/epoch_info?_epoch_no=${479}&_include_next_epoch=true`);
 
-    const totalReward: number = 0;
-    const totalPendingReward: number = 0;
+    const parse = JSON.parse(data);
+    const startTime: number = parse[0].start_time;
+    const endTime: number = parse[0].end_time;
 
-    const currentEpoch: number = (await blockfrost.epochsLatest()).epoch;
+    const API = new BlockFrostAPI({
+        projectId: process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!,
+        network: "preprod",
+    });
 
-    return Response.json(data);
+    const results = await Promise.all(
+        (await API.addressesTransactions(walletAddress)).reverse().map(async function ({ tx_hash, block_time }) {
+            return {
+                block_time: block_time,
+                utxos: await API.txsUtxos(tx_hash),
+            };
+        }),
+    );
+
+    const range = results.filter(function ({ block_time, utxos }) {
+        return block_time >= startTime && block_time <= endTime;
+    });
+
+    const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
+
+    const transactionsWithTargetAddress = await Promise.all(
+        range
+            .map((transaction) => {
+                const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
+
+                const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
+                if (hasInput) {
+                    let amount: number = -39000000;
+
+                    transaction.utxos.inputs.forEach(function (input) {
+                        if (input.address === addressToFind) {
+                            const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
+                                if (unit === "lovelace") {
+                                    return total + Number(quantity);
+                                }
+
+                                return total;
+                            }, 0);
+
+                            amount += quantity;
+                        }
+                    }, 0);
+                    return {
+                        type: "Withdraw",
+                        txHash: transaction.utxos.hash,
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
+                        fee: 1.5,
+                        blockTime: transaction.block_time,
+                    };
+                }
+
+                if (hasOutput) {
+                    let amount: number = 0;
+                    transaction.utxos.outputs.forEach(function (output) {
+                        if (output.address === addressToFind) {
+                            const quantity = output.amount.reduce(function (total: number, { unit, quantity }) {
+                                if (unit === "lovelace") {
+                                    return total + Number(quantity);
+                                }
+
+                                return total;
+                            }, 0);
+
+                            amount += quantity;
+                        }
+                    }, 0);
+                    return {
+                        blockTime: transaction.block_time,
+                        txHash: transaction.utxos.hash,
+                        type: "Deposit",
+                        amount: +(amount / 1000000).toFixed(5),
+                        status: "Completed",
+                        fee: 1.5,
+                    };
+                }
+            })
+            .filter((output) => output != null),
+    );
+
+    let depositTotal = 0;
+    let withdrawTotal = 0;
+
+    transactionsWithTargetAddress?.forEach((transaction: any) => {
+        if (transaction.type === "Deposit") {
+            depositTotal += transaction.amount;
+        } else if (transaction.type === "Withdraw") {
+            withdrawTotal += transaction.amount;
+        }
+    });
+
+    return Response.json(depositTotal - withdrawTotal);
 }
