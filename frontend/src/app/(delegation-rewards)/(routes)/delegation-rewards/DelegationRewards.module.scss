@@ -24,6 +24,20 @@
     text-align: center;
 }
 
+.loading-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+}
+.loading {
+    text-align: center;
+    width: 36px;
+    height: 36px;
+    border-width: 3px !important;
+}
+
 .sub-title {
     font-size: 18px;
     font-weight: 400;
@@ -54,11 +68,14 @@
         border-radius: 10px;
         color: #fff;
         height: 100%;
-        padding-right: 16px;
+        padding-right: 50px;
         padding-left: 16px;
         position: relative;
         font-size: 17px;
         width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
@@ -72,6 +89,11 @@
     -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
     width: 16px;
+    display: none;
+
+    &.show {
+        display: block;
+    }
 }
 
 .summary {

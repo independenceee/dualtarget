@@ -6,54 +6,62 @@ import convertDatetime from "~/helpers/convert-datetime";
 import Blockfrost from "~/services/blockfrost";
 import Koios from "~/services/koios";
 
-const data = [
+const DATA = [
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
     {
         epoch: 123,
         amount: 2000222,
         rewards: 20002,
         txHash: "123112313123123",
+        status: "Distributed",
     },
 ];
 
@@ -171,5 +179,5 @@ export async function GET(request: NextRequest) {
         }
     });
 
-    return Response.json(depositTotal - withdrawTotal);
+    return Response.json(DATA);
 }
