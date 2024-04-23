@@ -59,7 +59,7 @@ const Withdraw = function ({}: Props) {
         queryKey: ["Transactions", page],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 {
                     timeout: 5000,
                 },
@@ -118,7 +118,7 @@ const Withdraw = function ({}: Props) {
         isSuccess: isGetChartRecordsSuccess,
     } = useQuery({
         queryKey: ["ChartData"],
-        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/chart"),
+        queryFn: () => axios.get<ChartHistoryRecord[] | null>(`${window.location.origin}/chart`),
         refetchInterval: 5 * 60 * 1000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: true,

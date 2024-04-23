@@ -171,5 +171,5 @@ export async function GET(request: NextRequest) {
         }
     });
 
-    return Response.json(depositTotal - withdrawTotal);
+    return Response.json(data);
 }

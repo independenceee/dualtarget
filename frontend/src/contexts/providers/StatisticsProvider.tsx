@@ -4,7 +4,7 @@ import React, { ReactNode, useContext, useEffect, useState } from "react";
 import StatisticsContext from "~/contexts/components/StatisticContext";
 import { StatisticsType } from "~/types/GenericsType";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
-import LucidContext from "../components/LucidContext";
+import LucidContext from "~/contexts/components/LucidContext";
 import { Data, UTxO } from "lucid-cardano";
 
 type Props = {
