@@ -27,6 +27,7 @@ import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableU
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
 import CountUp from "react-countup";
+import { useDebounce } from "~/hooks";
 
 type WithdrawType = {
     amount: number;
@@ -40,9 +41,7 @@ const WITHDRAW_MODES: Item[] = [
     { name: "Select parts", id: 2 },
 ];
 
-type Props = {};
-
-const Withdraw = function ({}: Props) {
+const Withdraw = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
@@ -50,7 +49,8 @@ const Withdraw = function ({}: Props) {
     const [claimableUtxos, setClaimableUtxos] = useState<Array<ClaimableUTxO>>([]);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
-    const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([]);
+    const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([0, 0]);
+    const debouncedValue = useDebounce<number[]>(withdrawableProfit);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page],
@@ -59,44 +59,8 @@ const Withdraw = function ({}: Props) {
                 `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 { timeout: 5000 },
             ),
-        enabled: !Boolean(wallet?.address),
+        enabled: !!Boolean(wallet?.address),
     });
-
-    useEffect(() => {
-        if (lucid) {
-            previewWithdraw({ lucid: lucid, min: 0, max: 10 }).then((response) => {
-                setSellingStrategies(response);
-            });
-        }
-    }, [lucid]);
-
-    const {
-        register,
-        setValue,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<WithdrawType>();
-
-    useEffect(() => {
-        calcualateClaimEutxo({
-            lucid,
-            mode: currentWithdrawMode.id,
-            min: 0,
-            max: 10,
-        }).then((res: ClaimableUTxO[]) => {
-            console.log(res);
-
-            setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
-            if (currentWithdrawMode.id !== 0) {
-                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
-                setValue("amount", amount / 1000000);
-            } else {
-                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
-                setValue("amount", amount / 1000000);
-                const withdrawableParts = (res as ClaimableUTxO[]).map((claim) => Number(claim.utxo.assets.lovelace) / 1000000);
-            }
-        });
-    }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue]);
 
     const {
         data: chartDataRecords,
@@ -111,6 +75,53 @@ const Withdraw = function ({}: Props) {
         refetchOnReconnect: true,
     });
 
+    const {
+        register,
+        setValue,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<WithdrawType>();
+
+    const maxOfSellingStrategies = useMemo(() => {
+        if (sellingStrategies.length > 0) {
+            return (
+                Math.max(
+                    ...sellingStrategies.map(({ buyPrice }) => {
+                        return (Number(buyPrice) as number) / 1000000;
+                    }),
+                ) + 0.5
+            );
+        }
+
+        return 0;
+    }, [sellingStrategies]);
+
+    useEffect(() => {
+        const [min, max] = debouncedValue;
+        lucid &&
+            calcualateClaimEutxo({
+                lucid,
+                mode: currentWithdrawMode.id,
+                min,
+                max,
+            }).then((res: ClaimableUTxO[]) => {
+                console.log(res);
+
+                setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
+                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
+                setValue("amount", amount / 1000000);
+            });
+    }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue, debouncedValue]);
+
+    useEffect(() => {
+        if (lucid) {
+            previewWithdraw({ lucid }).then((response) => {
+                setSellingStrategies(response);
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lucid]);
+
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
@@ -124,14 +135,17 @@ const Withdraw = function ({}: Props) {
             lucid &&
                 withdraw({
                     lucid,
-                    claimableUtxos: claimableUtxos,
+                    claimableUtxos,
                 });
         } catch (error) {
             console.warn("Error: ", error);
         }
     });
 
-    const onRangeChange = function () {};
+    const onRangeChange = function (value: number[]) {
+        setWithdrawableProfit(value);
+    };
+
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -171,7 +185,12 @@ const Withdraw = function ({}: Props) {
                                                 }}
                                             />
 
-                                            <InputRange disabled={currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1} />
+                                            <InputRange
+                                                onChange={onRangeChange}
+                                                min={0}
+                                                max={Number(maxOfSellingStrategies.toFixed(4))}
+                                                disabled={currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1}
+                                            />
                                         </div>
 
                                         <div className={cx("info")}>

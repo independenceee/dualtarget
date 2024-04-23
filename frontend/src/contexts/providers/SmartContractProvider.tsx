@@ -192,17 +192,18 @@ const SmartContractProvider = function ({ children }: Props) {
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
                                 });
                             }
+                            break;
                     }
                 }
             }
             return claimableUtxos;
         } catch (error) {
             console.log(error);
-            return [];
         }
+        return [];
     };
 
-    const previewWithdraw = async function ({ lucid, min, max }: { lucid: Lucid; min?: number; max?: number }): Promise<CalculateSellingStrategy[]> {
+    const previewWithdraw = async function ({ lucid }: { lucid: Lucid }): Promise<CalculateSellingStrategy[]> {
         const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
         const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
         const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
@@ -220,9 +221,9 @@ const SmartContractProvider = function ({ children }: Props) {
                 };
 
                 if (
-                    String(params.odOwner) === String(paymentAddress) &&
-                    Number(params.buyPrice) >= min! * 1000000 &&
-                    Number(params.sellPrice) <= max! * 1000000
+                    String(params.odOwner) === String(paymentAddress)
+                    // && Number(params.buyPrice) >= min! * 1000000 &&
+                    // Number(params.sellPrice) <= max! * 1000000
                 ) {
                     sellingStrategies.push({
                         minimumAmountOut: Number(params.minimumAmountOut),
@@ -233,7 +234,6 @@ const SmartContractProvider = function ({ children }: Props) {
                 }
             }
         }
-
         return sellingStrategies;
     };
 
