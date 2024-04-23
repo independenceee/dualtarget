@@ -2,16 +2,18 @@ import { Network, TxHash, UTxO } from "lucid-cardano";
 
 export type DelegationRewardType = {
     epoch: number;
-    txHash: TxHash;
+    amount: number;
+    rewards: number;
+    status: string;
 };
 
-const a = {
-    type: "Withdraw",
-    txHash: "c6de33045a5c0459e181216697e2c04313959a7fa09b5b433d3ba550eed2e930",
-    amount: 1317645409,
-    status: "complete",
-    fee: 1.5,
-    blockTime: "5 Apr, 2024 20:57",
+export type StatisticsType = {
+    totalWallet?: number;
+    totalUTxO?: number;
+    totalADA?: number;
+    totalDJED?: number;
+
+    ROS?: number;
 };
 
 export type TransactionHistoryType = {

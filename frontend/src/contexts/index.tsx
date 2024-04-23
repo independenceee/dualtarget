@@ -11,6 +11,7 @@ const ToastProvider = lazy(() => import("~/contexts/providers/ToastProvider"));
 const AccountProvider = lazy(() => import("~/contexts/providers/AccountProvider"));
 const NetworkProvider = lazy(() => import("~/contexts/providers/NetworkProvider"));
 const TranslateProvider = lazy(() => import("~/contexts/providers/TranslateProvider"));
+const StatisticsProvider = lazy(() => import("~/contexts/providers/StatisticsProvider"));
 
 type Props = {
     children: ReactNode;
@@ -29,7 +30,9 @@ const ContextProvider = function ({ children }: Props) {
                             <LucidProvider>
                                 <WalletProvider>
                                     <AccountProvider>
-                                        <SmartContractProvider>{children}</SmartContractProvider>
+                                        <SmartContractProvider>
+                                            <StatisticsProvider>{children}</StatisticsProvider>
+                                        </SmartContractProvider>
                                     </AccountProvider>
                                 </WalletProvider>
                             </LucidProvider>

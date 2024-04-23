@@ -1,25 +1,20 @@
 "use client";
 
-import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, OutputData, C, Lovelace, Address, Constr } from "lucid-cardano";
+import { Data, Lucid, TxHash, TxSigned, UTxO, Credential, Lovelace, Address, Constr } from "lucid-cardano";
 import React, { ReactNode, useContext, useState } from "react";
 import SmartContractContext from "~/contexts/components/SmartContractContext";
-import { useQueryClient } from "@tanstack/react-query";
 import { ClaimableUTxO, CalculateSellingStrategy } from "~/types/GenericsType";
 import { DualtargetDatum } from "~/constants/datum";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
-import { AccountContextType } from "~/types/contexts/AccountContextType";
-import AccountContext from "~/contexts/components/AccountContext";
 
 type Props = {
     children: ReactNode;
 };
 
 const SmartContractProvider = function ({ children }: Props) {
-    const queryClient = useQueryClient();
     const { refresh } = useContext<WalletContextType>(WalletContext);
-    const { account } = useContext<AccountContextType>(AccountContext);
 
     const [txHashDeposit, setTxHashDeposit] = useState<TxHash>("");
     const [txHashWithdraw, setTxHashWithdraw] = useState<TxHash>("");
@@ -82,7 +77,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const withdraw = async function ({ lucid, mode, output }: { lucid: Lucid; mode: number; output: number }) {
+    const withdraw = async function ({ lucid, mode, min, max }: { lucid: Lucid; mode: number; min?: number; max?: number }) {
         try {
             setWaitingWithdraw(false);
             const refundRedeemer = Data.to(new Constr(1, []));
@@ -122,14 +117,9 @@ const SmartContractProvider = function ({ children }: Props) {
                         isLimitOrder: outputDatum.fields[15],
                     };
 
-                    /**
-                     * 1. Lấy tất cả
-                     * 2. Lấy UTXO DJED
-                     * 3. Lấy UTXO Profit
-                     */
-
                     switch (mode) {
                         case 0:
+                            console.log("All");
                             if (String(params.odOwner) === String(paymentAddress)) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
@@ -144,8 +134,9 @@ const SmartContractProvider = function ({ children }: Props) {
                                 break;
                             }
                         case 1:
+                            console.log("Part");
                             // UTXO profit (chua co) // Lấy Profit)
-                            if (Number(params.isLimitOrder) === 0) {
+                            if (String(params.odOwner) === String(paymentAddress) && Number(params.isLimitOrder) !== 0) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
 
@@ -160,7 +151,11 @@ const SmartContractProvider = function ({ children }: Props) {
                             break;
 
                         case 2:
-                            if (Number(scriptUtxo.assets.lovelace) === Number(output * 1000000)) {
+                            if (
+                                String(params.odOwner) === String(paymentAddress) &&
+                                Number(scriptUtxo.assets.lovelace) >= Number(min! * 1000000) &&
+                                Number(scriptUtxo.assets.lovelace) >= Number(max! * 1000000)
+                            ) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
 
@@ -172,6 +167,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
                                 });
                             }
+                            break;
                     }
                 }
             }
@@ -190,8 +186,11 @@ const SmartContractProvider = function ({ children }: Props) {
             for (const utxoToSpend of claimableUtxos) {
                 tx = await tx.collectFrom([utxoToSpend.utxo], refundRedeemer);
             }
+
             tx = await tx
-                .payToAddress(claimableUtxos[0].BatcherFee_addr, { lovelace: BigInt(claimableUtxos[0].fee) as Lovelace })
+                .payToAddress(claimableUtxos[0].BatcherFee_addr, {
+                    lovelace: BigInt(claimableUtxos[0].fee) as Lovelace,
+                })
                 .addSigner((await lucid.wallet.address()) as Address)
                 .complete();
 
@@ -209,7 +208,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const calcualateClaimEutxo = async function ({ lucid, mode }: { lucid: Lucid; mode: number }) {
+    const calcualateClaimEutxo = async function ({ lucid, mode, min, max }: { lucid: Lucid; mode: number; min?: number; max?: number }) {
         try {
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
@@ -225,11 +224,9 @@ const SmartContractProvider = function ({ children }: Props) {
             for (const scriptUtxo of scriptUtxos) {
                 if (scriptUtxo.scriptRef?.script) {
                     smartcontractUtxo = scriptUtxo;
-                    const outputDatum: any = Data.from(scriptUtxo.datum!);
-                    console.log(outputDatum.fields[2]);
                 } else if (scriptUtxo.datum) {
                     const outputDatum: any = Data.from(scriptUtxo.datum!);
-                    console.log(outputDatum);
+
                     const params = {
                         odOwner: outputDatum.fields[0],
                         odBeneficiary: outputDatum.fields[1],
@@ -249,12 +246,6 @@ const SmartContractProvider = function ({ children }: Props) {
                         isLimitOrder: outputDatum.fields[15],
                     };
 
-                    /**
-                     * 1. Lấy tất cả
-                     * 2. Lấy UTXO DJED
-                     * 3. Lấy UTXO Profit
-                     */
-
                     switch (mode) {
                         case 0:
                             if (String(params.odOwner) === String(paymentAddress)) {
@@ -271,8 +262,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                 break;
                             }
                         case 1:
-                            // UTXO profit (chua co) // Lấy Profit)
-                            if (Number(params.isLimitOrder) === 0) {
+                            if (String(params.odOwner) === String(paymentAddress) && Number(params.isLimitOrder) !== 0) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
 
@@ -288,8 +278,9 @@ const SmartContractProvider = function ({ children }: Props) {
 
                         case 2:
                             if (
-                                Number(scriptUtxo.assets.lovelace) >= 113590909 &&
-                                Number(scriptUtxo.assets.lovelace) <= 113590909 // UTXO djed // Lấy Djed ! Lấy từng phần
+                                String(params.odOwner) === String(paymentAddress) &&
+                                Number(scriptUtxo.assets.lovelace) >= Number(min! * 1000000) &&
+                                Number(scriptUtxo.assets.lovelace) >= Number(max! * 1000000)
                             ) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
@@ -312,7 +303,7 @@ const SmartContractProvider = function ({ children }: Props) {
         }
     };
 
-    const previewWithdraw = async function ({ lucid }: { lucid: Lucid }): Promise<CalculateSellingStrategy[]> {
+    const previewWithdraw = async function ({ lucid, min, max }: { lucid: Lucid; min?: number; max?: number }): Promise<CalculateSellingStrategy[]> {
         const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
         const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
         const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
@@ -320,7 +311,7 @@ const SmartContractProvider = function ({ children }: Props) {
         const sellingStrategies: CalculateSellingStrategy[] = [];
         for (const scriptUtxo of scriptUtxos) {
             if (scriptUtxo.datum) {
-                const outputDatum: any = Data.from(scriptUtxo.datum!);
+                const outputDatum: any = await Data.from(scriptUtxo.datum!);
                 const params = {
                     odOwner: outputDatum.fields[0],
                     minimumAmountOut: outputDatum.fields[5],
@@ -329,7 +320,11 @@ const SmartContractProvider = function ({ children }: Props) {
                     sellPrice: outputDatum.fields[8],
                 };
 
-                if (String(params.odOwner) === String(paymentAddress)) {
+                if (
+                    String(params.odOwner) === String(paymentAddress) &&
+                    Number(params.buyPrice) >= min! * 1000000 &&
+                    Number(params.sellPrice) <= max! * 1000000
+                ) {
                     sellingStrategies.push({
                         minimumAmountOut: Number(params.minimumAmountOut),
                         minimumAmountOutProfit: Number(params.minimumAmountOutProfit),

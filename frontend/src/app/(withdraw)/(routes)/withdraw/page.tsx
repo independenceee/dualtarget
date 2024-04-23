@@ -20,16 +20,12 @@ import { useForm } from "react-hook-form";
 import InputRange from "~/components/InputRange";
 import DropdownMenu from "~/components/DropdownMenu";
 import { Item } from "~/components/DropdownMenu/DropdownMenu";
-import { AccountContextType } from "~/types/contexts/AccountContextType";
-import AccountContext from "~/contexts/components/AccountContext";
 import { useQuery } from "@tanstack/react-query";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
 import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
-import { Credential, Data, UTxO } from "lucid-cardano";
-import readDatum from "~/utils/read-datum";
 
 type WithdrawType = {
     amount: number;
@@ -48,7 +44,6 @@ type Props = {};
 const Withdraw = function ({}: Props) {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
-    const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
@@ -59,7 +54,7 @@ const Withdraw = function ({}: Props) {
         queryKey: ["Transactions", page],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 {
                     timeout: 5000,
                 },
@@ -69,7 +64,11 @@ const Withdraw = function ({}: Props) {
 
     useEffect(() => {
         if (lucid) {
-            previewWithdraw({ lucid }).then((response) => {
+            previewWithdraw({
+                lucid: lucid,
+                min: 0,
+                max: 0.4,
+            }).then((response) => {
                 setSellingStrategies(response);
             });
         }
@@ -114,7 +113,7 @@ const Withdraw = function ({}: Props) {
         isSuccess: isGetChartRecordsSuccess,
     } = useQuery({
         queryKey: ["ChartData"],
-        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/chart"),
+        queryFn: () => axios.get<ChartHistoryRecord[] | null>(`${window.location.origin}/chart`),
         refetchInterval: 5 * 60 * 1000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: true,
@@ -135,7 +134,8 @@ const Withdraw = function ({}: Props) {
                 withdraw({
                     lucid,
                     mode: currentWithdrawMode.id,
-                    output: 10,
+                    min: 0,
+                    max: 0.4,
                 });
         } catch (error) {
             console.warn("Error: ", error);

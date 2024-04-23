@@ -4,9 +4,9 @@ import React, { useId, useLayoutEffect, useMemo, useState } from "react";
 import * as am5 from "@amcharts/amcharts5";
 import * as am5xy from "@amcharts/amcharts5/xy";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
-
 import styles from "./CustomChart.module.scss";
-import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord } from "~/types/GenericsType";
+import { CalculateSellingStrategy, ChartDataType } from "~/types/GenericsType";
+import CountUp from "react-countup";
 import Image from "next/image";
 import icons from "~/assets/icons";
 import Tippy from "../Tippy";

@@ -21,14 +21,11 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChartHistoryRecord } from "~/types/GenericsType";
 import CustomChart from "~/components/CustomChart";
-import { AccountContextType } from "~/types/contexts/AccountContextType";
-import AccountContext from "~/contexts/components/AccountContext";
 import calculateSellingStrategy from "~/utils/calculate-selling-strategy";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
 import CountUp from "react-countup";
 import images from "~/assets/images";
-
 const cx = classNames.bind(styles);
 
 type DepositeType = {
@@ -49,7 +46,7 @@ const Deposit = function () {
         queryKey: ["Transactions", page],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `http://localhost:3000/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 { timeout: 7000 },
             ),
         enabled: !Boolean(wallet?.address),
@@ -81,7 +78,7 @@ const Deposit = function () {
         isSuccess: isGetChartRecordsSuccess,
     } = useQuery({
         queryKey: ["ChartData"],
-        queryFn: () => axios.get<ChartHistoryRecord[] | null>("http://localhost:3000/chart"),
+        queryFn: () => axios.get<ChartHistoryRecord[] | null>(`${window.location.origin}/chart`),
         refetchInterval: 5 * 60 * 1000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: true,
