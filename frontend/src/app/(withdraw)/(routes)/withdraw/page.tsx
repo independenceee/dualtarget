@@ -26,6 +26,7 @@ import WalletContext from "~/contexts/components/WalletContext";
 import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
+import CountUp from "react-countup";
 
 type WithdrawType = {
     amount: number;
@@ -46,6 +47,7 @@ const Withdraw = function ({}: Props) {
     const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
+    const [claimableUtxos, setClaimableUtxos] = useState<Array<ClaimableUTxO>>([]);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
     const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([]);
@@ -55,26 +57,18 @@ const Withdraw = function ({}: Props) {
         queryFn: () =>
             axios.get<TransactionResponseType>(
                 `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
-                {
-                    timeout: 5000,
-                },
+                { timeout: 5000 },
             ),
         enabled: !Boolean(wallet?.address),
     });
 
     useEffect(() => {
         if (lucid) {
-            previewWithdraw({
-                lucid: lucid,
-                min: 0,
-                max: 0.4,
-            }).then((response) => {
+            previewWithdraw({ lucid: lucid, min: 0, max: 10 }).then((response) => {
                 setSellingStrategies(response);
             });
         }
     }, [lucid]);
-
-    console.log(sellingStrategies);
 
     const {
         register,
@@ -87,22 +81,19 @@ const Withdraw = function ({}: Props) {
         calcualateClaimEutxo({
             lucid,
             mode: currentWithdrawMode.id,
-        }).then((res) => {
+            min: 0,
+            max: 10,
+        }).then((res: ClaimableUTxO[]) => {
+            console.log(res);
+
+            setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
             if (currentWithdrawMode.id !== 0) {
                 const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
                 setValue("amount", amount / 1000000);
             } else {
+                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
+                setValue("amount", amount / 1000000);
                 const withdrawableParts = (res as ClaimableUTxO[]).map((claim) => Number(claim.utxo.assets.lovelace) / 1000000);
-                const result: number[] = [...withdrawableParts];
-                console.log(withdrawableParts);
-                for (let i = 0; i < withdrawableParts.length - 1; i++) {
-                    for (let j = i + 1; j < withdrawableParts.length; j++) {
-                        result.push(withdrawableParts[i] + withdrawableParts[j]);
-                    }
-                }
-
-                setWithdrawableProfit([...Array.from(new Set(result))]);
-                setValue("amount", 0);
             }
         });
     }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue]);
@@ -133,9 +124,7 @@ const Withdraw = function ({}: Props) {
             lucid &&
                 withdraw({
                     lucid,
-                    mode: currentWithdrawMode.id,
-                    min: 0,
-                    max: 0.4,
+                    claimableUtxos: claimableUtxos,
                 });
         } catch (error) {
             console.warn("Error: ", error);
@@ -156,7 +145,9 @@ const Withdraw = function ({}: Props) {
                                 <Card title="Withdraw" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onWithdraw} className={"card-service"}>
                                         <div className={cx("balance")}>
-                                            <span>Balance: {0} ₳</span>
+                                            <span>
+                                                Balance: <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                            </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
                                             <DropdownMenu
