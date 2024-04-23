@@ -64,7 +64,11 @@ const Withdraw = function ({}: Props) {
 
     useEffect(() => {
         if (lucid) {
-            previewWithdraw({ lucid }).then((response) => {
+            previewWithdraw({
+                lucid: lucid,
+                min: 0,
+                max: 0.4,
+            }).then((response) => {
                 setSellingStrategies(response);
             });
         }
@@ -130,7 +134,8 @@ const Withdraw = function ({}: Props) {
                 withdraw({
                     lucid,
                     mode: currentWithdrawMode.id,
-                    output: 10,
+                    min: 0,
+                    max: 0.4,
                 });
         } catch (error) {
             console.warn("Error: ", error);
