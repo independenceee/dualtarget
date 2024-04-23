@@ -5,18 +5,18 @@ const historyTransactions: HeaderTableType[] = [
     { title: "Tx Hash" },
     { title: "Action" },
     { title: "Amount" },
-    { title: "Recieved/Payed" },
+    { title: "Fee" },
     { title: "Status" },
 ];
 
 const historyRewards: HeaderTableType[] = [
     { title: "Epoch" },
     {
-        title: "Amount (SHEN)",
+        title: "Amount (ADA)",
         description: "Amount of SHEN address held at the moment of the snapshot",
     },
     {
-        title: "Amount (SHEN)",
+        title: "Amount (ADA)",
         description: "Rewards are calculated with 2-3 epoch delay according to Cardano network rules",
     },
     {

@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     );
 
     const range = results.filter(function ({ block_time, utxos }) {
-        return block_time >= startTime && block_time <= endTime;
+        return block_time >= endTime;
     });
 
     const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
