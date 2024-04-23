@@ -2,7 +2,9 @@ import { Network, TxHash, UTxO } from "lucid-cardano";
 
 export type DelegationRewardType = {
     epoch: number;
-    txHash: TxHash;
+    amount: number;
+    rewards: number;
+    status: string;
 };
 
 export type StatisticsType = {

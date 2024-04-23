@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import Image from "next/image";
 import classNames from "classnames/bind";
 import styles from "./Home.module.scss";

@@ -20,16 +20,12 @@ import { useForm } from "react-hook-form";
 import InputRange from "~/components/InputRange";
 import DropdownMenu from "~/components/DropdownMenu";
 import { Item } from "~/components/DropdownMenu/DropdownMenu";
-import { AccountContextType } from "~/types/contexts/AccountContextType";
-import AccountContext from "~/contexts/components/AccountContext";
 import { useQuery } from "@tanstack/react-query";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
 import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
-import { Credential, Data, UTxO } from "lucid-cardano";
-import readDatum from "~/utils/read-datum";
 
 type WithdrawType = {
     amount: number;
@@ -48,7 +44,6 @@ type Props = {};
 const Withdraw = function ({}: Props) {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
-    const { account } = useContext<AccountContextType>(AccountContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
