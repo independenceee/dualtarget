@@ -53,7 +53,6 @@ export default function Home() {
             })();
         }
     }, [lucidPlatform]);
-    console.log(pool);
 
     return (
         <div className={cx("wrapper")}>
