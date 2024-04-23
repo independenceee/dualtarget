@@ -21,10 +21,10 @@ const queryClient = new QueryClient();
 
 const ContextProvider = function ({ children }: Props) {
     return (
-        <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <TranslateProvider>
-                <ToastProvider>
+        <ToastProvider>
+            <QueryClientProvider client={queryClient}>
+                <ReactQueryDevtools initialIsOpen={false} />
+                <TranslateProvider>
                     <ModalProvider>
                         <NetworkProvider>
                             <LucidProvider>
@@ -38,9 +38,9 @@ const ContextProvider = function ({ children }: Props) {
                             </LucidProvider>
                         </NetworkProvider>
                     </ModalProvider>
-                </ToastProvider>
-            </TranslateProvider>
-        </QueryClientProvider>
+                </TranslateProvider>
+            </QueryClientProvider>
+        </ToastProvider>
     );
 };
 
