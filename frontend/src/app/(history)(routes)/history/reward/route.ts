@@ -42,27 +42,6 @@ const DATA = [
         txHash: "123112313123123",
         status: "Distributed",
     },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
 ];
 
 /*

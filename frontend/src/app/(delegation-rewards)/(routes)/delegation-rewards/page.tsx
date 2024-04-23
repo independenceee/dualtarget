@@ -15,6 +15,7 @@ import axios from "axios";
 import { DelegationRewardType } from "~/types/GenericsType";
 import Loading from "~/components/Loading";
 import { useDebounce } from "~/hooks";
+import Reward from "~/components/Reward";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
@@ -145,6 +146,11 @@ const DelegationRewards = function () {
                                 ) : (
                                     <div>
                                         <Table center titles={historyRewards} data={rewards?.data} />
+                                        <div className={cx("reponsive")}>
+                                            {rewards?.data.map(function (item, index) {
+                                                return <Reward data={item} key={index} />;
+                                            })}
+                                        </div>
                                         <Pagination totalPages={5} page={1} setPage={setPage} totalItems={20} />
                                     </div>
                                 )}

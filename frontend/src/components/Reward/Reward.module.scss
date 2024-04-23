@@ -1,0 +1,24 @@
+.wrapper {
+}
+
+.container {
+    background: #2f3353;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 8px 16px;
+}
+
+.icon {
+    background-image: url("../../assets/icons/arrow-bottom.svg");
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+    height: 15px;
+    position: absolute;
+    right: 16px;
+    top: 24.5px;
+    transition: all 0.1s ease-out;
+    width: 16px;
+    z-index: 100;
+}

@@ -46,14 +46,14 @@ const Table = function ({ className, data, titles, center = false }: Props) {
 
     return (
         <div className={cx("wrapper", className)}>
-            <table className={cx("table", { center })}>
+            <table className={cx("table", { center: false })}>
                 <thead>
                     <tr className={cx("table-header")}>
                         {titles.map(({ title }, index) => (
                             <td
                                 key={index}
                                 className={cx("table-header-item", {
-                                    center,
+                                    center: false,
                                 })}
                             >
                                 {title}
