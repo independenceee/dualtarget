@@ -10,6 +10,7 @@ type Props = {
     data: TransactionHistoryType[];
 };
 const Table = function ({ className, data }: Props) {
+    
     return (
         <div className={cx("wrapper", className)}>
             <table className={cx("table")}>

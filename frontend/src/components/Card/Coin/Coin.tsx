@@ -11,7 +11,12 @@ type Props = {
     circulatingSupply: number;
     mintableAmount: number;
     className?: string;
+    titles: Record<string, number>;
 };
+
+
+
+const b: string[] = ["Total wallet", "Total UTxO", "Total Volume Lock", "Total DJED"];
 
 const Coin = function ({ buyPrice, circulatingSupply, mintableAmount, sellPrice, className }: Props) {
     return (

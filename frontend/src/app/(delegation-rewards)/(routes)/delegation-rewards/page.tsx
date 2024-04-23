@@ -14,6 +14,7 @@ const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
     const [page, setPage] = useState<number>(1);
+    
     return (
         <div className={cx("wrapper")}>
             <div className={cx("container")}>
