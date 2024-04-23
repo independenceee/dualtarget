@@ -32,6 +32,10 @@ const LucidProvider = function ({ children }: Props) {
         })();
     }, [network]);
 
+    
+
+
+
     return <LucidContext.Provider value={{ lucid, setLucid, lucidPlatform }}>{children}</LucidContext.Provider>;
 };
 
