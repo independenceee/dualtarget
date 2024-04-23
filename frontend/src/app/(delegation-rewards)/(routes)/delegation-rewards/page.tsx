@@ -8,7 +8,6 @@ import Tippy from "~/components/Tippy";
 import Image from "next/image";
 import icons from "~/assets/icons";
 import Table from "~/components/Table";
-import { historyRewards } from "~/constants/header-table";
 import Pagination from "~/components/Pagination";
 const cx = classNames.bind(styles);
 
