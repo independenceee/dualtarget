@@ -32,11 +32,7 @@ const LucidProvider = function ({ children }: Props) {
         })();
     }, [network]);
 
-    
-
-
-
-    return <LucidContext.Provider value={{ lucid, setLucid, lucidPlatform }}>{children}</LucidContext.Provider>;
+    return <LucidContext.Provider value={{ loading, lucid, setLucid, lucidPlatform }}>{children}</LucidContext.Provider>;
 };
 
 export default LucidProvider;

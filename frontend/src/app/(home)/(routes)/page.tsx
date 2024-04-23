@@ -16,11 +16,15 @@ import TranslateContext from "~/contexts/components/TranslateContext";
 import Button from "~/components/Button";
 import { StatisticContextType } from "~/types/contexts/StatisticContextType";
 import StatisticsContext from "~/contexts/components/StatisticContext";
+import { LucidContextType } from "~/types/contexts/LucidContextType";
+import LucidContext from "~/contexts/components/LucidContext";
+import convertDatetime from "~/helpers/convert-datetime";
 
 const cx = classNames.bind(styles);
 
 export default function Home() {
     const { t } = useContext<TranslateContextType>(TranslateContext);
+    const { loading } = useContext<LucidContextType>(LucidContext);
     const { pool, profit } = useContext<StatisticContextType>(StatisticsContext);
 
     return (
@@ -55,13 +59,19 @@ export default function Home() {
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
                         <Card title="Pool" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
+                            <Coin title="Total wallet" amount={pool.totalWallet} loading={loading} />
+                            <Coin title="Total UTxO" amount={pool.totalUTxO} denominations="UTxO" loading={loading} />
+                            <Coin title="Total Volume Lock" amount={pool.totalADA} denominations="₳" loading={loading} />
+                            <Coin title="Total DJED" amount={pool.totalDJED} denominations="DJED" loading={loading} />
                             <Button className={cx("stat-button")} href={routes.deposit}>
                                 Deposit
                             </Button>
                         </Card>
                         <Card title="Profit margin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin buyPrice={1.7199} mintableAmount={2521208.26} sellPrice={1.669} circulatingSupply={3574361.04} />
+                            <Coin title="Total wallet" amount={pool.totalWallet} loading={loading} />
+                            <Coin title="Total UTxO" amount={pool.totalUTxO} denominations="UTxO" loading={loading} />
+                            <Coin title="Total Volume Lock" amount={pool.totalADA} denominations="₳" loading={loading} />
+                            <Coin title="Total DJED" amount={pool.totalDJED} denominations="DJED" loading={loading} />
                             <Button className={cx("stat-button")} href={routes.withdraw}>
                                 Withdraw
                             </Button>
@@ -82,7 +92,7 @@ export default function Home() {
                                         <h2>ROS</h2>
                                     </div>
                                     <div className={cx("reserves-value-ratio")}>
-                                        615<span className="suffix">%</span>
+                                        0.004<span className="suffix">%</span>
                                     </div>
                                 </div>
                                 <div className={cx("base-reserves")}>
@@ -95,7 +105,7 @@ export default function Home() {
                                     </div>
                                 </div>
                             </div>
-                            <div className={cx("last-updated-mobile")}>Last updated: 22 Feb, 2024 17:06 UTC</div>
+                            <div className={cx("last-updated-mobile")}>Last updated: {convertDatetime(Date.now() / 1000)} UTC</div>
                         </div>
                     </Gutter>
                 </div>

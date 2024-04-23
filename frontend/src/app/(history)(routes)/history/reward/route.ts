@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     const poolId: string = process.env.HADA_POOL_ID!;
     const koios = new Koios(process.env.KOIOS_RPC_URL_MAINNET!);
     const stakeAddress: string = "stake1uyxnzh6wtdhtyxlyyjs4mmqrtfs52zzurdvczn9p23na0ccn824kf";
-    const { data } = await koios.get(`/epoch_info?_epoch_no=${479}&_include_next_epoch=true`);
+    const { data } = await koios.get(`/epoch_info?_epoch_no=${480}&_include_next_epoch=true`);
 
     const parse = JSON.parse(data);
     const startTime: number = parse[0].start_time;
