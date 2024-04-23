@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import Image from "next/image";
 import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
@@ -14,45 +14,14 @@ import Coin from "~/components/Card/Coin";
 import { TranslateContextType } from "~/types/contexts/TranslateContextType";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import Button from "~/components/Button";
-import { LucidContextType } from "~/types/contexts/LucidContextType";
-import LucidContext from "~/contexts/components/LucidContext";
-import { UTxO } from "lucid-cardano";
-import { StatisticsType } from "~/types/GenericsType";
+import { StatisticContextType } from "~/types/contexts/StatisticContextType";
+import StatisticsContext from "~/contexts/components/StatisticContext";
 
 const cx = classNames.bind(styles);
 
 export default function Home() {
     const { t } = useContext<TranslateContextType>(TranslateContext);
-    const { lucidPlatform } = useContext<LucidContextType>(LucidContext);
-
-    const [pool, setPool] = useState<StatisticsType>({
-        totalWallet: 0,
-        totalUTxO: 0,
-        totalADA: 0,
-        totalDJED: 0,
-    });
-
-    const [profitMargin, setProfitMargin] = useState();
-
-    useEffect(() => {
-        if (lucidPlatform) {
-            (async function () {
-                const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
-                const scriptUTxOs: UTxO[] = await lucidPlatform.utxosAt(contractAddress);
-                console.log(scriptUTxOs);
-                const totalADA: number = scriptUTxOs.reduce(function (balance: number, utxo: UTxO) {
-                    return balance + Number(utxo.assets.lovelace) / 1000000;
-                }, 0);
-                setPool(function (prev) {
-                    return {
-                        ...prev,
-                        totalUTxO: scriptUTxOs.length,
-                        totalADA: totalADA,
-                    };
-                });
-            })();
-        }
-    }, [lucidPlatform]);
+    const { pool, profit } = useContext<StatisticContextType>(StatisticsContext);
 
     return (
         <div className={cx("wrapper")}>
