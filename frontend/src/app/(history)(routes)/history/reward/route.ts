@@ -4,44 +4,6 @@ import { NextRequest } from "next/server";
 import Koios from "~/services/koios";
 import caculateDepositWithdraw from "~/utils/calculate-deposit-withdraw";
 
-const DATA = [
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-        status: "Distributed",
-    },
-];
-
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
@@ -55,10 +17,6 @@ export async function GET(request: NextRequest) {
     const stakeAddress: string = process.env.DUALTARGET_STAKE_ADDRESS_PREPROP as string;
     const smartcontractAddress: string = process.env.DUALTARGET_PAYMENT_ADDRESS_PREPROP as string;
     const koios = new Koios(process.env.KOIOS_RPC_URL_MAINNET!);
-
-    // const amountStake = await koios.poolDelegatorsHistory({ poolId: poolId, stakeAddress: stakeAddress, epochNo: 477 });
-    // const accountRewards = await koios.accountRewards({ stakeAddress, epochNo: 477 });
-    // const epochInfomation = await koios.epochInfomation({ epochNo: 477 });
 
     const API = new BlockFrostAPI({
         projectId: process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!,
@@ -96,5 +54,11 @@ export async function GET(request: NextRequest) {
         });
     }
 
-    return Response.json(results);
+    const totalPage = Math.ceil(results.length / Number(pageSize));
+    const histories = [...results].slice((Number(page) - 1) * Number(pageSize), Number(page) * Number(pageSize));
+
+    return Response.json({
+        totalPage,
+        histories,
+    });
 }
