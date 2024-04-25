@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
             epoch: i,
             amount: amountDepositWithdraw,
             rewards: accountRewards * ROS,
+            status: "Distributed",
         });
     }
 
@@ -60,5 +61,6 @@ export async function GET(request: NextRequest) {
     return Response.json({
         totalPage,
         histories,
+        totalItems: results.length,
     });
 }

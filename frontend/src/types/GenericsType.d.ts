@@ -7,6 +7,12 @@ export type DelegationRewardType = {
     status: string;
 };
 
+export type DelegationRewardResponseType = {
+    totalPage: number;
+    histories: DelegationRewardType[];
+    totalItems: number;
+};
+
 export type StatisticsType = {
     totalWallet?: number;
     totalUTxO?: number;

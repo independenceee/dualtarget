@@ -1,7 +1,6 @@
 import classNames from "classnames/bind";
 import Link from "next/link";
 import styles from "./Button.module.scss";
-import { IconType } from "react-icons";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { ClipLoader } from "react-spinners";
 
@@ -20,8 +19,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     large?: boolean;
     children: ReactNode;
     className?: string;
-    LeftIcon?: IconType;
-    RightIcon?: IconType;
+    LeftIcon?: ReactNode;
+    RightIcon?: ReactNode;
     onClick?: () => void;
 }
 
@@ -78,17 +77,9 @@ function Button({
 
     return (
         <Component className={classes} {...props}>
-            {!loading && LeftIcon && (
-                <span className={cx("icon")}>
-                    <LeftIcon />
-                </span>
-            )}
+            {LeftIcon && <span className={cx("icon")}>{LeftIcon}</span>}
             {loading ? <ClipLoader color={"#fff"} loading={loading} size={18} /> : <span className={cx("title")}>{children}</span>}
-            {!loading && RightIcon && (
-                <span className={cx("icon")}>
-                    <RightIcon />
-                </span>
-            )}
+            {RightIcon && <span className={cx("icon")}>{RightIcon}</span>}
         </Component>
     );
 }

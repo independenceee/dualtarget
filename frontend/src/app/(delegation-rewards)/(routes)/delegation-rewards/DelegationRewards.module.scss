@@ -131,8 +131,11 @@
 
 .summary-link {
     color: #fff;
-    text-decoration: underline;
     line-height: 2.4rem;
+    text-decoration: none;
+    &:nth-child(1) {
+        text-decoration: underline;
+    }
 }
 
 .status {
@@ -165,9 +168,8 @@
     transform: translateY(-4px);
 }
 
-
-.reponsive {
-    
+.reponsive-tx-history {
+    display: none;
 }
 
 @media (max-width: 768px) {
@@ -176,6 +178,13 @@
         padding: 172px 18px 0;
     }
 
+    .desktop-tx-history {
+        display: none;
+    }
+
+    .reponsive-tx-history {
+        display: block;
+    }
     .container {
         border-radius: 16px;
         padding: 32px 16px;
@@ -195,6 +204,7 @@
 .no-data-hyphen {
     line-height: 2.2rem;
 }
+
 @media (max-width: 1365px) {
     .wrapper {
         padding: 172px 16px 0;
