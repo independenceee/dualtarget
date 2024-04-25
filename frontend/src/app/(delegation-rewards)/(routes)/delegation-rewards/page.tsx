@@ -35,7 +35,9 @@ const DelegationRewards = function () {
     } = useQuery({
         queryKey: ["Rewards", debouncedValue, page],
         queryFn: () =>
-            axios.get<DelegationRewardResponseType>(`http://localhost:3000/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5`),
+            axios.get<DelegationRewardResponseType>(
+                `${window.location.origin}/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5`,
+            ),
         enabled: !!debouncedValue,
     });
 
