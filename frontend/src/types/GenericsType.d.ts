@@ -13,6 +13,11 @@ export type StatisticsType = {
     totalADA?: number;
     totalDJED?: number;
 
+    totalTransaction?: number;
+    totalVolumeWithdrawsDJED?: number;
+    totalVolumeWithdrawsADA?: number;
+    totalVolumeDepositsADA?: number;
+
     ROS?: number;
 };
 
