@@ -12,7 +12,7 @@ import Pagination from "~/components/Pagination";
 import { historyRewards } from "~/constants/header-table";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { DelegationRewardType } from "~/types/GenericsType";
+import { DelegationRewardResponseType, DelegationRewardType } from "~/types/GenericsType";
 import Loading from "~/components/Loading";
 import { useDebounce } from "~/hooks";
 import Reward from "~/components/Reward";
@@ -31,7 +31,7 @@ const DelegationRewards = function () {
     } = useQuery({
         queryKey: ["Rewards", debouncedValue, page],
         queryFn: () =>
-            axios.get<DelegationRewardType[]>(`http://localhost:3000/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5`),
+            axios.get<DelegationRewardResponseType>(`http://localhost:3000/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5`),
         enabled: !!debouncedValue,
     });
 
@@ -81,9 +81,9 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards.data.length > 0 ? (
+                                    {isSuccess && rewards.data.histories.length > 0 ? (
                                         <Link className={cx("summary-link")} href={""} target="_blank">
-                                            468
+                                            {Math.max(...rewards.data.histories.map(({ epoch }) => epoch))}
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -99,9 +99,9 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards.data.length > 0 ? (
+                                    {isSuccess && rewards.data.histories.length > 0 ? (
                                         <Link className={cx("summary-link")} href={""} target="_blank">
-                                            468
+                                            {rewards.data.histories.reduce((acc, history) => acc + history.rewards, 0)} ₳
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -117,9 +117,9 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards.data.length > 0 ? (
+                                    {isSuccess && rewards.data.histories.length > 0 ? (
                                         <Link className={cx("summary-link")} href={""} target="_blank">
-                                            468
+                                            0 ₳
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -138,20 +138,27 @@ const DelegationRewards = function () {
                     <div>
                         {isSuccess && (
                             <div>
-                                {rewards.data.length === 0 ? (
+                                {rewards.data.histories.length === 0 ? (
                                     <section className={cx("status")}>
                                         <div className={cx("no-data")} />
                                         <span>No data for this wallet address</span>
                                     </section>
                                 ) : (
                                     <div>
-                                        <Table center titles={historyRewards} data={rewards?.data} />
-                                        <div className={cx("reponsive")}>
-                                            {rewards?.data.map(function (item, index) {
+                                        <Table center titles={historyRewards} data={rewards?.data.histories} className={cx("desktop-tx-history")} />
+                                        <div className={cx("reponsive-tx-history")}>
+                                            {rewards.data.histories.map(function (item, index) {
                                                 return <Reward data={item} key={index} />;
                                             })}
                                         </div>
-                                        <Pagination totalPages={5} page={1} setPage={setPage} totalItems={20} />
+                                        {rewards.data.histories.length > 0 && (
+                                            <Pagination
+                                                totalPages={rewards.data.totalPage}
+                                                page={page}
+                                                setPage={setPage}
+                                                totalItems={rewards.data.totalItems}
+                                            />
+                                        )}
                                     </div>
                                 )}
                             </div>

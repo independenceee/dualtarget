@@ -144,9 +144,17 @@
         box-shadow: 0 4px 16px 0 rgba(177, 109, 215, 0.48);
     }
 }
+.withdraw-loading {
+    display: none;
+    &.withdrawing {
+        display: block;
+    }
+}
+
 .input-amount {
     margin-top: 1.6rem;
 }
+
 @media (max-width: 1024px) {
     .card-wrapper {
         width: 100%;

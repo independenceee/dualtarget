@@ -15,11 +15,11 @@ type Props = {
 
 const SmartContractProvider = function ({ children }: Props) {
     const { refresh } = useContext<WalletContextType>(WalletContext);
-
     const [txHashDeposit, setTxHashDeposit] = useState<TxHash>("");
     const [txHashWithdraw, setTxHashWithdraw] = useState<TxHash>("");
     const [waitingDeposit, setWaitingDeposit] = useState<boolean>(false);
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
+    const [waitingCalculateEUTxO, setWaitingCalculateEUTxO] = useState<boolean>(false);
 
     const deposit = async function ({ lucid, sellingStrategies }: { lucid: Lucid; sellingStrategies: CalculateSellingStrategy[] }) {
         try {
@@ -69,6 +69,7 @@ const SmartContractProvider = function ({ children }: Props) {
             if (success) {
                 setTxHashDeposit(txHash);
                 await refresh();
+                setWaitingDeposit(false);
             }
         } catch (error) {
             console.log(error);
@@ -79,7 +80,7 @@ const SmartContractProvider = function ({ children }: Props) {
 
     const withdraw = async function ({ lucid, claimableUtxos }: { lucid: Lucid; claimableUtxos: Array<ClaimableUTxO> }) {
         try {
-            setWaitingWithdraw(false);
+            setWaitingWithdraw(true);
             const refundRedeemer = Data.to(new Constr(1, []));
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
@@ -107,15 +108,17 @@ const SmartContractProvider = function ({ children }: Props) {
             if (success) {
                 setTxHashWithdraw(txHash);
                 await refresh();
+                setWaitingWithdraw(false);
             }
         } catch (error) {
             console.log(error);
         } finally {
-            setWaitingWithdraw(true);
+            setWaitingWithdraw(false);
         }
     };
 
-    const calcualateClaimEutxo = async function ({ lucid, mode, min, max }: { lucid: Lucid; mode: number; min?: number; max?: number }) {
+    const calculateClaimEUTxO = async function ({ lucid, mode, min, max }: { lucid: Lucid; mode: number; min: number; max: number }) {
+        setWaitingCalculateEUTxO(true);
         try {
             const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
@@ -178,8 +181,8 @@ const SmartContractProvider = function ({ children }: Props) {
                         case 2:
                             if (
                                 String(params.odOwner) === String(paymentAddress) &&
-                                Number(scriptUtxo.assets.lovelace) >= Number(min! * 1000000) &&
-                                Number(scriptUtxo.assets.lovelace) >= Number(max! * 1000000)
+                                params.buyPrice >= min * 1000000 &&
+                                params.buyPrice <= max * 1000000
                             ) {
                                 let winter_addr: Credential = { type: "Key", hash: params.feeAddress };
                                 const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
@@ -196,9 +199,12 @@ const SmartContractProvider = function ({ children }: Props) {
                     }
                 }
             }
+
             return claimableUtxos;
         } catch (error) {
             console.log(error);
+        } finally {
+            setWaitingCalculateEUTxO(false);
         }
         return [];
     };
@@ -220,11 +226,7 @@ const SmartContractProvider = function ({ children }: Props) {
                     sellPrice: outputDatum.fields[8],
                 };
 
-                if (
-                    String(params.odOwner) === String(paymentAddress)
-                    // && Number(params.buyPrice) >= min! * 1000000 &&
-                    // Number(params.sellPrice) <= max! * 1000000
-                ) {
+                if (String(params.odOwner) === String(paymentAddress)) {
                     sellingStrategies.push({
                         minimumAmountOut: Number(params.minimumAmountOut),
                         minimumAmountOutProfit: Number(params.minimumAmountOutProfit),
@@ -241,13 +243,14 @@ const SmartContractProvider = function ({ children }: Props) {
         <SmartContractContext.Provider
             value={{
                 deposit,
-                calcualateClaimEutxo,
+                calculateClaimEUTxO,
                 withdraw,
                 previewWithdraw,
                 txHashDeposit,
                 txHashWithdraw,
                 waitingDeposit,
                 waitingWithdraw,
+                waitingCalculateEUTxO,
             }}
         >
             {children}

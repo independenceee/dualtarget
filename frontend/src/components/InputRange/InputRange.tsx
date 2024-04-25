@@ -85,7 +85,7 @@ const InputRange = function ({ disabled, min, max, currentValue, onChange }: Pro
                         getAriaLabel={() => "Withdraw Range"}
                         value={value}
                         onChange={handleChange}
-                        valueLabelDisplay="on"
+                        valueLabelDisplay="auto"
                         getAriaValueText={(value: number) => `${value} DJED`}
                     />
                 </Box>

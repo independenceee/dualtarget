@@ -39,17 +39,19 @@ type DepositeType = {
 
 const Deposit = function () {
     const { wallet } = useContext<WalletContextType>(WalletContext);
+    const { lucid } = useContext<LucidContextType>(LucidContext);
+    const { deposit, waitingDeposit, txHashDeposit } = useContext<SmartContractContextType>(SmartContractContext);
     const [page, setPage] = useState<number>(1);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["Transactions", page],
+        queryKey: ["Transactions", page, txHashDeposit],
         queryFn: () =>
             axios.get<TransactionResponseType>(
                 `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 { timeout: 7000 },
             ),
-        enabled: !Boolean(wallet?.address),
+        enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
 
     const {
@@ -84,9 +86,6 @@ const Deposit = function () {
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
     });
-
-    const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { deposit, waitingDeposit } = useContext<SmartContractContextType>(SmartContractContext);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {

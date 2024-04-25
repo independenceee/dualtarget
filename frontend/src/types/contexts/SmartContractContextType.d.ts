@@ -5,8 +5,9 @@ export type SmartContractContextType = {
     txHashDeposit: string;
     txHashWithdraw: string;
     waitingWithdraw: boolean;
+    waitingCalculateEUTxO: boolean;
     previewWithdraw: ({ lucid }: { lucid: Lucid }) => Promise<CalculateSellingStrategy[]>;
-    calcualateClaimEutxo: ({ lucid, mode }: { lucid: Lucid; mode: number; min?: number; max?: number }) => Promise<ClaimableUTxO[]>;
+    calculateClaimEUTxO: ({ lucid, mode }: { lucid: Lucid; mode: number; min: number; max: number }) => Promise<ClaimableUTxO[]>;
     deposit: ({ lucid, sellingStrategies }: { lucid: Lucid; sellingStrategies: CalculateSellingStrategy[] }) => Promise<void>;
     withdraw: ({ lucid, claimableUtxos }: { lucid: Lucid; claimableUtxos: Array<ClaimableUTxO> }) => Promise<void>;
 };
