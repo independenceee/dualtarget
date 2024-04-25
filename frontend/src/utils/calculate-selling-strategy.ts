@@ -1,21 +1,16 @@
 import quantityDualTarget from "./quantity-dual-target";
 import { CalculateSellingStrategy } from "~/types/GenericsType";
 
-function calculateSellingStrategy({
-    priceHight,
-    priceLow,
-    step,
-    income,
-    stake,
-    totalADA,
-}: {
+type Props = {
     priceLow: number;
     priceHight: number;
     step: number;
     income: number;
     totalADA: number;
     stake: number;
-}): Array<CalculateSellingStrategy> {
+};
+
+function calculateSellingStrategy({ priceHight, priceLow, step, income, stake, totalADA }: Props): Array<CalculateSellingStrategy> {
     const DECIMAL_PLACES: number = 1000000;
     const OUTPUT_ADA: number = 3000000;
     const BATCHER_FEE: number = 1500000;

@@ -4,6 +4,9 @@
     text-align: left;
     table-layout: fixed;
     border-collapse: collapse;
+    &.center {
+        text-align: center;
+    }
 }
 
 .table-header {
@@ -21,6 +24,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    &.center {
+        text-align: center;
+    }
 }
 
 .row {

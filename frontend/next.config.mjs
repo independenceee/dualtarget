@@ -17,8 +17,11 @@ const nextConfig = {
         BINANCE_API_SECRET: "nItpNsxBjIgePDYGAgZ9iiMUlK1LwLLwOs4776B9vbf5HLmDm61TsT5hC9w1nrpg",
         DUALTARGET_CONTRACT_ADDRESS_PREPROD: "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk",
         EXCHANGE_ADDRESS_FREE_PREPROP: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
-        DUALTARGET_CONTRACT_POOL_ID: "pool1mvgpsafktxs883p66awp7fplj73cj6j9hqdxzvqw494f7f0v2dp",
         HADA_POOL_ID: "pool1rqgf6qd0p3wyf9dxf2w7qcddvgg4vu56l35ez2xqemhqun2gn7y",
+        EPOCH_POOL_ID: "478",
+
+        DUALTARGET_PAYMENT_ADDRESS_PREPROP: "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk",
+        DUALTARGET_STAKE_ADDRESS_PREPROP: "stake1ux0ptr0qx8ey4pw8n7f2n0mkg94dkdqg28nw5jh3l9pdcfc0scpge",
     },
 };
 

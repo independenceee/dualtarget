@@ -1,91 +1,29 @@
 import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
-import axios from "axios";
-import convertDatetime from "~/helpers/convert-datetime";
-import Blockfrost from "~/services/blockfrost";
 import Koios from "~/services/koios";
-
-const data = [
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-    {
-        epoch: 123,
-        amount: 2000222,
-        rewards: 20002,
-        txHash: "123112313123123",
-    },
-];
-
-/*
- * https://api.koios.rest/api/v0/pool_delegators_history?_pool_bech32=pool1xvaagsvl9prlr20hvg2qv434yss5c88r2ml6n43wcpepxmw85lj&_epoch_no=478
- * https://api.koios.rest/api/v0/pool_delegators_history?_pool_bech32=pool1xvaagsvl9prlr20hvg2qv434yss5c88r2ml6n43wcpepxmw85lj
- * https://preprod.koios.rest/#get-/epoch_info
- */
+import caculateDepositWithdraw from "~/utils/calculate-deposit-withdraw";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
-    const walletAddress: string = searchParams.get("wallet_address") as string;
-
     const page: string = searchParams.get("page") as string;
     const pageSize: string = searchParams.get("page_size") as string;
+    const walletAddress: string = searchParams.get("wallet_address") as string;
     const network: CardanoNetwork = searchParams.get("network") as CardanoNetwork;
-    const poolId: string = process.env.HADA_POOL_ID!;
-    const koios = new Koios(process.env.KOIOS_RPC_URL_MAINNET!);
-    const stakeAddress: string = "stake1uyxnzh6wtdhtyxlyyjs4mmqrtfs52zzurdvczn9p23na0ccn824kf";
-    const { data } = await koios.get(`/epoch_info?_epoch_no=${480}&_include_next_epoch=true`);
 
-    const parse = JSON.parse(data);
-    const startTime: number = parse[0].start_time;
-    const endTime: number = parse[0].end_time;
+    const epoch: string = process.env.EPOCH_POOL_ID as string;
+    const poolId: string = process.env.HADA_POOL_ID as string;
+    const stakeAddress: string = process.env.DUALTARGET_STAKE_ADDRESS_PREPROP as string;
+    const smartcontractAddress: string = process.env.DUALTARGET_PAYMENT_ADDRESS_PREPROP as string;
+    const koios = new Koios(process.env.KOIOS_RPC_URL_MAINNET!);
 
     const API = new BlockFrostAPI({
         projectId: process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!,
         network: "preprod",
     });
 
-    const results = await Promise.all(
+    const utxos = await Promise.all(
         (await API.addressesTransactions(walletAddress)).reverse().map(async function ({ tx_hash, block_time }) {
             return {
                 block_time: block_time,
@@ -94,82 +32,33 @@ export async function GET(request: NextRequest) {
         }),
     );
 
-    const range = results.filter(function ({ block_time, utxos }) {
-        return block_time >= endTime;
+    let results: any = [];
+
+    for (let i = 480; i >= 475; i--) {
+        const epochInfomation = await koios.epochInfomation({ epochNo: i });
+        const amountStake = await koios.poolDelegatorsHistory({ poolId: poolId, stakeAddress: stakeAddress, epochNo: i });
+        const accountRewards = await koios.accountRewards({ stakeAddress, epochNo: i });
+        console.log(amountStake, accountRewards);
+        const amountDepositWithdraw = await caculateDepositWithdraw({
+            utxos: utxos,
+            address: smartcontractAddress,
+            endTime: epochInfomation.end_time,
+        });
+
+        const ROS = amountDepositWithdraw / amountStake;
+
+        results.push({
+            epoch: i,
+            amount: amountDepositWithdraw,
+            rewards: accountRewards * ROS,
+        });
+    }
+
+    const totalPage = Math.ceil(results.length / Number(pageSize));
+    const histories = [...results].slice((Number(page) - 1) * Number(pageSize), Number(page) * Number(pageSize));
+
+    return Response.json({
+        totalPage,
+        histories,
     });
-
-    const addressToFind = "addr_test1wrkv2awy8l5nk9vwq2shdjg4ntlxs8xsj7gswj8au5xn8fcxyhpjk";
-
-    const transactionsWithTargetAddress = await Promise.all(
-        range
-            .map((transaction) => {
-                const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
-
-                const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
-                if (hasInput) {
-                    let amount: number = -39000000;
-
-                    transaction.utxos.inputs.forEach(function (input) {
-                        if (input.address === addressToFind) {
-                            const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
-                                if (unit === "lovelace") {
-                                    return total + Number(quantity);
-                                }
-
-                                return total;
-                            }, 0);
-
-                            amount += quantity;
-                        }
-                    }, 0);
-                    return {
-                        type: "Withdraw",
-                        txHash: transaction.utxos.hash,
-                        amount: +(amount / 1000000).toFixed(5),
-                        status: "Completed",
-                        fee: 1.5,
-                        blockTime: transaction.block_time,
-                    };
-                }
-
-                if (hasOutput) {
-                    let amount: number = 0;
-                    transaction.utxos.outputs.forEach(function (output) {
-                        if (output.address === addressToFind) {
-                            const quantity = output.amount.reduce(function (total: number, { unit, quantity }) {
-                                if (unit === "lovelace") {
-                                    return total + Number(quantity);
-                                }
-
-                                return total;
-                            }, 0);
-
-                            amount += quantity;
-                        }
-                    }, 0);
-                    return {
-                        blockTime: transaction.block_time,
-                        txHash: transaction.utxos.hash,
-                        type: "Deposit",
-                        amount: +(amount / 1000000).toFixed(5),
-                        status: "Completed",
-                        fee: 1.5,
-                    };
-                }
-            })
-            .filter((output) => output != null),
-    );
-
-    let depositTotal = 0;
-    let withdrawTotal = 0;
-
-    transactionsWithTargetAddress?.forEach((transaction: any) => {
-        if (transaction.type === "Deposit") {
-            depositTotal += transaction.amount;
-        } else if (transaction.type === "Withdraw") {
-            withdrawTotal += transaction.amount;
-        }
-    });
-
-    return Response.json(data);
 }

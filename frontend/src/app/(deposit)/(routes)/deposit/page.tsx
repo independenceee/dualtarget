@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders";

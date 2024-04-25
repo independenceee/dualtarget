@@ -11,6 +11,7 @@ import icons from "~/assets/icons";
 import { TransactionHistoryType, TransactionResponseType } from "~/types/GenericsType";
 import WalletContext from "~/contexts/components/WalletContext";
 import Loading from "../Loading";
+import { historyTransactions } from "~/constants/header-table";
 
 const cx = classNames.bind(styles);
 
@@ -63,7 +64,11 @@ const Orders = ({ className, isLoading, data, isError, page, setPage }: Props) =
                     {data && data.histories.length > 0 && (
                         <>
                             <div className={cx("table-wrapper", "irresponsive")}>
-                                <Table className={cx("order-table")} data={data?.histories as TransactionHistoryType[]} />
+                                <Table
+                                    titles={historyTransactions}
+                                    className={cx("order-table")}
+                                    data={data?.histories as TransactionHistoryType[]}
+                                />
                                 <Pagination setPage={setPage} page={page} totalItems={data.totalItems} totalPages={data.totalPage} />
                             </div>
                             <div className={cx("responsive")}>

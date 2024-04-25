@@ -26,6 +26,8 @@ import WalletContext from "~/contexts/components/WalletContext";
 import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
+import CountUp from "react-countup";
+import { useDebounce } from "~/hooks";
 
 type WithdrawType = {
     amount: number;
@@ -39,73 +41,26 @@ const WITHDRAW_MODES: Item[] = [
     { name: "Select parts", id: 2 },
 ];
 
-type Props = {};
-
-const Withdraw = function ({}: Props) {
+const Withdraw = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
+    const [claimableUtxos, setClaimableUtxos] = useState<Array<ClaimableUTxO>>([]);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
-    const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([]);
+    const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([0, 0]);
+    const debouncedValue = useDebounce<number[]>(withdrawableProfit);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page],
         queryFn: () =>
             axios.get<TransactionResponseType>(
                 `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
-                {
-                    timeout: 5000,
-                },
+                { timeout: 5000 },
             ),
-        enabled: !Boolean(wallet?.address),
+        enabled: !!Boolean(wallet?.address),
     });
-
-    useEffect(() => {
-        if (lucid) {
-            previewWithdraw({
-                lucid: lucid,
-                min: 0,
-                max: 0.4,
-            }).then((response) => {
-                setSellingStrategies(response);
-            });
-        }
-    }, [lucid]);
-
-    console.log(sellingStrategies);
-
-    const {
-        register,
-        setValue,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<WithdrawType>();
-
-    useEffect(() => {
-        calcualateClaimEutxo({
-            lucid,
-            mode: currentWithdrawMode.id,
-        }).then((res) => {
-            if (currentWithdrawMode.id !== 0) {
-                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
-                setValue("amount", amount / 1000000);
-            } else {
-                const withdrawableParts = (res as ClaimableUTxO[]).map((claim) => Number(claim.utxo.assets.lovelace) / 1000000);
-                const result: number[] = [...withdrawableParts];
-                console.log(withdrawableParts);
-                for (let i = 0; i < withdrawableParts.length - 1; i++) {
-                    for (let j = i + 1; j < withdrawableParts.length; j++) {
-                        result.push(withdrawableParts[i] + withdrawableParts[j]);
-                    }
-                }
-
-                setWithdrawableProfit([...Array.from(new Set(result))]);
-                setValue("amount", 0);
-            }
-        });
-    }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue]);
 
     const {
         data: chartDataRecords,
@@ -120,6 +75,53 @@ const Withdraw = function ({}: Props) {
         refetchOnReconnect: true,
     });
 
+    const {
+        register,
+        setValue,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<WithdrawType>();
+
+    const maxOfSellingStrategies = useMemo(() => {
+        if (sellingStrategies.length > 0) {
+            return (
+                Math.max(
+                    ...sellingStrategies.map(({ buyPrice }) => {
+                        return (Number(buyPrice) as number) / 1000000;
+                    }),
+                ) + 0.5
+            );
+        }
+
+        return 0;
+    }, [sellingStrategies]);
+
+    useEffect(() => {
+        const [min, max] = debouncedValue;
+        lucid &&
+            calcualateClaimEutxo({
+                lucid,
+                mode: currentWithdrawMode.id,
+                min,
+                max,
+            }).then((res: ClaimableUTxO[]) => {
+                console.log(res);
+
+                setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
+                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
+                setValue("amount", amount / 1000000);
+            });
+    }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue, debouncedValue]);
+
+    useEffect(() => {
+        if (lucid) {
+            previewWithdraw({ lucid }).then((response) => {
+                setSellingStrategies(response);
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lucid]);
+
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
@@ -133,16 +135,17 @@ const Withdraw = function ({}: Props) {
             lucid &&
                 withdraw({
                     lucid,
-                    mode: currentWithdrawMode.id,
-                    min: 0,
-                    max: 0.4,
+                    claimableUtxos,
                 });
         } catch (error) {
             console.warn("Error: ", error);
         }
     });
 
-    const onRangeChange = function () {};
+    const onRangeChange = function (value: number[]) {
+        setWithdrawableProfit(value);
+    };
+
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -156,7 +159,9 @@ const Withdraw = function ({}: Props) {
                                 <Card title="Withdraw" icon={images.logo} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onWithdraw} className={"card-service"}>
                                         <div className={cx("balance")}>
-                                            <span>Balance: {0} ₳</span>
+                                            <span>
+                                                Balance: <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                            </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
                                             <DropdownMenu
@@ -180,7 +185,12 @@ const Withdraw = function ({}: Props) {
                                                 }}
                                             />
 
-                                            <InputRange disabled={currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1} />
+                                            <InputRange
+                                                onChange={onRangeChange}
+                                                min={0}
+                                                max={Number(maxOfSellingStrategies.toFixed(4))}
+                                                disabled={currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1}
+                                            />
                                         </div>
 
                                         <div className={cx("info")}>
