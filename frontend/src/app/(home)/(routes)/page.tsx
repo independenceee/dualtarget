@@ -19,13 +19,26 @@ import StatisticsContext from "~/contexts/components/StatisticContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
 import convertDatetime from "~/helpers/convert-datetime";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { StatisticsType } from "~/types/GenericsType";
 
 const cx = classNames.bind(styles);
 
 export default function Home() {
     const { t } = useContext<TranslateContextType>(TranslateContext);
     const { loading } = useContext<LucidContextType>(LucidContext);
-    const { pool, profit } = useContext<StatisticContextType>(StatisticsContext);
+    const { pool } = useContext<StatisticContextType>(StatisticsContext);
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["Transactions"],
+        queryFn: () =>
+            axios.get<StatisticsType>(`${window.location.origin}/api/statistics?network`, {
+                timeout: 5000,
+            }),
+        enabled: true,
+    });
+
+    console.log(data?.data);
 
     return (
         <div className={cx("wrapper")}>
@@ -51,7 +64,6 @@ export default function Home() {
                         <div className={cx("description-child")}>
                             Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot
                         </div>
-                        {/* <div className={cx("description-child")}>DJED is backed by ADA and uses SHEN as a reserve coin.</div> */}
                     </div>
                 </div>
             </section>
@@ -67,11 +79,11 @@ export default function Home() {
                                 Deposit
                             </Button>
                         </Card>
-                        <Card title="Profit margin" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin title="Total wallet" amount={pool.totalWallet} loading={loading} />
-                            <Coin title="Total UTxO" amount={pool.totalUTxO} denominations="UTxO" loading={loading} />
-                            <Coin title="Total Volume Lock" amount={pool.totalADA} denominations="₳" loading={loading} />
-                            <Coin title="Total DJED" amount={pool.totalDJED} denominations="DJED" loading={loading} />
+                        <Card title="Statistics" icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                            <Coin title="Total transactions" amount={data?.data.totalTransaction} loading={loading} />
+                            <Coin title="Total Volume Lock" amount={data?.data.totalVolumeDepositsADA} denominations="₳" loading={loading} />
+                            <Coin title="Total Volume Un Lock" amount={data?.data.totalVolumeWithdrawsADA} denominations="₳" loading={loading} />
+                            <Coin title="Total DJED" amount={data?.data.totalVolumeWithdrawsDJED} denominations="DJED" loading={loading} />
                             <Button className={cx("stat-button")} href={routes.withdraw}>
                                 Withdraw
                             </Button>

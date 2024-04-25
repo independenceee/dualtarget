@@ -5,7 +5,7 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - "3000:3000"
+            - "3500:3500"
         environment:
             BLOCKFROST_NETWORK_NAME_PREPROD: "Preprod"
             BLOCKFROST_NETWORK_NAME_PREVIEW: "Preview"

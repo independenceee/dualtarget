@@ -7,11 +7,22 @@ export type DelegationRewardType = {
     status: string;
 };
 
+export type DelegationRewardResponseType = {
+    totalPage: number;
+    histories: DelegationRewardType[];
+    totalItems: number;
+};
+
 export type StatisticsType = {
     totalWallet?: number;
     totalUTxO?: number;
     totalADA?: number;
     totalDJED?: number;
+
+    totalTransaction?: number;
+    totalVolumeWithdrawsDJED?: number;
+    totalVolumeWithdrawsADA?: number;
+    totalVolumeDepositsADA?: number;
 
     ROS?: number;
 };

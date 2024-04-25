@@ -41,9 +41,12 @@ const WITHDRAW_MODES: Item[] = [
     { name: "Select parts", id: 2 },
 ];
 
+const FEE = 1.5;
+
 const Withdraw = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { waitingWithdraw, withdraw, calcualateClaimEutxo, previewWithdraw } = useContext<SmartContractContextType>(SmartContractContext);
+    const { waitingWithdraw, waitingCalculateEUTxO, withdraw, calculateClaimEUTxO, previewWithdraw, txHashWithdraw } =
+        useContext<SmartContractContextType>(SmartContractContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const [page, setPage] = useState<number>(1);
     const [claimableUtxos, setClaimableUtxos] = useState<Array<ClaimableUTxO>>([]);
@@ -53,13 +56,13 @@ const Withdraw = function () {
     const debouncedValue = useDebounce<number[]>(withdrawableProfit);
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["Transactions", page],
+        queryKey: ["Transactions", page, txHashWithdraw],
         queryFn: () =>
             axios.get<TransactionResponseType>(
                 `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
                 { timeout: 5000 },
             ),
-        enabled: !!Boolean(wallet?.address),
+        enabled: !!Boolean(wallet?.address) || (!!Boolean(wallet?.address) && !!txHashWithdraw),
     });
 
     const {
@@ -76,6 +79,7 @@ const Withdraw = function () {
     });
 
     const {
+        watch,
         register,
         setValue,
         handleSubmit,
@@ -89,7 +93,7 @@ const Withdraw = function () {
                     ...sellingStrategies.map(({ buyPrice }) => {
                         return (Number(buyPrice) as number) / 1000000;
                     }),
-                ) + 0.5
+                ) + 0.1
             );
         }
 
@@ -97,31 +101,50 @@ const Withdraw = function () {
     }, [sellingStrategies]);
 
     useEffect(() => {
+        setWithdrawableProfit([0, maxOfSellingStrategies]);
+    }, [maxOfSellingStrategies]);
+
+    useEffect(() => {
         const [min, max] = debouncedValue;
         lucid &&
-            calcualateClaimEutxo({
+            calculateClaimEUTxO({
                 lucid,
                 mode: currentWithdrawMode.id,
                 min,
                 max,
             }).then((res: ClaimableUTxO[]) => {
-                console.log(res);
-
                 setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
                 const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
                 setValue("amount", amount / 1000000);
             });
-    }, [calcualateClaimEutxo, currentWithdrawMode, lucid, setValue, debouncedValue]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentWithdrawMode, lucid, debouncedValue]);
 
     useEffect(() => {
         if (lucid) {
+            console.log("Refresh Chart");
             previewWithdraw({ lucid }).then((response) => {
+                console.log(response);
                 setSellingStrategies(response);
             });
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lucid]);
 
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (Boolean(txHashWithdraw) && lucid) {
+                previewWithdraw({ lucid }).then((response) => {
+                    setWithdrawableProfit([0, maxOfSellingStrategies]);
+                    setSellingStrategies(response);
+                });
+            }
+        }, 5000);
+
+        return () => clearTimeout(timeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lucid, txHashWithdraw, maxOfSellingStrategies]);
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
@@ -136,7 +159,7 @@ const Withdraw = function () {
                 withdraw({
                     lucid,
                     claimableUtxos,
-                });
+                }).then(() => {});
         } catch (error) {
             console.warn("Error: ", error);
         }
@@ -145,7 +168,7 @@ const Withdraw = function () {
     const onRangeChange = function (value: number[]) {
         setWithdrawableProfit(value);
     };
-
+    console.log("Waiting withdraw: ", waitingWithdraw);
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
@@ -220,17 +243,32 @@ const Withdraw = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                -
+                                                {waitingCalculateEUTxO ? <Loading /> : <>{claimableUtxos.length === 0 ? "-" : `${FEE} ₳`}</>}
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
                                                     <span>You will receive</span>
                                                 </div>
-                                                {waitingWithdraw ? <Loading /> : "-"}
+                                                {waitingCalculateEUTxO ? (
+                                                    <Loading />
+                                                ) : (
+                                                    <>{claimableUtxos.length === 0 ? "-" : `${Number(watch("amount")) - FEE} ₳`}</>
+                                                )}
                                             </div>
                                         </div>
 
-                                        <Button disabled={!lucid || waitingWithdraw} onClick={onWithdraw} className={cx("withdraw-button")}>
+                                        <Button
+                                            disabled={!lucid || waitingWithdraw || waitingCalculateEUTxO}
+                                            onClick={onWithdraw}
+                                            RightIcon={
+                                                <Loading
+                                                    className={cx("withdraw-loading", {
+                                                        withdrawing: waitingWithdraw,
+                                                    })}
+                                                />
+                                            }
+                                            className={cx("withdraw-button")}
+                                        >
                                             Withdraw
                                         </Button>
                                     </form>
