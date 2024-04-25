@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
 
         results.push({
             epoch: i,
-            amount: amountDepositWithdraw,
-            rewards: accountRewards * ROS,
+            amount: amountDepositWithdraw.toFixed(5),
+            rewards: (accountRewards * ROS).toFixed(5),
             status: "Distributed",
         });
     }

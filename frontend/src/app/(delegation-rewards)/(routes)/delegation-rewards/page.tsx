@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import styles from "./DelegationRewards.module.scss";
 import Tippy from "~/components/Tippy";
@@ -16,12 +16,16 @@ import { DelegationRewardResponseType, DelegationRewardType } from "~/types/Gene
 import Loading from "~/components/Loading";
 import { useDebounce } from "~/hooks";
 import Reward from "~/components/Reward";
+import { WalletContextType } from "~/types/contexts/WalletContextType";
+import WalletContext from "~/contexts/components/WalletContext";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
     const [page, setPage] = useState<number>(1);
+    const { wallet } = useContext<WalletContextType>(WalletContext);
     const [walletAddress, setWalletAddress] = useState<string>("");
-    const debouncedValue = useDebounce(walletAddress);
+
+    const debouncedValue = useDebounce(walletAddress || wallet?.address);
 
     const {
         data: rewards,
@@ -58,7 +62,7 @@ const DelegationRewards = function () {
                     <section className={cx("search")}>
                         <div className={cx("search-input")}>
                             <input
-                                value={walletAddress}
+                                value={walletAddress || wallet?.address}
                                 onChange={handleChangeWalletAddress}
                                 type="text"
                                 placeholder="Enter address to load the data"
@@ -159,6 +163,10 @@ const DelegationRewards = function () {
                                                 totalItems={rewards.data.totalItems}
                                             />
                                         )}
+
+                                        <div className={cx("note")}>
+                                            <p>* Reward amount lower than 2 ₳ will be added to pending rewards</p>
+                                        </div>
                                     </div>
                                 )}
                             </div>

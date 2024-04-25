@@ -16,6 +16,10 @@
     width: 100%;
 }
 
+.small-loading {
+    margin-top: 0.5rem;
+}
+
 .title {
     font-size: 33px;
     font-weight: 700;
@@ -123,6 +127,7 @@
 }
 
 .summary-description {
+    margin-top: 0.5rem;
     font-size: 16px;
     font-weight: 300;
     margin: 0;
@@ -172,6 +177,19 @@
     display: none;
 }
 
+.note {
+    margin-top: 20px;
+    position: relative;
+    top: 30px;
+
+    p {
+        font-size: 14px;
+        margin: 0;
+        opacity: 0.8;
+        text-align: center;
+    }
+}
+
 @media (max-width: 768px) {
     .wrapper {
         margin: 0 auto 72px;
@@ -214,5 +232,12 @@
 @media (max-width: 1024px) {
     .container {
         padding: 88px 60px;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        margin: 0 auto 72px;
+        padding: 172px 18px 0;
     }
 }
