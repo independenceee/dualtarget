@@ -9,7 +9,6 @@ const cx = classNames.bind(styles);
 
 const Hamburger = function () {
     const [open, setOpen] = useState<boolean>(false);
-    const { isShowingWallet } = useContext<ModalContextType>(ModalContext);
     const handleOpenMenu = () => {
         setOpen((prev) => !prev);
     };
@@ -28,7 +27,6 @@ const Hamburger = function () {
                 type="button"
                 className={cx("wrapper", {
                     open: open,
-                    isShowingWallet: isShowingWallet,
                 })}
                 onClick={handleOpenMenu}
             >

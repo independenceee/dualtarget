@@ -21,7 +21,7 @@ const faqs = [
                         minting and burning DJED and SHEN.
                     </p>
                     <p className={cx("faq-paragraph")}>
-                        <Image className={cx("faq-image")} src={images.eternl} alt="" />
+                        <Image className={cx("faq-image")} style={{ objectFit: "contain" }} src={images.eternl} alt="" />
                     </p>
                 </span>
             );
