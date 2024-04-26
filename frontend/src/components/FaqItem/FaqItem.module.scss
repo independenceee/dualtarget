@@ -19,7 +19,6 @@
     flex-direction: column;
     position: relative;
     border-radius: 20px;
-    margin-bottom: 20px;
     padding: 20px 36px 20px 20px;
     width: 100%;
 }
@@ -93,8 +92,5 @@
 @media (max-width: 1024px) {
     .title {
         font-size: 1.6rem;
-    }
-    .inner {
-        margin-bottom: 0;
     }
 }
