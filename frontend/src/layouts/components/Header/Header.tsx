@@ -60,7 +60,7 @@ const Header = function ({ selectedRouter, setSelectedRouter }: Props) {
                     <div className={cx("nav-right-wrapper")}>
                         <LanguageSelector />
                         <ConnectWallet className={cx("connect-wallet-button")} />
-                        <Hamburger  />
+                        <Hamburger />
                     </div>
                 </div>
             </div>

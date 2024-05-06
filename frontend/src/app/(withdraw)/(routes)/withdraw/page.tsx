@@ -168,7 +168,7 @@ const Withdraw = function () {
     const onRangeChange = function (value: number[]) {
         setWithdrawableProfit(value);
     };
-    console.log("Waiting withdraw: ", waitingWithdraw);
+
     return (
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
