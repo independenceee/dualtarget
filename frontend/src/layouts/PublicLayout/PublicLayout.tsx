@@ -24,10 +24,11 @@ const PublicLayout = function ({ children }: Props) {
     }, [pathName]);
 
     useEffect(() => {
-        
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
             setPageLoading(false);
         }, 1000);
+
+        return () => clearTimeout(timeout);
     }, []);
 
     return (

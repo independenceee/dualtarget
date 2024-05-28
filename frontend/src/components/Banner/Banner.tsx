@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Banner.module.scss";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import Title from "../Title";
+import TranslateContext from "~/contexts/components/TranslateContext";
 const cx = classNames.bind(styles);
 
 type Props = {
@@ -13,6 +14,8 @@ type Props = {
 };
 
 const Banner = function ({ title, description }: Props) {
+    const { t } = useContext(TranslateContext);
+
     const [init, setInit] = useState(false);
     useEffect(() => {
         initParticlesEngine(async (engine) => {
@@ -98,11 +101,7 @@ const Banner = function ({ title, description }: Props) {
     return (
         <section className={cx("wrapper")}>
             {init ? <Particles id={cx(styles.tsparticles)} particlesLoaded={null!} options={options} /> : null}
-            <Title
-                title="Our Foundation"
-                description="We are impartial and independent, and every day we create distinctive, world-class
-                            programmes and develop"
-            />
+            <Title title={t("about.title")} description={t("about.sub title")} />
         </section>
     );
 };

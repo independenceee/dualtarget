@@ -1,6 +1,16 @@
 import images from "~/assets/images";
 
-const founders = [
+const founders: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    role: string;
+    avatar: any;
+    twitter: string;
+    linkedin: string;
+    description: string;
+    company?: string;
+}[] = [
     {
         id: 1,
         firstName: "Tien",

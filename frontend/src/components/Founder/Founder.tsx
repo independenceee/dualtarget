@@ -1,18 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 import classNames from "classnames/bind";
 import Link from "next/link";
 import { BiLogoLinkedin as LinkedinIcon } from "react-icons/bi";
 import { FaTelegramPlane as TelegramIcon } from "react-icons/fa";
 import styles from "./Founder.module.scss";
 import Image from "next/image";
+import TranslateContext from "~/contexts/components/TranslateContext";
 
 const cx = classNames.bind(styles);
 
 type Props = {
+    id: number;
     avatar: string;
-    company: string;
+    company?: string;
     firstName: string;
     lastName: string;
     role: string;
@@ -21,7 +23,9 @@ type Props = {
     description: string;
 };
 
-const Founder = function ({ avatar, firstName, lastName, role, twitter, linkedin, description }: Props) {
+const Founder = function ({ id, avatar, firstName, lastName, role, twitter, linkedin, description }: Props) {
+    const { t } = useContext(TranslateContext);
+
     return (
         <div className={cx("wrapper")}>
             <div className={cx("image-wrapper")}>
@@ -40,9 +44,9 @@ const Founder = function ({ avatar, firstName, lastName, role, twitter, linkedin
                 </div>
             </div>
             <div className={cx("container")}>
-                <div className={cx("name")}>{firstName + " " + lastName} </div>
-                <div className={cx("role")}>{role}</div>
-                <div className={cx("description")}>{description}</div>
+                <div className={cx("name")}>{t(`about.founders.${id}.name`)} </div>
+                <div className={cx("role")}>{t(`about.founders.${id}.major`)}</div>
+                <div className={cx("description")}>{t(`about.founders.${id}.description`)}</div>
             </div>
         </div>
     );

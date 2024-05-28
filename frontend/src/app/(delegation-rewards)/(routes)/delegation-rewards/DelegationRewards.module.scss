@@ -102,8 +102,7 @@
 
 .summary {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    gap: 8px;
     justify-content: space-between;
     line-height: 24px;
     margin-bottom: 40px;
@@ -112,6 +111,7 @@
 }
 
 .summary-item {
+    text-align: center;
     align-items: center;
     display: flex;
     flex-direction: column;

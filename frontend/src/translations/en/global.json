@@ -5,18 +5,21 @@
             "deposit": "Deposit",
             "withdraw": "Withdraw",
             "rewards": "Delegation Rewards",
+            "about": "About",
             "faq": "FAQ"
         },
         "connect wallet button": "Connect Wallet",
         "notification": {
             "no wallet": "Connect to view your mint and burn requests",
             "error to fetch data": "There was an error fetching data",
-            "no data": "No data available"
+            "no data": "No data available",
+            "no data wallet address": " for this wallet address"
         }
     },
     "home": {
         "title": "Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot",
         "card pool": {
+            "title": "Pool",
             "total wallet": "Total wallet",
             "total UTxO": "Total UTxO",
             "total volume lock": "Total Volume Lock",
@@ -24,6 +27,7 @@
             "button": "Deposit"
         },
         "card statistics": {
+            "title": "Statistics",
             "total transactions": "Total transactions",
             "total volume lock": "Total Volume Lock",
             "total volume unlock": "Total Volume Unlock",
@@ -35,15 +39,15 @@
             "base reserve": "Base Reserve",
             "update": "Last updated: "
         },
-        "card-sub": "*Deposit/Withdraw includes base fee and operator fee",
+        "card sub": "*Deposit\\Withdraw includes base fee and operator fee",
         "about dualtarget": {
             "title": "About dualtarget",
-            "sub-title": "Staking and increasing assets with a decentralized",
+            "sub title": "Staking and increasing assets with a decentralized",
             "content": {
                 "paragraph 1": "We will develop a platform that enables users to choose dual targets and trading methods directly within their wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges",
-                "paragraph 2": "We will develop a platform that enables users to choose dual targets and trading methods directly within their wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges",
-                "button": "Contact us"
-            }
+                "paragraph 2": "We will develop a platform that enables users to choose dual targets and trading methods directly within their wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges"
+            },
+            "button": "Contact us"
         }
     },
     "deposit": {
@@ -67,7 +71,7 @@
                     "placeholder": "Enter your desired income",
                     "instruction": "Money recive for month"
                 },
-                "take percentage": {
+                "stake percentage": {
                     "title": "Stake",
                     "placeholder": "Enter the stake percentage",
                     "instruction": "Stake reward for year"
@@ -83,6 +87,7 @@
                     "instruction": "Total ADA hold"
                 }
             },
+            "button": "Deposit",
             "fees": "Fees",
             "you will pay": "You will pay"
         },
@@ -92,11 +97,12 @@
     },
     "withdraw": {
         "title": "Withdraw asset",
+        "balance": "Balance",
         "card": {
             "fields": {
                 "ranges": {
-                    "min": { "title": "Min", "instruction": "Calculated based on the contract minimum amount parameters." },
-                    "max": { "title": "Max", "instruction": "Calculate based on the available mintable amount and your wallet balance." }
+                    "min": { "title": "MIN", "instruction": "Calculated based on the contract minimum amount parameters." },
+                    "max": { "title": "MAX", "instruction": "Calculate based on the available mintable amount and your wallet balance." }
                 },
                 "amount": {
                     "placeholder": "Enter the total number of ADA"
@@ -107,6 +113,7 @@
                 "only profit": "ONLY PROFIT",
                 "select parts": "SELECT PARTS"
             },
+            "button": "Withdraw",
             "fees": "Fees",
             "you will receive": "You will receive"
         },
@@ -117,7 +124,7 @@
     "delegation rewards": {
         "card": {
             "title": "Delegation Rewards for ADA holders",
-            "sub-title": "Check your ADA rewards",
+            "sub title": "Check your ADA rewards",
             "fields": {
                 "address": {
                     "title": "Address",
@@ -133,5 +140,26 @@
     "faq": {
         "title": "FAQ",
         "sub title": "Answers to frequently asked questions"
+    },
+    "about": {
+        "title": "Our Foundation",
+        "sub title": "We are impartial and independent, and every day we create distinctive, world-class programmes and develop",
+        "founders": {
+            "1": {
+                "name": "Tien Nguyen Anh",
+                "major": "Computer Science Experts",
+                "description": "Founder of the VILAI stake pool, former Experts at HPE; Blockchain Support Engineer"
+            },
+            "2": {
+                "name": "Hieu Nguyen Van",
+                "major": "MSc. Electronics and Telecommunication",
+                "description": "Founder of HADA stake pool, member of Plutus Pioneer Program, Researcher at VAST."
+            },
+            "3": {
+                "name": "Khanh Pham Van",
+                "major": "Doctor of Mathematics",
+                "description": "Researcher at the Institute of Information Technology - VAST; Lecturer at Hanoi National University on Artificial Intelligence, Deep Learning, Reinforcement Learning"
+            }
+        }
     }
 }

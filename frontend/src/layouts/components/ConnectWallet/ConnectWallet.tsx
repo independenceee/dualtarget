@@ -27,6 +27,7 @@ import ModalContext from "~/contexts/components/ModalContext";
 import Toast from "~/components/Toast";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "~/contexts/components/ToastContext";
+import TranslateContext from "~/contexts/components/TranslateContext";
 
 const cx = classNames.bind(styles);
 type Props = {
@@ -34,6 +35,8 @@ type Props = {
 };
 
 const ConnectWallet = function ({ className }: Props) {
+    const { t } = useContext(TranslateContext);
+
     const { isShowingErrorNetwork, toogleErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
         useContext<ModalContextType>(ModalContext);
     const { toasts } = useContext<ToastContextType>(ToastContext);

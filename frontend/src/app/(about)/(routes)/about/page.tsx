@@ -3,14 +3,11 @@ import classNames from "classnames/bind";
 import Founder from "~/components/Founder";
 import founders from "~/constants/founders";
 import styles from "./About.module.scss";
-import Title from "~/components/Title";
 import Banner from "~/components/Banner";
-import Button from "~/components/Button";
-import routes from "~/configs/routes";
+
 const cx = classNames.bind(styles);
 
-type Props = {};
-const About = function ({}: Props) {
+const About = function () {
     return (
         <main className={cx("wrapper")}>
             <div className={cx("container")}>
@@ -18,15 +15,16 @@ const About = function ({}: Props) {
 
                 <section className={cx("founder-wrapper")}>
                     <div id="founder-contact" className={cx("founder-container")}>
-                        {founders?.map(function (founder: any, index: number) {
+                        {founders?.map(function (founder, index: number) {
                             return (
                                 <Founder
+                                    id={founder.id}
                                     role={founder.role}
                                     twitter={founder.twitter}
                                     linkedin={founder.linkedin}
                                     lastName={founder.lastName}
                                     firstName={founder.firstName}
-                                    company={founder.company}
+                                    company={founder?.company}
                                     avatar={founder.avatar}
                                     key={index}
                                     description={founder.description}
