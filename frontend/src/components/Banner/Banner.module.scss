@@ -1,0 +1,18 @@
+.wrapper {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var();
+}
+
+#tsparticles {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}

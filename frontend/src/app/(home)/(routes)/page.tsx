@@ -22,6 +22,7 @@ import convertDatetime from "~/helpers/convert-datetime";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { StatisticsType } from "~/types/GenericsType";
+import CountUp from "react-countup";
 
 const cx = classNames.bind(styles);
 
@@ -37,8 +38,6 @@ export default function Home() {
             }),
         enabled: true,
     });
-
-    console.log(data?.data);
 
     return (
         <div className={cx("wrapper")}>
@@ -71,19 +70,34 @@ export default function Home() {
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
                         <Card title="Pool" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin title="Total wallet" amount={pool.totalWallet} loading={loading} />
-                            <Coin title="Total UTxO" amount={pool.totalUTxO} denominations="UTxO" loading={loading} />
-                            <Coin title="Total Volume Lock" amount={pool.totalADA} denominations="₳" loading={loading} />
-                            <Coin title="Total DJED" amount={pool.totalDJED} denominations="DJED" loading={loading} />
+                            <Coin title="Total wallet" decimals={0} amount={pool.totalWallet} loading={loading || isLoading} />
+                            <Coin title="Total UTxO" decimals={0} amount={pool.totalUTxO} denominations="UTxO" loading={loading || isLoading} />
+                            <Coin title="Total Volume Lock" amount={pool.totalADA} denominations="₳" loading={loading || isLoading} />
+                            <Coin title="Total DJED" amount={pool.totalDJED} denominations="DJED" loading={loading || isLoading} />
                             <Button className={cx("stat-button")} href={routes.deposit}>
                                 Deposit
                             </Button>
                         </Card>
                         <Card title="Statistics" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin title="Total transactions" amount={data?.data.totalTransaction} loading={loading} />
-                            <Coin title="Total Volume Lock" amount={data?.data.totalVolumeDepositsADA} denominations="₳" loading={loading} />
-                            <Coin title="Total Volume Un Lock" amount={data?.data.totalVolumeWithdrawsADA} denominations="₳" loading={loading} />
-                            <Coin title="Total DJED" amount={data?.data.totalVolumeWithdrawsDJED} denominations="DJED" loading={loading} />
+                            <Coin title="Total transactions" decimals={0} amount={data?.data.totalTransaction} loading={loading || isLoading} />
+                            <Coin
+                                title="Total Volume Lock"
+                                amount={data?.data.totalVolumeDepositsADA}
+                                denominations="₳"
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title="Total Volume Un Lock"
+                                amount={data?.data.totalVolumeWithdrawsADA}
+                                denominations="₳"
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title="Total DJED"
+                                amount={data?.data.totalVolumeWithdrawsDJED}
+                                denominations="DJED"
+                                loading={loading || isLoading}
+                            />
                             <Button className={cx("stat-button")} href={routes.withdraw}>
                                 Withdraw
                             </Button>
@@ -112,8 +126,13 @@ export default function Home() {
                                         <h2>Base Reserve</h2>
                                     </div>
                                     <div className={cx("reserves-value-base")}>
-                                        <div className={cx("base-reserves-value")}>37,107,970.3052 ₳</div>
-                                        <span className={cx("approximate")}>≈21,987,529.98 DJED</span>
+                                        <div className={cx("base-reserves-value")}>
+                                            <CountUp decimals={6} enableScrollSpy start={0} end={Number(data?.data.totalVolumeDepositsADA)} /> ₳
+                                        </div>
+                                        <span className={cx("approximate")}>
+                                            ≈ <CountUp decimals={6} enableScrollSpy start={0} end={Number(data?.data.totalVolumeWithdrawsDJED)} />{" "}
+                                            DJED
+                                        </span>
                                     </div>
                                 </div>
                             </div>
