@@ -9,6 +9,8 @@ const cx = classNames.bind(styles);
 
 const Hamburger = function () {
     const [open, setOpen] = useState<boolean>(false);
+    const [hideX, setHideX] = useState<boolean>(false);
+
     const handleOpenMenu = () => {
         setOpen((prev) => !prev);
     };
@@ -21,12 +23,21 @@ const Hamburger = function () {
         window.addEventListener("resize", handleResponsiveSidebar);
     }, []);
 
+    useLayoutEffect(() => {
+        const handleHideX = () => {
+            if (window.innerWidth <= 670) setHideX(true);
+        };
+
+        window.addEventListener("resize", handleHideX);
+    }, []);
+
     return (
         <div>
             <button
                 type="button"
                 className={cx("wrapper", {
                     open: open,
+                    hideX: open && hideX,
                 })}
                 onClick={handleOpenMenu}
             >

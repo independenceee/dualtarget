@@ -1,10 +1,137 @@
 {
-    "header": {
-        "home": "Trang chủ",
-        "deposit": "Tiền gửi",
-        "withdraw": "Rút",
-        "rewards": "Phần thưởng ủy quyền",
-        "faq": "Các câu hỏi thường gặp"
+    "layout": {
+        "header": {
+            "home": "Trang chủ",
+            "deposit": "Tiền gửi",
+            "withdraw": "Rút",
+            "rewards": "Phần thưởng ủy quyền",
+            "faq": "Các câu hỏi thường gặp"
+        },
+        "connect wallet button": "Kết nối ví",
+        "notification": {
+            "no wallet": "Kết nối để xem các yêu cầu đúc và ghi của bạn",
+            "error to fetch data": "Đã xảy ra lỗi khi tìm nạp dữ liệu",
+            "no data": "Không có dữ liệu"
+        }
     },
-    "home": ""
+    "home page": {
+        "title": "Mục tiêu kép dành cho Người nắm giữ ADA (Stake và tăng tài sản) với bot giao dịch tự động phi tập trung",
+        "card pool": {
+            "total wallet": "Tổng số ví",
+            "total UTxO": "Tổng UTxO",
+            "total volume lock": "Tổng số lượng giao dịch khóa",
+            "total DJED": "Tổng DJED",
+            "button": "Gửi tiền"
+        },
+        "card statistics": {
+            "total transactions": "Tổng số giao dịch",
+            "total volume lock": "Tổng số lượng giao dịch khóa",
+            "total volume unlock": "Tổng số lượng giao dịch không khóa",
+            "total DJED": "Tổng DJED",
+            "button": "Rút tiền"
+        },
+        "card profit": {
+            "title": "Tỷ suất lợi nhuận",
+            "base reserve": "Cơ sở chuyển đổi",
+            "update": "Cập nhật mới nhất: "
+        },
+        "card-sub": "*Gửi tiền/Rút tiền bao gồm phí cơ bản và phí điều hành",
+        "about dualtarget": {
+            "title": "Về dualtarget",
+            "sub-title": "Đặt cọc và tăng tài sản bằng phương thức phi tập trung",
+            "content": {
+                "paragraph 1": "Chúng tôi sẽ phát triển một nền tảng cho phép người dùng chọn mục tiêu kép và phương thức giao dịch trực tiếp trong ví của họ. Đồng thời, chúng tôi sẽ tạo các bot giao dịch tự động trên các sàn giao dịch phi tập trung",
+                "paragraph 2": "Chúng tôi sẽ phát triển một nền tảng cho phép người dùng chọn mục tiêu kép và phương thức giao dịch trực tiếp trong ví của họ. Đồng thời, chúng tôi sẽ tạo các bot giao dịch tự động trên các sàn giao dịch phi tập trung",
+                "button": "Liên hệ chúng tôi"
+            }
+        }
+    },
+    "deposit": {
+        "title": "Quỹ tiền gửi",
+        "card": {
+            "title": "Tiền gửi",
+            "balance": "Số dư",
+            "fields": {
+                "min price": {
+                    "title": "Giá thấp nhất",
+                    "placeholder": "Nhập giá thấp nhất",
+                    "instruction": "Bạn có thể giữ giá thấp nhất cho chiến lược"
+                },
+                "max price": {
+                    "title": "Giá cao nhất",
+                    "placeholder": "Nhập giá cao nhất",
+                    "instruction": "Bạn có thể giữ giá cao nhất cho chiến lược"
+                },
+                "desired income": {
+                    "title": "Thu nhập mong muốn",
+                    "placeholder": "Nhập thu nhập mong muốn",
+                    "instruction": "Số tiền nhận được hàng tháng"
+                },
+                "take percentage": {
+                    "title": "Tỷ lệ cổ phần",
+                    "placeholder": "Nhập tỷ lệ cổ phần",
+                    "instruction": "Phần thưởng cổ phần hàng năm"
+                },
+                "step": {
+                    "title": "Bước nhảy",
+                    "placeholder": "Nhập bước nhảy giá",
+                    "instruction": "Bước nhảy cho ₳/DJED"
+                },
+                "total ADA": {
+                    "title": "Tổng số ADA",
+                    "placeholder": "Nhập tổng số ADA",
+                    "instruction": "Tổng số ADA đang giữ"
+                }
+            },
+            "fees": "Phí",
+            "you will pay": "Bạn sẽ trả"
+        },
+        "history": {
+            "title": "Lịch sử"
+        }
+    },
+    "withdraw": {
+        "title": "Rút tài sản",
+        "card": {
+            "fields": {
+                "ranges": {
+                    "min": { "title": "Tối thiểu", "instruction": "Tính toán dựa trên các tham số số lượng tối thiểu của hợp đồng." },
+                    "max": { "title": "Tối đa", "instruction": "Tính toán dựa trên số lượng có thể đúc được và số dư ví của bạn." }
+                },
+                "amount": {
+                    "placeholder": "Nhập tổng số ADA"
+                }
+            },
+            "modes": {
+                "all": "TẤT CẢ",
+                "only profit": "CHỈ LỢI NHUẬN",
+                "select parts": "CHỌN PHẦN"
+            },
+            "fees": "Phí",
+            "you will receive": "Bạn sẽ nhận"
+        },
+        "orders": {
+            "title": "Đơn hàng"
+        }
+    },
+    "delegation rewards": {
+        "card": {
+            "title": "Phần thưởng ủy quyền cho người giữ ADA",
+            "sub-title": "Kiểm tra phần thưởng ADA của bạn",
+            "fields": {
+                "address": {
+                    "title": "Địa chỉ",
+                    "placeholder": "Nhập địa chỉ để tải dữ liệu",
+                    "instruction": "Vui lòng nhập địa chỉ Cardano của bạn đủ điều kiện nhận phần thưởng ủy quyền."
+                }
+            },
+            "current epoch": "Epoch hiện tại",
+            "total distributed rewards": "Tổng phần thưởng đã phân phối",
+            "total pending rewards": "Tổng phần thưởng đang chờ xử lý"
+        }
+    },
+    "faq": {
+        "title": "Câu hỏi thường gặp",
+        "sub title": "Câu trả lời cho các câu hỏi thường gặp"
+    }
 }

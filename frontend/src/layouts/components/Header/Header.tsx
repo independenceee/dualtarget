@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
 import HeaderOption from "./HeaderOption";
@@ -48,7 +48,7 @@ const Header = function ({ selectedRouter, setSelectedRouter }: Props) {
                                     <HeaderOption
                                         setOpen={null!}
                                         key={index}
-                                        name={t(`header.${name}`)}
+                                        name={t(`layout.header.${name}`)}
                                         redirect={redirect}
                                         isActive={Boolean(selectedRouter === redirect)}
                                         setSelectedRouter={setSelectedRouter}

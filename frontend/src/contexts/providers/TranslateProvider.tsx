@@ -35,7 +35,6 @@ type Props = {
 
 const TranslateProvider = function ({ children }: Props) {
     const { t, i18n } = useTranslation("global");
-    
 
     const changeLanguage = function (language: string) {
         i18n.changeLanguage(language);

@@ -58,7 +58,7 @@ export default function Home() {
                 <div className={cx("introduction")}>
                     <div className={cx("introduction-header")}>
                         <span className={cx("prefix")}>Dualtarget</span>
-                        <span className={cx("title")}>{t("home")}</span>
+                        {/* <span className={cx("title")}>{t("home")}</span> */}
                     </div>
                     <div className={cx("introduction-description")}>
                         <div className={cx("description-child")}>
