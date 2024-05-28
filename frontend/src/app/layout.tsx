@@ -20,7 +20,7 @@ const RootLayout = function ({ children }: Readonly<Props>) {
             <body>
                 <ContextProvider>
                     <PublicLayout>{children}</PublicLayout>
-                    {/* <NetworkConnectionStatus /> */}
+                    <NetworkConnectionStatus />
                 </ContextProvider>
             </body>
         </html>
