@@ -18,11 +18,13 @@ import { useDebounce } from "~/hooks";
 import Reward from "~/components/Reward";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
+import TranslateContext from "~/contexts/components/TranslateContext";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
     const [page, setPage] = useState<number>(1);
     const { wallet } = useContext<WalletContextType>(WalletContext);
+    const { t } = useContext(TranslateContext);
     const [walletAddress, setWalletAddress] = useState<string>("");
 
     const debouncedValue = useDebounce(walletAddress || wallet?.address);
@@ -52,12 +54,12 @@ const DelegationRewards = function () {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("container")}>
-                <h1 className={cx("title")}>Delegation Rewards for ADA holders</h1>
-                <h2 className={cx("sub-title")}>Check your ADA rewards</h2>
+                <h1 className={cx("title")}>{t("delegation rewards.card.title")}</h1>
+                <h2 className={cx("sub-title")}>{t("delegation rewards.card.sub title")}</h2>
                 <form className={cx("form")}>
                     <section className={cx("label")}>
-                        <div className={cx("input-name")}>Address</div>
-                        <Tippy render={<div>Please enter your Cardano address eligible for deligation rewards.</div>}>
+                        <div className={cx("input-name")}>{t("delegation rewards.card.fields.address.title")}</div>
+                        <Tippy render={<div>{t("delegation rewards.card.fields.address.instruction")}</div>}>
                             <Image className={cx("icon-help-circle")} src={icons.helpCircle} width={12} height={12} alt="" />
                         </Tippy>
                     </section>
@@ -67,7 +69,7 @@ const DelegationRewards = function () {
                                 value={walletAddress || wallet?.address}
                                 onChange={handleChangeWalletAddress}
                                 type="text"
-                                placeholder="Enter address to load the data"
+                                placeholder={t("delegation rewards.card.fields.address.placeholder")}
                             />
                         </div>
                         <div
@@ -81,7 +83,7 @@ const DelegationRewards = function () {
 
                 <section className={cx("summary")}>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>Current Epoch</h2>
+                        <h2 className={cx("summary-title")}>{t("delegation rewards.card.current epoch")}</h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
@@ -99,7 +101,7 @@ const DelegationRewards = function () {
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>Total Distributed Rewards</h2>
+                        <h2 className={cx("summary-title")}>{t("delegation rewards.card.total distributed rewards")}</h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
@@ -117,7 +119,7 @@ const DelegationRewards = function () {
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>Total Pending Rewards</h2>
+                        <h2 className={cx("summary-title")}>{t("delegation rewards.card.total pending rewards")}</h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
@@ -147,7 +149,7 @@ const DelegationRewards = function () {
                                 {rewards.data.histories.length === 0 ? (
                                     <section className={cx("status")}>
                                         <div className={cx("no-data")} />
-                                        <span>No data for this wallet address</span>
+                                        <span>{t("layout.notification.no data wallet address")}</span>
                                     </section>
                                 ) : (
                                     <div>
@@ -177,14 +179,14 @@ const DelegationRewards = function () {
                         {!rewards && (
                             <section className={cx("status")}>
                                 <div className={cx("no-data")} />
-                                <span>No available data</span>
+                                <span>{t("layout.notification.no data")}</span>
                             </section>
                         )}
 
                         {isError && (
                             <section className={cx("status")}>
                                 <div className={cx("no-data")} />
-                                <span>Error to fetch data</span>
+                                <span>{t("layout.notification.error to fetch data")}</span>
                             </section>
                         )}
                     </div>

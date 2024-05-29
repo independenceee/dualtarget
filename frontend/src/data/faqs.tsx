@@ -5,7 +5,6 @@ import styles from "~/components/FaqItem/FaqItem.module.scss";
 import images from "~/assets/images";
 
 const cx = classNames.bind(styles);
-type Props = {};
 
 const faqs = [
     {

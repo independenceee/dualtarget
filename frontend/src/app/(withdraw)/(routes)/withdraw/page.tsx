@@ -28,6 +28,7 @@ import axios from "axios";
 import CustomChart from "~/components/CustomChart";
 import CountUp from "react-countup";
 import { useDebounce } from "~/hooks";
+import TranslateContext from "~/contexts/components/TranslateContext";
 
 type WithdrawType = {
     amount: number;
@@ -64,6 +65,8 @@ const Withdraw = function () {
             ),
         enabled: !!Boolean(wallet?.address) || (!!Boolean(wallet?.address) && !!txHashWithdraw),
     });
+
+    const { t } = useContext(TranslateContext);
 
     const {
         data: chartDataRecords,
@@ -173,17 +176,17 @@ const Withdraw = function () {
         <div className={cx("wrapper")}>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
-                    <h2 className={cx("title")}>Withdraw asset</h2>
+                    <h2 className={cx("title")}>{t("withdraw.title")}</h2>
                 </div>
                 <div className={cx("stats")}>
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
-                                <Card title="Withdraw" icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                                <Card title={t("withdraw.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
                                     <form onSubmit={onWithdraw} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>
-                                                Balance: <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                                {t("withdraw.balance")}: <CountUp end={wallet?.balance || 0} start={0} /> ₳
                                             </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
@@ -196,7 +199,7 @@ const Withdraw = function () {
                                             <Input
                                                 className={cx("input-amount")}
                                                 name="amount"
-                                                placeholder="Enter the total number of ada"
+                                                placeholder={t("withdraw.card.fields.amount.placeholder")}
                                                 register={register}
                                                 errorMessage={errors.amount?.message}
                                                 disabled={true}
@@ -219,7 +222,7 @@ const Withdraw = function () {
                                         <div className={cx("info")}>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
-                                                    <span>Fees</span>
+                                                    <span>{t("withdraw.card.fees")}</span>
                                                     <Tippy
                                                         render={
                                                             <div>
@@ -247,7 +250,7 @@ const Withdraw = function () {
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
-                                                    <span>You will receive</span>
+                                                    <span>{t("withdraw.card.you will receive")}</span>
                                                 </div>
                                                 {waitingCalculateEUTxO ? (
                                                     <Loading />
@@ -269,7 +272,7 @@ const Withdraw = function () {
                                             }
                                             className={cx("withdraw-button")}
                                         >
-                                            Withdraw
+                                            {t("withdraw.card.button")}
                                         </Button>
                                     </form>
                                 </Card>
@@ -282,7 +285,7 @@ const Withdraw = function () {
             </section>
             <section>
                 <div className={cx("header-order")}>
-                    <h2 className={cx("title")}>Orders</h2>
+                    <h2 className={cx("title")}>{t("withdraw.orders.title")}</h2>
                 </div>
                 <Orders page={page} setPage={setPage} data={data?.data} isError={isError} isLoading={isLoading} className={cx("orders")} />
             </section>

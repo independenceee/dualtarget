@@ -22,6 +22,7 @@ import convertDatetime from "~/helpers/convert-datetime";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { StatisticsType } from "~/types/GenericsType";
+import CountUp from "react-countup";
 
 const cx = classNames.bind(styles);
 
@@ -37,8 +38,6 @@ export default function Home() {
             }),
         enabled: true,
     });
-
-    console.log(data?.data);
 
     return (
         <div className={cx("wrapper")}>
@@ -58,45 +57,78 @@ export default function Home() {
                 <div className={cx("introduction")}>
                     <div className={cx("introduction-header")}>
                         <span className={cx("prefix")}>Dualtarget</span>
-                        <span className={cx("title")}>{t("home")}</span>
                     </div>
                     <div className={cx("introduction-description")}>
-                        <div className={cx("description-child")}>
-                            Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot
-                        </div>
+                        <div className={cx("description-child")}>{t("home.title")}</div>
                     </div>
                 </div>
             </section>
             <section className={cx("stats")}>
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
-                        <Card title="Pool" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin title="Total wallet" amount={pool.totalWallet} loading={loading} />
-                            <Coin title="Total UTxO" amount={pool.totalUTxO} denominations="UTxO" loading={loading} />
-                            <Coin title="Total Volume Lock" amount={pool.totalADA} denominations="₳" loading={loading} />
-                            <Coin title="Total DJED" amount={pool.totalDJED} denominations="DJED" loading={loading} />
+                        <Card title={t("home.card pool.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                            <Coin title={t("home.card pool.total wallet")} decimals={0} amount={pool.totalWallet} loading={loading || isLoading} />
+                            <Coin
+                                title={t("home.card pool.total UTxO")}
+                                decimals={0}
+                                amount={pool.totalUTxO}
+                                denominations="UTxO"
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title={t("home.card pool.total volume lock")}
+                                amount={pool.totalADA}
+                                denominations="₳"
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title={t("home.card pool.total DJED")}
+                                amount={pool.totalDJED}
+                                denominations="DJED"
+                                loading={loading || isLoading}
+                            />
                             <Button className={cx("stat-button")} href={routes.deposit}>
-                                Deposit
+                                {t("home.card pool.button")}
                             </Button>
                         </Card>
-                        <Card title="Statistics" icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin title="Total transactions" amount={data?.data.totalTransaction} loading={loading} />
-                            <Coin title="Total Volume Lock" amount={data?.data.totalVolumeDepositsADA} denominations="₳" loading={loading} />
-                            <Coin title="Total Volume Un Lock" amount={data?.data.totalVolumeWithdrawsADA} denominations="₳" loading={loading} />
-                            <Coin title="Total DJED" amount={data?.data.totalVolumeWithdrawsDJED} denominations="DJED" loading={loading} />
+                        <Card title={t("home.card statistics.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                            <Coin
+                                title={t("home.card statistics.total transactions")}
+                                decimals={0}
+                                amount={data?.data.totalTransaction}
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title={t("home.card statistics.total volume lock")}
+                                amount={data?.data.totalVolumeDepositsADA}
+                                denominations="₳"
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title={t("home.card statistics.total volume unlock")}
+                                amount={data?.data.totalVolumeWithdrawsADA}
+                                denominations="₳"
+                                loading={loading || isLoading}
+                            />
+                            <Coin
+                                title={t("home.card statistics.total DJED")}
+                                amount={data?.data.totalVolumeWithdrawsDJED}
+                                denominations="DJED"
+                                loading={loading || isLoading}
+                            />
                             <Button className={cx("stat-button")} href={routes.withdraw}>
-                                Withdraw
+                                {t("home.card statistics.button")}
                             </Button>
                         </Card>
                     </div>
-                    <div className={cx("sub-stats")}>*Deposit\Withdraw includes base fee and operator fee</div>
+                    <div className={cx("sub-stats")}>{t("home.card sub")}</div>
                 </div>
             </section>
             <section className={cx("reverse-wrapper")}>
                 <div className={cx("reverse-inner")}>
                     <Gutter className={cx("reverse-card")}>
                         <div>
-                            <Title icon={icons.reserves} title="Profit margin" />
+                            <Title icon={icons.reserves} title={t("home.card profit.title")} />
 
                             <div className={cx("reserves")}>
                                 <div className={cx("reserve-ratio")}>
@@ -109,15 +141,22 @@ export default function Home() {
                                 </div>
                                 <div className={cx("base-reserves")}>
                                     <div className={cx("title-wrapper")}>
-                                        <h2>Base Reserve</h2>
+                                        <h2>{t("home.card profit.base reserve")}</h2>
                                     </div>
                                     <div className={cx("reserves-value-base")}>
-                                        <div className={cx("base-reserves-value")}>37,107,970.3052 ₳</div>
-                                        <span className={cx("approximate")}>≈21,987,529.98 DJED</span>
+                                        <div className={cx("base-reserves-value")}>
+                                            <CountUp decimals={6} enableScrollSpy start={0} end={Number(data?.data.totalVolumeDepositsADA)} /> ₳
+                                        </div>
+                                        <span className={cx("approximate")}>
+                                            ≈ <CountUp decimals={6} enableScrollSpy start={0} end={Number(data?.data.totalVolumeWithdrawsDJED)} />{" "}
+                                            DJED
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                            <div className={cx("last-updated-mobile")}>Last updated: {convertDatetime(Date.now() / 1000)} UTC</div>
+                            <div className={cx("last-updated-mobile")}>
+                                {t("home.card profit.update")} {convertDatetime(Date.now() / 1000)} UTC
+                            </div>
                         </div>
                     </Gutter>
                 </div>
@@ -136,18 +175,12 @@ export default function Home() {
                             ></iframe>
                         </div>
                         <div className={cx("about-content-wrapper")}>
-                            <h2 className={cx("about-title")}>About dualtarget</h2>
-                            <p className={cx("about-description")}>Staking and increasing assets with a decentralized</p>
-                            <span className={cx("about-content")}>
-                                We will develop a platform that enables users to choose dual targets and trading methods directly within their
-                                wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
-                            </span>
-                            <span className={cx("about-content")}>
-                                We will develop a platform that enables users to choose dual targets and trading methods directly within their
-                                wallets. Simultaneously, we'll create automated trading bots on decentralized exchanges
-                            </span>
+                            <h2 className={cx("about-title")}>{t("home.about dualtarget.title")}</h2>
+                            <p className={cx("about-description")}>{t("home.about dualtarget.sub title")}</p>
+                            <span className={cx("about-content")}>{t("home.about dualtarget.content.paragraph 1")}</span>
+                            <span className={cx("about-content")}>{t("home.about dualtarget.content.paragraph 2")}</span>
                             <Button className={cx("stat-button")} href={routes.withdraw}>
-                                Contact us
+                                {t("home.about dualtarget.button")}
                             </Button>
                         </div>
                     </div>

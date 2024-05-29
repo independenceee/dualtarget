@@ -53,7 +53,6 @@
 .container {
     margin: 0 auto;
     max-width: 1024px;
-    min-height: calc(100vh - 415px);
     padding: 172px 0 0;
     width: 100%;
     align-items: center;
@@ -62,9 +61,6 @@
     justify-content: space-between;
     text-align: left;
 }
-
-
-
 
 @media (max-width: 1365px) {
     .wrapper {
