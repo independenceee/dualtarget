@@ -14,7 +14,8 @@
             "error to fetch data": "There was an error fetching data",
             "no data": "No data available",
             "no data wallet address": " for this wallet address"
-        }
+        },
+        "footer": {}
     },
     "home": {
         "title": "Dualtarget for ADA-Holders (Staking and increasing assets) with a decentralized automated trading bot",
@@ -36,7 +37,7 @@
         },
         "card profit": {
             "title": "Profit margin",
-            "base reserve": "Base Reserve",
+            "base reserve": "Pool Dualtarget",
             "update": "Last updated: "
         },
         "card sub": "*Deposit\\Withdraw includes base fee and operator fee",

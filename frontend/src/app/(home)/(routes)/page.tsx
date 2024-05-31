@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { StatisticsType } from "~/types/GenericsType";
 import CountUp from "react-countup";
+import { Cursor, useTypewriter } from "react-simple-typewriter";
 
 const cx = classNames.bind(styles);
 
@@ -37,6 +38,14 @@ export default function Home() {
                 timeout: 5000,
             }),
         enabled: true,
+    });
+
+    const words = [t("home.title")];
+    const [text, count] = useTypewriter({
+        words,
+        loop: 1,
+        delaySpeed: 5000,
+        typeSpeed: 40,
     });
 
     return (
@@ -56,10 +65,16 @@ export default function Home() {
             <section className={cx("content")}>
                 <div className={cx("introduction")}>
                     <div className={cx("introduction-header")}>
-                        <span className={cx("prefix")}>Dualtarget</span>
+                        <span className={cx("prefix")}>
+                            <span>Dualtarget</span>
+                            {/* <Cursor cursorColor="#FFFFFF" /> */}
+                        </span>
                     </div>
                     <div className={cx("introduction-description")}>
-                        <div className={cx("description-child")}>{t("home.title")}</div>
+                        <div className={cx("description-child")}>
+                            <span>{text}</span>
+                            <Cursor cursorColor="#FFFFFF" />
+                        </div>
                     </div>
                 </div>
             </section>
@@ -136,7 +151,8 @@ export default function Home() {
                                         <h2>ROS</h2>
                                     </div>
                                     <div className={cx("reserves-value-ratio")}>
-                                        0.004<span className="suffix">%</span>
+                                        <CountUp decimals={2} enableScrollSpy start={0} end={Number(0.04)} />
+                                        <span className="suffix">%</span>
                                     </div>
                                 </div>
                                 <div className={cx("base-reserves")}>

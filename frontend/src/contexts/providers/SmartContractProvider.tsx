@@ -21,7 +21,15 @@ const SmartContractProvider = function ({ children }: Props) {
     const [waitingWithdraw, setWaitingWithdraw] = useState<boolean>(false);
     const [waitingCalculateEUTxO, setWaitingCalculateEUTxO] = useState<boolean>(false);
 
-    const deposit = async function ({ lucid, sellingStrategies }: { lucid: Lucid; sellingStrategies: CalculateSellingStrategy[] }) {
+    const deposit = async function ({
+        lucid,
+        sellingStrategies,
+        currentPrice,
+    }: {
+        lucid: Lucid;
+        sellingStrategies: CalculateSellingStrategy[];
+        currentPrice?: number;
+    }) {
         try {
             setWaitingDeposit(true);
 
@@ -58,7 +66,11 @@ const SmartContractProvider = function ({ children }: Props) {
             let tx: any = lucid.newTx();
 
             sellingStrategies.forEach(async function (sellingStrategy: CalculateSellingStrategy, index: number) {
-                tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend!) });
+                if (Number(sellingStrategy.minimumAmountOut) < Number(currentPrice)) {
+                    tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend!) });
+                } else {
+                    tx = await tx.payToContract(contractAddress, { inline: datums[index] }, { lovelace: BigInt(sellingStrategy.amountSend!) });
+                }
             });
 
             tx = await tx.complete();

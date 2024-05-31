@@ -13,7 +13,8 @@
             "no wallet": "Kết nối để xem các yêu cầu đúc và ghi của bạn",
             "error to fetch data": "Đã xảy ra lỗi khi tìm nạp dữ liệu",
             "no data": "Không có dữ liệu"
-        }
+        },
+        "footer": {}
     },
     "home": {
         "title": "Mục tiêu kép dành cho Người nắm giữ ADA (Stake và tăng tài sản) với bot giao dịch tự động phi tập trung",
@@ -35,7 +36,7 @@
         },
         "card profit": {
             "title": "Tỷ suất lợi nhuận",
-            "base reserve": "Cơ sở chuyển đổi",
+            "base reserve": "Pool Dualtarget",
             "update": "Cập nhật mới nhất: "
         },
         "card sub": "*Gửi tiền\\Rút tiền bao gồm phí cơ bản và phí điều hành",
