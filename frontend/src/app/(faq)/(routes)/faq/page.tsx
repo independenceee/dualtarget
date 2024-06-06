@@ -13,6 +13,7 @@ type Props = {};
 const FrequentlyAskedQuestion = function ({}: Props) {
     return (
         <div className={cx("wrapper")}>
+            <title>FAQS - Dualtarget</title>
             <section className={cx("background")} />
 
             <section className={cx("title-container")}>

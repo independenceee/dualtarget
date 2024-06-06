@@ -130,6 +130,7 @@ const Deposit = function () {
 
     return (
         <div className={cx("wrapper")}>
+            <title>Deposit - Dualtarget</title>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
                     <h2 className={cx("title")}>{t("deposit.title")}</h2>

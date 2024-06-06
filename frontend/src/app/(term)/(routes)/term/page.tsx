@@ -8,6 +8,7 @@ type Props = {};
 const Term = function ({}: Props) {
     return (
         <div className={cx("wrapper")}>
+            <title>Term - Dualtarget</title>
             <div>
                 <div className={cx("terms")}>
                     <div>

@@ -10,6 +10,7 @@ const cx = classNames.bind(styles);
 const About = function () {
     return (
         <main className={cx("wrapper")}>
+            <title>About - Dualtarget</title>
             <div className={cx("container")}>
                 <Banner />
 

@@ -72,8 +72,9 @@ export default function Home() {
                     </div>
                     <div className={cx("introduction-description")}>
                         <div className={cx("description-child")}>
-                            <span>{text}</span>
-                            <Cursor cursorColor="#FFFFFF" />
+                            <span>{t("home.title")}</span>
+                            {/* <span>{text}</span> */}
+                            {/* <Cursor cursorColor="#FFFFFF" /> */}
                         </div>
                     </div>
                 </div>
@@ -195,7 +196,7 @@ export default function Home() {
                             <p className={cx("about-description")}>{t("home.about dualtarget.sub title")}</p>
                             <span className={cx("about-content")}>{t("home.about dualtarget.content.paragraph 1")}</span>
                             <span className={cx("about-content")}>{t("home.about dualtarget.content.paragraph 2")}</span>
-                            <Button className={cx("stat-button")} href={routes.withdraw}>
+                            <Button className={cx("stat-button")} href={routes.about}>
                                 {t("home.about dualtarget.button")}
                             </Button>
                         </div>

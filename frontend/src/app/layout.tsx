@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import ContextProvider from "~/contexts";
 import { PublicLayout } from "~/layouts";
 import NetworkConnectionStatus from "~/components/NetworkConnectionStatus";
+import Aos from "~/components/Aos";
 
 export const metadata: Metadata = {
     title: "Dualtarget",
@@ -20,7 +21,8 @@ const RootLayout = function ({ children }: Readonly<Props>) {
             <body>
                 <ContextProvider>
                     <PublicLayout>{children}</PublicLayout>
-                    {/* <NetworkConnectionStatus /> */}
+                    <NetworkConnectionStatus />
+                    <Aos />
                 </ContextProvider>
             </body>
         </html>

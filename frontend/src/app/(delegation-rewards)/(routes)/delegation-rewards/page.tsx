@@ -53,6 +53,7 @@ const DelegationRewards = function () {
 
     return (
         <div className={cx("wrapper")}>
+            <title>Delegation Reward - Dualtarget</title>
             <div className={cx("container")}>
                 <h1 className={cx("title")}>{t("delegation rewards.card.title")}</h1>
                 <h2 className={cx("sub-title")}>{t("delegation rewards.card.sub title")}</h2>

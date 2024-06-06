@@ -174,6 +174,7 @@ const Withdraw = function () {
 
     return (
         <div className={cx("wrapper")}>
+            <title>Withdraw - Dualtarget</title>
             <section className={cx("header-wrapper")}>
                 <div className={cx("header")}>
                     <h2 className={cx("title")}>{t("withdraw.title")}</h2>
