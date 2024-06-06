@@ -38,8 +38,6 @@ const SmartContractProvider = function ({ children }: Props) {
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
             await readTxHash({
                 lucid: lucid,
-                url: "https://preprod.koios.rest/api/v1",
-                txHash: "fcb9cf2638779b75c371c66449e433675298b56aabb3c2f19610d14cc61eaabf",
             });
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;

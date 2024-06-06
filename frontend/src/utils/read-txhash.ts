@@ -3,12 +3,10 @@ import { Lucid, TxHash } from "lucid-cardano";
 
 type Props = {
     lucid: Lucid;
-    url: string;
-    txHash: TxHash;
 };
 
-const readTxHash = async function ({ lucid, url, txHash }: Props) {
-    const { data } = await axios.post(`https://preprod.koios.rest/api/v1/tx_info`, { _tx_hashes: [txHash] });
+const readTxHash = async function ({ lucid }: Props) {
+    const { data } = await axios.get(`${window.location.origin}/api/transaction`);
 
     console.log(data);
 };
