@@ -161,7 +161,7 @@ const ConnectWallet = function ({ className }: Props) {
                             </section>
                         </div>
                     ) : (
-                        <span>{isShowingErrorNetwork ? "Wrong Network" : "Connect Wallet"}</span>
+                        <span>{isShowingErrorNetwork ? t("layout.wallet.button wrong network") : t("layout.wallet.button connect")}</span>
                     )}
                 </Button>
             </Tippy>
@@ -177,16 +177,16 @@ const ConnectWallet = function ({ className }: Props) {
                             <Image className={cx("connect-wallet-close-icon")} src={icons.close} alt="" />
                         </section>
                         <section className={cx("connect-wallet-title")}>
-                            <h1>Connect Wallet</h1>
+                            <h1> {t("layout.wallet.button connect")}</h1>
                         </section>
                         <section className={cx("connect-wallet-accept")}>
                             <div className={cx("connect-wallet-input")}>
                                 <input onChange={handleAccept} type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
                             </div>
                             <label className={cx("connect-wallet-input")} htmlFor="">
-                                By checking this box and connecting my wallet, I confirm that I have read, understood, and agreed to the
+                                {t("layout.wallet.terms and conditions")}
                                 <Link className={cx("connect-wallet-input-link")} target="_blank" href={configs.routes.term}>
-                                    Terms and Conditions
+                                    {t("layout.wallet.terms and conditions link")}
                                 </Link>
                                 .
                             </label>
@@ -202,8 +202,8 @@ const ConnectWallet = function ({ className }: Props) {
 
             <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>
-                    <h2 className={cx("connect-wallet-error-title")}>Wallet Network Error</h2>
-                    <p className={cx("connect-wallet-error-description")}>Please change the network to preprod or disconnect</p>
+                    <h2 className={cx("connect-wallet-error-title")}>{t("layout.wallet.network error")}</h2>
+                    <p className={cx("connect-wallet-error-description")}>{t("layout.wallet.change network")}</p>
                     <div className={cx("connect-wallet-error-button-wrapper")}>
                         <Button onClick={disconnect} className={cx("connect-wallet-error-button")}>
                             Disconnect

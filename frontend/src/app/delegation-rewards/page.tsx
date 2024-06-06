@@ -16,18 +16,16 @@ import { DelegationRewardResponseType, DelegationRewardType } from "~/types/Gene
 import Loading from "~/components/Loading";
 import { useDebounce } from "~/hooks";
 import Reward from "~/components/Reward";
-import { WalletContextType } from "~/types/contexts/WalletContextType";
-import WalletContext from "~/contexts/components/WalletContext";
 import TranslateContext from "~/contexts/components/TranslateContext";
+import Button from "~/components/Button";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
     const [page, setPage] = useState<number>(1);
-    const { wallet } = useContext<WalletContextType>(WalletContext);
     const { t } = useContext(TranslateContext);
     const [walletAddress, setWalletAddress] = useState<string>("");
 
-    const debouncedValue = useDebounce(walletAddress || wallet?.address);
+    const debouncedValue = useDebounce(walletAddress);
 
     const {
         data: rewards,
@@ -64,22 +62,28 @@ const DelegationRewards = function () {
                             <Image className={cx("icon-help-circle")} src={icons.helpCircle} width={12} height={12} alt="" />
                         </Tippy>
                     </section>
-                    <section className={cx("search")}>
-                        <div className={cx("search-input")}>
-                            <input
-                                value={walletAddress || wallet?.address}
-                                onChange={handleChangeWalletAddress}
-                                type="text"
-                                placeholder={t("delegation rewards.card.fields.address.placeholder")}
+                    <div className={cx("form-content-wrapper")}>
+                        <section className={cx("search")}>
+                            <div className={cx("search-input")}>
+                                <input
+                                    className={cx("input")}
+                                    value={walletAddress}
+                                    onChange={handleChangeWalletAddress}
+                                    type="text"
+                                    placeholder={t("delegation rewards.card.fields.address.placeholder")}
+                                />
+                            </div>
+                            <div
+                                className={cx("search-delete", {
+                                    show: walletAddress,
+                                })}
+                                onClick={handleClearInput}
                             />
-                        </div>
-                        <div
-                            className={cx("search-delete", {
-                                show: !!walletAddress,
-                            })}
-                            onClick={handleClearInput}
-                        />
-                    </section>
+                        </section>
+                        {/* <Button disabled={!Boolean(walletAddress)} className={cx("submit-button")} type="button" onClick={handleDelegateRewards}>
+                            Submit
+                        </Button> */}
+                    </div>
                 </form>
 
                 <section className={cx("summary")}>
@@ -150,7 +154,7 @@ const DelegationRewards = function () {
                                 {rewards.data.histories.length === 0 ? (
                                     <section className={cx("status")}>
                                         <div className={cx("no-data")} />
-                                        <span>{t("layout.notification.no data wallet address")}</span>
+                                        <span>{t("layout.notification.no data")}</span>
                                     </section>
                                 ) : (
                                     <div>
@@ -175,13 +179,6 @@ const DelegationRewards = function () {
                                     </div>
                                 )}
                             </div>
-                        )}
-
-                        {!rewards && (
-                            <section className={cx("status")}>
-                                <div className={cx("no-data")} />
-                                <span>{t("layout.notification.no data")}</span>
-                            </section>
                         )}
 
                         {isError && (

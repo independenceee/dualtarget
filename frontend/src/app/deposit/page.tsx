@@ -54,7 +54,6 @@ const Deposit = function () {
             ),
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
-
     const {
         handleSubmit,
         watch,
@@ -62,7 +61,7 @@ const Deposit = function () {
         reset,
         trigger,
         getValues,
-        formState: { errors },
+        formState: { errors, isDirty },
     } = useForm<DepositeType>({
         defaultValues: {
             income: "",
@@ -82,11 +81,18 @@ const Deposit = function () {
     } = useQuery({
         queryKey: ["ChartData"],
         queryFn: () => axios.get<ChartHistoryRecord[] | null>(`${window.location.origin}/chart`),
-        refetchInterval: 5 * 60 * 1000,
+        refetchInterval: 1 * 60 * 1000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
     });
+    useEffect(() => {
+        if (Object.keys(errors).length !== 0 || isDirty) {
+            Object.keys(errors).forEach((key) => {
+                trigger(key as keyof DepositeType);
+            });
+        }
+    }, [t]);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
@@ -106,7 +112,7 @@ const Deposit = function () {
 
     const { income, priceHight, priceLow, stake, step, totalADA } = watch();
 
-    useEffect(() => {
+    const handleCalculateSellingStrategy = function () {
         if (income && priceHight && priceLow && stake && step && totalADA && Object.keys(errors).length === 0) {
             const result: CalculateSellingStrategy[] = calculateSellingStrategy({
                 income: Number(income), // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
@@ -119,9 +125,9 @@ const Deposit = function () {
 
             setSellingStrategies(result);
         } else {
-            console.log("Please enter data");
+            trigger();
         }
-    }, [errors, income, priceHight, priceLow, stake, step, totalADA]);
+    };
 
     const handleRefreshChart = function () {
         reset();
@@ -154,11 +160,11 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: "This field is required",
+                                                            message: t("layout.form.errors.messages.required"),
                                                         },
                                                         validate: (value) =>
                                                             parseFloat(value) <= parseFloat(getValues("priceHight")) ||
-                                                            "Min price must be greater than Max price.",
+                                                            t("layout.form.errors.messages.min"),
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
@@ -179,14 +185,15 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: "This field is required",
+                                                            message: t("layout.form.errors.messages.required"),
                                                         },
                                                         validate: (value) =>
                                                             parseFloat(value) >= parseFloat(getValues("priceLow")) ||
-                                                            "Max price must be greater than Min price.",
+                                                            t("layout.form.errors.messages.max"),
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            tooltipPlacement="top-end"
                                                             {...field}
                                                             onChange={(e) => {
                                                                 field.onChange(e);
@@ -208,7 +215,7 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: "This field is required",
+                                                            message: t("layout.form.errors.messages.required"),
                                                         },
                                                     }}
                                                     render={({ field }) => (
@@ -229,11 +236,12 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: "This field is required",
+                                                            message: t("layout.form.errors.messages.required"),
                                                         },
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            tooltipPlacement="top-end"
                                                             {...field}
                                                             className={cx("input")}
                                                             errorMessage={errors.stake?.message}
@@ -252,7 +260,7 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: "This field is required",
+                                                            message: t("layout.form.errors.messages.required"),
                                                         },
                                                     }}
                                                     render={({ field }) => (
@@ -274,11 +282,12 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: "This field is required",
+                                                            message: t("layout.form.errors.messages.required"),
                                                         },
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
+                                                            tooltipPlacement="top-end"
                                                             {...field}
                                                             description={t("deposit.card.fields.total ADA.instruction")}
                                                             title={`${t("deposit.card.fields.total ADA.title")} ($)`}
@@ -333,12 +342,34 @@ const Deposit = function () {
                                                 )}
                                             </div>
                                         </div>
-                                        <Button
-                                            disabled={!lucid || waitingDeposit || Object.keys(errors).length > 0 || sellingStrategies.length === 0}
-                                            className={cx("deposite-button")}
-                                        >
-                                            {t("deposit.card.button")}
-                                        </Button>
+                                        <div className={cx("actions-wrapper")}>
+                                            <Button
+                                                disabled={
+                                                    !lucid || waitingDeposit || Object.keys(errors).length > 0 || sellingStrategies.length === 0
+                                                }
+                                                className={cx("deposite-button")}
+                                            >
+                                                {t("deposit.card.button deposit")}
+                                            </Button>
+                                            <Tippy placement="top-end" render={<div>{t("deposit.card.button calculate")} </div>}>
+                                                <Button className={cx("calculate-button")} type="button" onClick={handleCalculateSellingStrategy}>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth={1.5}
+                                                        stroke="currentColor"
+                                                        className={cx("calculate-icon")}
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V13.5Zm0 2.25h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V18Zm2.498-6.75h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V13.5Zm0 2.25h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V18Zm2.504-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5Zm0 2.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V18Zm2.498-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5ZM8.25 6h7.5v2.25h-7.5V6ZM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0 0 12 2.25Z"
+                                                        />
+                                                    </svg>
+                                                </Button>
+                                            </Tippy>
+                                        </div>
                                     </form>
                                 </Card>
                             </div>

@@ -17,7 +17,7 @@ type Props = {
 
 const RootLayout = function ({ children }: Readonly<Props>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body>
                 <ContextProvider>
                     <PublicLayout>{children}</PublicLayout>
