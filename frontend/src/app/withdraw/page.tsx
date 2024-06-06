@@ -273,7 +273,7 @@ const Withdraw = function () {
                                             }
                                             className={cx("withdraw-button")}
                                         >
-                                            {t("withdraw.card.button")}
+                                            {(!waitingWithdraw || !waitingCalculateEUTxO) && t("withdraw.card.button")}
                                         </Button>
                                     </form>
                                 </Card>

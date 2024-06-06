@@ -93,7 +93,7 @@ const DelegationRewards = function () {
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
                             ) : (
-                                <>
+                                <div>
                                     {isSuccess && rewards.data.histories.length > 0 ? (
                                         <Link className={cx("summary-link")} href={""} target="_blank">
                                             {Math.max(...rewards.data.histories.map(({ epoch }) => epoch))}
@@ -101,7 +101,7 @@ const DelegationRewards = function () {
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
                                     )}
-                                </>
+                                </div>
                             )}
                         </p>
                     </div>
@@ -114,7 +114,7 @@ const DelegationRewards = function () {
                                 <>
                                     {isSuccess && rewards.data.histories.length > 0 ? (
                                         <Link className={cx("summary-link")} href={""} target="_blank">
-                                            {rewards.data.histories.reduce((acc, history) => acc + history.rewards, 0)} ₳
+                                            {rewards.data.histories.reduce((acc, history) => Number(acc) + Number(history.rewards), 0)} ₳
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>

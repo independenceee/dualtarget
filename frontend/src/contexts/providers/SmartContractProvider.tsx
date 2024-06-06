@@ -8,6 +8,7 @@ import { DualtargetDatum } from "~/constants/datum";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
+import readTxHash from "~/utils/read-txhash";
 
 type Props = {
     children: ReactNode;
@@ -35,7 +36,9 @@ const SmartContractProvider = function ({ children }: Props) {
 
             const contractAddress: string = process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
-
+            await readTxHash({
+                lucid: lucid,
+            });
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(await lucid.wallet.address()).paymentCredential?.hash as string;
             const vkeyBeneficiaryHash: string = lucid.utils.getAddressDetails(contractAddress).paymentCredential?.hash as string;
 
@@ -75,7 +78,6 @@ const SmartContractProvider = function ({ children }: Props) {
 
             tx = await tx.complete();
 
-            console.log(tx);
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();
             const success: boolean = await lucid.awaitTx(txHash);

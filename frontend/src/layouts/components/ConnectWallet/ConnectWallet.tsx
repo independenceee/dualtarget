@@ -115,18 +115,7 @@ const ConnectWallet = function ({ className }: Props) {
                                         <div className={cx("data-number")}>{wallet?.balance}</div>
                                     </section>
                                 </div>
-                                <div className={cx("item-wallet")}>
-                                    <section className={cx("item-icon")}>
-                                        <Image className={cx("item-icon-image")} src={images.shen} alt="" />
-                                    </section>
-                                    <section className={cx("item-data")}>
-                                        <div className={cx("item-data-name")}>
-                                            <p className={cx("item-data-name-symbol")}>ADA</p>
-                                            <p className={cx("item-data-name-description")}>Cardano</p>
-                                        </div>
-                                        <p className={cx("data-number")}>{wallet?.balance}</p>
-                                    </section>
-                                </div>
+
                                 <div onClick={disconnect} className={cx("disconnect")}>
                                     Disconnect
                                 </div>
@@ -146,7 +135,7 @@ const ConnectWallet = function ({ className }: Props) {
                         <div>
                             <section className={cx("connected-wallet-container")}>
                                 <div className={cx("connected-wallet-total-ada")}>
-                                    {wallet?.balance && wallet.balance.toFixed(6)} {" ₳"}
+                                    {wallet?.balance && wallet.balance.toFixed(5)} {" ₳"}
                                 </div>
 
                                 <div className={cx("connected-wallet-image-container")}>
