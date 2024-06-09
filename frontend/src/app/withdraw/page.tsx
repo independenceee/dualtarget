@@ -23,12 +23,20 @@ import { Item } from "~/components/DropdownMenu/DropdownMenu";
 import { useQuery } from "@tanstack/react-query";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
-import { CalculateSellingStrategy, ChartDataType, ChartHistoryRecord, ClaimableUTxO, TransactionResponseType } from "~/types/GenericsType";
+import {
+    CalculateSellingStrategy,
+    ChartDataType,
+    ChartHistoryRecord,
+    ClaimableUTxO,
+    TransactionResponseType,
+} from "~/types/GenericsType";
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
 import CountUp from "react-countup";
 import { useDebounce } from "~/hooks";
 import TranslateContext from "~/contexts/components/TranslateContext";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
 
 type WithdrawType = {
     amount: number;
@@ -46,9 +54,16 @@ const FEE = 1.5;
 
 const Withdraw = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { waitingWithdraw, waitingCalculateEUTxO, withdraw, calculateClaimEUTxO, previewWithdraw, txHashWithdraw } =
-        useContext<SmartContractContextType>(SmartContractContext);
+    const {
+        waitingWithdraw,
+        waitingCalculateEUTxO,
+        withdraw,
+        calculateClaimEUTxO,
+        previewWithdraw,
+        txHashWithdraw,
+    } = useContext<SmartContractContextType>(SmartContractContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
+    const { network } = useContext<NetworkContextType>(NetworkContext);
     const [page, setPage] = useState<number>(1);
     const [claimableUtxos, setClaimableUtxos] = useState<Array<ClaimableUTxO>>([]);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
@@ -60,7 +75,9 @@ const Withdraw = function () {
         queryKey: ["Transactions", page, txHashWithdraw],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                `${window.location.origin}/api/history/transaction?wallet_address=${
+                    wallet?.address
+                }&page=${page}&page_size=5&network=${network.toLowerCase()}`,
                 { timeout: 5000 },
             ),
         enabled: !!Boolean(wallet?.address) || (!!Boolean(wallet?.address) && !!txHashWithdraw),
@@ -117,7 +134,10 @@ const Withdraw = function () {
                 max,
             }).then((res: ClaimableUTxO[]) => {
                 setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
-                const amount = (res as ClaimableUTxO[]).reduce((acc, claim) => acc + Number(claim.utxo.assets.lovelace), 0);
+                const amount = (res as ClaimableUTxO[]).reduce(
+                    (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
+                    0,
+                );
                 setValue("amount", amount / 1000000);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,7 +170,10 @@ const Withdraw = function () {
     }, [lucid, txHashWithdraw, maxOfSellingStrategies]);
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
-            const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
+            const prices = chartDataRecords.data.map((history) => [
+                +history.closeTime,
+                +history.high,
+            ]);
             return prices as ChartDataType;
         }
         return [];
@@ -183,11 +206,16 @@ const Withdraw = function () {
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
-                                <Card title={t("withdraw.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                                <Card
+                                    title={t("withdraw.title")}
+                                    icon={images.logo}
+                                    className={cx("stat-djed-stablecoin")}
+                                >
                                     <form onSubmit={onWithdraw} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>
-                                                {t("withdraw.balance")}: <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                                {t("withdraw.balance")}:{" "}
+                                                <CountUp end={wallet?.balance || 0} start={0} /> ₳
                                             </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
@@ -200,7 +228,9 @@ const Withdraw = function () {
                                             <Input
                                                 className={cx("input-amount")}
                                                 name="amount"
-                                                placeholder={t("withdraw.card.fields.amount.placeholder")}
+                                                placeholder={t(
+                                                    "withdraw.card.fields.amount.placeholder",
+                                                )}
                                                 register={register}
                                                 errorMessage={errors.amount?.message}
                                                 disabled={true}
@@ -216,7 +246,10 @@ const Withdraw = function () {
                                                 onChange={onRangeChange}
                                                 min={0}
                                                 max={Number(maxOfSellingStrategies.toFixed(4))}
-                                                disabled={currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1}
+                                                disabled={
+                                                    currentWithdrawMode.id === 0 ||
+                                                    currentWithdrawMode.id === 1
+                                                }
                                             />
                                         </div>
 
@@ -247,22 +280,38 @@ const Withdraw = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                {waitingCalculateEUTxO ? <Loading /> : <>{claimableUtxos.length === 0 ? "-" : `${FEE} ₳`}</>}
+                                                {waitingCalculateEUTxO ? (
+                                                    <Loading />
+                                                ) : (
+                                                    <>
+                                                        {claimableUtxos.length === 0
+                                                            ? "-"
+                                                            : `${FEE} ₳`}
+                                                    </>
+                                                )}
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
-                                                    <span>{t("withdraw.card.you will receive")}</span>
+                                                    <span>
+                                                        {t("withdraw.card.you will receive")}
+                                                    </span>
                                                 </div>
                                                 {waitingCalculateEUTxO ? (
                                                     <Loading />
                                                 ) : (
-                                                    <>{claimableUtxos.length === 0 ? "-" : `${Number(watch("amount")) - FEE} ₳`}</>
+                                                    <>
+                                                        {claimableUtxos.length === 0
+                                                            ? "-"
+                                                            : `${Number(watch("amount")) - FEE} ₳`}
+                                                    </>
                                                 )}
                                             </div>
                                         </div>
 
                                         <Button
-                                            disabled={!lucid || waitingWithdraw || waitingCalculateEUTxO}
+                                            disabled={
+                                                !lucid || waitingWithdraw || waitingCalculateEUTxO
+                                            }
                                             onClick={onWithdraw}
                                             RightIcon={
                                                 <Loading
@@ -273,13 +322,22 @@ const Withdraw = function () {
                                             }
                                             className={cx("withdraw-button")}
                                         >
-                                            {(!waitingWithdraw || !waitingCalculateEUTxO) && t("withdraw.card.button")}
+                                            {(!waitingWithdraw || !waitingCalculateEUTxO) &&
+                                                t("withdraw.card.button")}
                                         </Button>
                                     </form>
                                 </Card>
-                                <Image className={cx("coin-image-left")} src={images.coinDjedLeft} alt="coin-djed" />
+                                <Image
+                                    className={cx("coin-image-left")}
+                                    src={images.coinDjedLeft}
+                                    alt="coin-djed"
+                                />
                             </div>
-                            <CustomChart isLoading={isGetChartRecordsLoading} data={historyPrices} preview={sellingStrategies} />
+                            <CustomChart
+                                isLoading={isGetChartRecordsLoading}
+                                data={historyPrices}
+                                preview={sellingStrategies}
+                            />
                         </div>
                     </div>
                 </div>
@@ -288,7 +346,14 @@ const Withdraw = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>{t("withdraw.orders.title")}</h2>
                 </div>
-                <Orders page={page} setPage={setPage} data={data?.data} isError={isError} isLoading={isLoading} className={cx("orders")} />
+                <Orders
+                    page={page}
+                    setPage={setPage}
+                    data={data?.data}
+                    isError={isError}
+                    isLoading={isLoading}
+                    className={cx("orders")}
+                />
             </section>
         </div>
     );

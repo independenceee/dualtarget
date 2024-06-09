@@ -24,6 +24,8 @@ import axios from "axios";
 import { StatisticsType } from "~/types/GenericsType";
 import CountUp from "react-countup";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
 
 const cx = classNames.bind(styles);
 
@@ -31,10 +33,11 @@ export default function Home() {
     const { t } = useContext<TranslateContextType>(TranslateContext);
     const { loading } = useContext<LucidContextType>(LucidContext);
     const { pool } = useContext<StatisticContextType>(StatisticsContext);
+    const { network } = useContext<NetworkContextType>(NetworkContext);
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions"],
         queryFn: () =>
-            axios.get<StatisticsType>(`${window.location.origin}/api/statistics?network`, {
+            axios.get<StatisticsType>(`${window.location.origin}/api/statistics?network=${network.toLowerCase()}`, {
                 timeout: 5000,
             }),
         enabled: true,

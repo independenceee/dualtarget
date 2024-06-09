@@ -18,13 +18,15 @@ import { useDebounce } from "~/hooks";
 import Reward from "~/components/Reward";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import Button from "~/components/Button";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
     const [page, setPage] = useState<number>(1);
     const { t } = useContext(TranslateContext);
     const [walletAddress, setWalletAddress] = useState<string>("");
-
+    const { network } = useContext<NetworkContextType>(NetworkContext);
     const debouncedValue = useDebounce(walletAddress);
 
     const {
@@ -36,10 +38,14 @@ const DelegationRewards = function () {
         queryKey: ["Rewards", debouncedValue, page],
         queryFn: () =>
             axios.get<DelegationRewardResponseType>(
-                `${window.location.origin}/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5`,
+                `${
+                    window.location.origin
+                }/api/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5&network=${network.toLowerCase()}`,
             ),
         enabled: !!debouncedValue,
     });
+
+
 
     const handleChangeWalletAddress = function (e: React.ChangeEvent<HTMLInputElement>) {
         setWalletAddress(e.target.value);
@@ -57,9 +63,21 @@ const DelegationRewards = function () {
                 <h2 className={cx("sub-title")}>{t("delegation rewards.card.sub title")}</h2>
                 <form className={cx("form")}>
                     <section className={cx("label")}>
-                        <div className={cx("input-name")}>{t("delegation rewards.card.fields.address.title")}</div>
-                        <Tippy render={<div>{t("delegation rewards.card.fields.address.instruction")}</div>}>
-                            <Image className={cx("icon-help-circle")} src={icons.helpCircle} width={12} height={12} alt="" />
+                        <div className={cx("input-name")}>
+                            {t("delegation rewards.card.fields.address.title")}
+                        </div>
+                        <Tippy
+                            render={
+                                <div>{t("delegation rewards.card.fields.address.instruction")}</div>
+                            }
+                        >
+                            <Image
+                                className={cx("icon-help-circle")}
+                                src={icons.helpCircle}
+                                width={12}
+                                height={12}
+                                alt=""
+                            />
                         </Tippy>
                     </section>
                     <div className={cx("form-content-wrapper")}>
@@ -70,7 +88,9 @@ const DelegationRewards = function () {
                                     value={walletAddress}
                                     onChange={handleChangeWalletAddress}
                                     type="text"
-                                    placeholder={t("delegation rewards.card.fields.address.placeholder")}
+                                    placeholder={t(
+                                        "delegation rewards.card.fields.address.placeholder",
+                                    )}
                                 />
                             </div>
                             <div
@@ -88,15 +108,23 @@ const DelegationRewards = function () {
 
                 <section className={cx("summary")}>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>{t("delegation rewards.card.current epoch")}</h2>
+                        <h2 className={cx("summary-title")}>
+                            {t("delegation rewards.card.current epoch")}
+                        </h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <div>
                                     {isSuccess && rewards.data.histories.length > 0 ? (
-                                        <Link className={cx("summary-link")} href={""} target="_blank">
-                                            {Math.max(...rewards.data.histories.map(({ epoch }) => epoch))}
+                                        <Link
+                                            className={cx("summary-link")}
+                                            href={""}
+                                            target="_blank"
+                                        >
+                                            {Math.max(
+                                                ...rewards.data.histories.map(({ epoch }) => epoch),
+                                            )}
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -106,15 +134,26 @@ const DelegationRewards = function () {
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>{t("delegation rewards.card.total distributed rewards")}</h2>
+                        <h2 className={cx("summary-title")}>
+                            {t("delegation rewards.card.total distributed rewards")}
+                        </h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
                                     {isSuccess && rewards.data.histories.length > 0 ? (
-                                        <Link className={cx("summary-link")} href={""} target="_blank">
-                                            {rewards.data.histories.reduce((acc, history) => Number(acc) + Number(history.rewards), 0)} ₳
+                                        <Link
+                                            className={cx("summary-link")}
+                                            href={""}
+                                            target="_blank"
+                                        >
+                                            {rewards.data.histories.reduce(
+                                                (acc, history) =>
+                                                    Number(acc) + Number(history.rewards),
+                                                0,
+                                            )}{" "}
+                                            ₳
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -124,14 +163,20 @@ const DelegationRewards = function () {
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>{t("delegation rewards.card.total pending rewards")}</h2>
+                        <h2 className={cx("summary-title")}>
+                            {t("delegation rewards.card.total pending rewards")}
+                        </h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
                                     {isSuccess && rewards.data.histories.length > 0 ? (
-                                        <Link className={cx("summary-link")} href={""} target="_blank">
+                                        <Link
+                                            className={cx("summary-link")}
+                                            href={""}
+                                            target="_blank"
+                                        >
                                             0 ₳
                                         </Link>
                                     ) : (
@@ -158,7 +203,12 @@ const DelegationRewards = function () {
                                     </section>
                                 ) : (
                                     <div>
-                                        <Table center titles={historyRewards} data={rewards?.data.histories} className={cx("desktop-tx-history")} />
+                                        <Table
+                                            center
+                                            titles={historyRewards}
+                                            data={rewards?.data.histories}
+                                            className={cx("desktop-tx-history")}
+                                        />
                                         <div className={cx("reponsive-tx-history")}>
                                             {rewards.data.histories.map(function (item, index) {
                                                 return <Reward data={item} key={index} />;
@@ -174,7 +224,10 @@ const DelegationRewards = function () {
                                         )}
 
                                         <div className={cx("note")}>
-                                            <p>* Reward amount lower than 2 ₳ will be added to pending rewards</p>
+                                            <p>
+                                                * Reward amount lower than 2 ₳ will be added to
+                                                pending rewards
+                                            </p>
                                         </div>
                                     </div>
                                 )}

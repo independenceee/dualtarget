@@ -27,6 +27,8 @@ import WalletContext from "~/contexts/components/WalletContext";
 import CountUp from "react-countup";
 import images from "~/assets/images";
 import TranslateContext from "~/contexts/components/TranslateContext";
+import { NetworkContextType } from "~/types/contexts/NetworkContextType";
+import NetworkContext from "~/contexts/components/NetworkContext";
 const cx = classNames.bind(styles);
 
 type DepositeType = {
@@ -39,17 +41,21 @@ type DepositeType = {
 };
 
 const Deposit = function () {
-    const { wallet } = useContext<WalletContextType>(WalletContext);
-    const { lucid } = useContext<LucidContextType>(LucidContext);
-    const { deposit, waitingDeposit, txHashDeposit } = useContext<SmartContractContextType>(SmartContractContext);
     const [page, setPage] = useState<number>(1);
+    const { lucid } = useContext<LucidContextType>(LucidContext);
+    const { wallet } = useContext<WalletContextType>(WalletContext);
+    const { network } = useContext<NetworkContextType>(NetworkContext);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
+
+    const { deposit, waitingDeposit, txHashDeposit } = useContext<SmartContractContextType>(SmartContractContext);
     const { t } = useContext(TranslateContext);
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page, txHashDeposit],
         queryFn: () =>
             axios.get<TransactionResponseType>(
-                `${window.location.origin}/history/transaction?wallet_address=${wallet?.address}&page=${page}&page_size=5`,
+                `${window.location.origin}/api/history/transaction?wallet_address=${
+                    wallet?.address
+                }&page=${page}&page_size=5&network=${network.toLowerCase()}`,
                 { timeout: 7000 },
             ),
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
@@ -102,11 +108,19 @@ const Deposit = function () {
         return [];
     }, [chartDataRecords, isGetChartRecordsSuccess]);
 
+    const currentPrice = useMemo(() => {
+        if (historyPrices && historyPrices.length > 0) {
+            return historyPrices[historyPrices.length - 1][1];
+        }
+        return 0;
+    }, [historyPrices]);
+
     const onDeposite = handleSubmit((data) => {
         lucid &&
             deposit({
                 lucid,
                 sellingStrategies,
+                currentPrice,
             }).catch((error) => {});
     });
 
@@ -145,11 +159,16 @@ const Deposit = function () {
                     <div className={cx("stats-inner")}>
                         <div className={cx("stats")}>
                             <div className={cx("card-wrapper")}>
-                                <Card title={t("deposit.card.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                                <Card
+                                    title={t("deposit.card.title")}
+                                    icon={images.logo}
+                                    className={cx("stat-djed-stablecoin")}
+                                >
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>
-                                                {t("deposit.card.balance")}: <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                                {t("deposit.card.balance")}:{" "}
+                                                <CountUp end={wallet?.balance || 0} start={0} /> ₳
                                             </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>
@@ -223,9 +242,15 @@ const Deposit = function () {
                                                             {...field}
                                                             className={cx("input")}
                                                             errorMessage={errors.income?.message}
-                                                            description={t("deposit.card.fields.desired income.instruction")}
-                                                            title={`${t("deposit.card.fields.desired income.title")} ($)`}
-                                                            placeholder={t("deposit.card.fields.desired income.placeholder")}
+                                                            description={t(
+                                                                "deposit.card.fields.desired income.instruction",
+                                                            )}
+                                                            title={`${t(
+                                                                "deposit.card.fields.desired income.title",
+                                                            )} ($)`}
+                                                            placeholder={t(
+                                                                "deposit.card.fields.desired income.placeholder",
+                                                            )}
                                                         />
                                                     )}
                                                 />
@@ -245,9 +270,15 @@ const Deposit = function () {
                                                             {...field}
                                                             className={cx("input")}
                                                             errorMessage={errors.stake?.message}
-                                                            description={t("deposit.card.fields.stake percentage.instruction")}
-                                                            title={`${t("deposit.card.fields.stake percentage.title")} ($)`}
-                                                            placeholder={t("deposit.card.fields.stake percentage.placeholder")}
+                                                            description={t(
+                                                                "deposit.card.fields.stake percentage.instruction",
+                                                            )}
+                                                            title={`${t(
+                                                                "deposit.card.fields.stake percentage.title",
+                                                            )} ($)`}
+                                                            placeholder={t(
+                                                                "deposit.card.fields.stake percentage.placeholder",
+                                                            )}
                                                         />
                                                     )}
                                                 />
@@ -313,7 +344,9 @@ const Deposit = function () {
                                                                 </div>
                                                                 <div className={cx("stats-fee")}>
                                                                     <span>Operator Fee</span>
-                                                                    <span>{sellingStrategies.length > 0 ? "1.5 ₳" : "-"}</span>
+                                                                    <span>
+                                                                        {sellingStrategies.length > 0 ? "1.5 ₳" : "-"}
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         }
@@ -327,16 +360,49 @@ const Deposit = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                {waitingDeposit ? <Loading /> : sellingStrategies.length > 0 ? "1.5 ₳" : "-"}
+                                                {waitingDeposit ? (
+                                                    <Loading />
+                                                ) : sellingStrategies.length > 0 ? (
+                                                    "1.5 ₳"
+                                                ) : (
+                                                    "-"
+                                                )}
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
                                                     <span>{t("deposit.card.you will pay")}</span>
+                                                    <Tippy
+                                                        render={
+                                                            <div>
+                                                                <div className={cx("stats-fee")}>
+                                                                    <span>Amount ADA</span>
+                                                                    <span>-</span>
+                                                                </div>
+                                                                <div className={cx("stats-fee")}>
+                                                                    <span>Amount MIN</span>
+                                                                    <span>
+                                                                        {sellingStrategies.length > 0 ? "1.5 ₳" : "-"}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <Image
+                                                            className={cx("icon-help-circle")}
+                                                            src={icons.helpCircle}
+                                                            width={12}
+                                                            height={12}
+                                                            alt=""
+                                                        />
+                                                    </Tippy>
                                                 </div>
                                                 {waitingDeposit ? (
                                                     <Loading />
                                                 ) : sellingStrategies.length > 0 ? (
-                                                    `${sellingStrategies[sellingStrategies.length - 1].sumADA! / 1000000} ₳`
+                                                    `${
+                                                        sellingStrategies[sellingStrategies.length - 1].sumADA! /
+                                                        1000000
+                                                    } ₳`
                                                 ) : (
                                                     "-"
                                                 )}
@@ -345,14 +411,24 @@ const Deposit = function () {
                                         <div className={cx("actions-wrapper")}>
                                             <Button
                                                 disabled={
-                                                    !lucid || waitingDeposit || Object.keys(errors).length > 0 || sellingStrategies.length === 0
+                                                    !lucid ||
+                                                    waitingDeposit ||
+                                                    Object.keys(errors).length > 0 ||
+                                                    sellingStrategies.length === 0
                                                 }
                                                 className={cx("deposite-button")}
                                             >
                                                 {t("deposit.card.button deposit")}
                                             </Button>
-                                            <Tippy placement="top-end" render={<div>{t("deposit.card.button calculate")} </div>}>
-                                                <Button className={cx("calculate-button")} type="button" onClick={handleCalculateSellingStrategy}>
+                                            <Tippy
+                                                placement="top-end"
+                                                render={<div>{t("deposit.card.button calculate")} </div>}
+                                            >
+                                                <Button
+                                                    className={cx("calculate-button")}
+                                                    type="button"
+                                                    onClick={handleCalculateSellingStrategy}
+                                                >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
@@ -388,7 +464,14 @@ const Deposit = function () {
                 <div className={cx("header-order")}>
                     <h2 className={cx("title")}>{t("deposit.history.title")}</h2>
                 </div>
-                <Orders page={page} setPage={setPage} data={data?.data} isError={isError} isLoading={isLoading} className={cx("orders")} />
+                <Orders
+                    page={page}
+                    setPage={setPage}
+                    data={data?.data}
+                    isError={isError}
+                    isLoading={isLoading}
+                    className={cx("orders")}
+                />
             </section>
         </div>
     );
