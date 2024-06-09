@@ -4,7 +4,7 @@ import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { Blockfrost, Lucid, Network } from "lucid-cardano";
 import LucidContext from "~/contexts/components/LucidContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
-import NetworkContext from "../components/NetworkContext";
+import NetworkContext from "~/contexts/components/NetworkContext";
 import { networks } from "~/constants/networks";
 
 type Props = {

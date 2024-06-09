@@ -1,5 +1,14 @@
 {
     "layout": {
+        "form": {
+            "errors": {
+                "messages": {
+                    "required": "Trường này là bắt buộc",
+                    "min": "Giá tối thiểu phải lớn hơn giá tối đa.",
+                    "max": "Giá tối đa phải lớn hơn giá tối thiểu."
+                }
+            }
+        },
         "header": {
             "home": "Trang chủ",
             "deposit": "Tiền gửi",
@@ -8,11 +17,23 @@
             "about": "Giới thiệu",
             "faq": "Các câu hỏi thường gặp"
         },
-        "connect wallet button": "Kết nối ví",
+        "wallet": {
+            "button connect": "Kết nối ví",
+            "button wrong network": "Sai mạng",
+            "terms and conditions": "Bằng cách chọn hộp này và kết nối ví của mình, tôi xác nhận rằng tôi đã đọc, hiểu và đồng ý với",
+            "terms and conditions link": "Điều khoản và Điều kiện",
+            "not installed": "Chưa cài đặt",
+            "network error": "Lỗi mạng ví",
+            "change network": "Vui lòng thay đổi mạng thành preprod hoặc ngắt kết nối"
+        },
         "notification": {
             "no wallet": "Kết nối để xem các yêu cầu đúc và ghi của bạn",
             "error to fetch data": "Đã xảy ra lỗi khi tìm nạp dữ liệu",
             "no data": "Không có dữ liệu"
+        },
+        "footer": {
+            "term of use": "Điều khoản sử dụng",
+            "powered by": "Được cung cấp bởi"
         }
     },
     "home": {
@@ -35,7 +56,7 @@
         },
         "card profit": {
             "title": "Tỷ suất lợi nhuận",
-            "base reserve": "Cơ sở chuyển đổi",
+            "base reserve": "Pool Dualtarget",
             "update": "Cập nhật mới nhất: "
         },
         "card sub": "*Gửi tiền\\Rút tiền bao gồm phí cơ bản và phí điều hành",
@@ -46,7 +67,7 @@
                 "paragraph 1": "Chúng tôi sẽ phát triển một nền tảng cho phép người dùng chọn mục tiêu kép và phương thức giao dịch trực tiếp trong ví của họ. Đồng thời, chúng tôi sẽ tạo các bot giao dịch tự động trên các sàn giao dịch phi tập trung",
                 "paragraph 2": "Chúng tôi sẽ phát triển một nền tảng cho phép người dùng chọn mục tiêu kép và phương thức giao dịch trực tiếp trong ví của họ. Đồng thời, chúng tôi sẽ tạo các bot giao dịch tự động trên các sàn giao dịch phi tập trung"
             },
-            "button": "Liên hệ chúng tôi"
+            "button": "Chúng tôi"
         }
     },
     "deposit": {
@@ -86,7 +107,8 @@
                     "instruction": "Tổng số ADA đang giữ"
                 }
             },
-            "button": "Gửi tiền",
+            "button deposit": "Gửi tiền",
+            "button calculate": "Tính",
             "fees": "Phí",
             "you will pay": "Bạn sẽ trả"
         },
@@ -138,7 +160,17 @@
     },
     "faq": {
         "title": "Câu hỏi thường gặp",
-        "sub title": "Câu trả lời cho các câu hỏi thường gặp"
+        "sub title": "Câu trả lời cho các câu hỏi thường gặp",
+        "questions": {
+            "1": "Cơ chế ổn định của DJED là gì?",
+            "2": "Cơ chế ổn định của DJED là gì?",
+            "3": "Điều gì xảy ra với giá của SHEN nếu tỷ lệ rơi xuống dưới 400%?"
+        },
+        "answers": {
+            "1": "<p className={cx(\"faq-paragraph\")}>DJED là một stablecoin được thế chấp quá mức sử dụng tài sản thế chấp ngoại sinh (ADA) để đảm bảo sự ổn định. Giao thức này được hỗ trợ bởi tỷ lệ thế chấp quá mức từ 400-800% và được đảm bảo bởi đồng tiền dự trữ của nó, SHEN. Sự ổn định của DJED dựa trên thế chấp quá mức, điều này loại bỏ nhu cầu tin tưởng vào một token quản trị như được thấy trong các stablecoin thuật toán. Nền tảng này cũng hoàn toàn phi tập trung và do cộng đồng điều hành, cho phép phát triển mã nguồn mở và sự tham gia của cộng đồng trong việc đúc và đốt DJED và SHEN. </p> <p className={cx(\"faq-paragraph\")}><Image className={cx(\"faq-image\")} style={{ objectFit: \"contain\" }} src={images.eternl} alt=\"\"/></p>",
+            "2": "<p className={cx(\"faq-paragraph\")}><b className={cx(\"faq-bold\")}>Tài sản thế chấp</b> - Djed sử dụng tài sản thế chấp ngoại sinh (ADA). Một stablecoin thuật toán thông thường sử dụng tài sản thế chấp nội sinh, như: FRAX, Synthetix và UST. </p>",
+            "3": "<p className={cx(\"faq-paragraph\")}>Giá mua của SHEN được xác định bởi phương trình PbRc. Điều này có nghĩa là nếu Ptrc (giá mục tiêu của đồng tiền dự trữ) không được xác định, giao thức sẽ lấy giá tối thiểu. Ngược lại, nó sẽ lấy giá tối đa giữa vốn chia cho số lượng RC và giá tối thiểu. </p> <p className={cx(\"faq-paragraph\")}>Giá mua của SHEN được xác định bởi phương trình PbRc. Điều này có nghĩa là nếu Ptrc (giá mục tiêu của đồng tiền dự trữ) không được xác định, giao thức sẽ lấy giá tối thiểu. Ngược lại, nó sẽ lấy giá tối đa giữa vốn chia cho số lượng RC và giá tối thiểu. </p>"
+        }
     },
     "about": {
         "title": "Về Quỹ của Chúng Tôi",

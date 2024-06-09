@@ -4,10 +4,9 @@ import "./Loading.scss";
 type Props = {};
 
 const Loading = function ({}: Props) {
-    console.log("Loading component...");
-
     return (
         <div id="preloader">
+            <title>Loading ...</title>
             <ul className="preloader__wrapper">
                 <li className="preloader_box" style={{ "--i": "300ms" } as any} />
                 <li className="preloader_box" style={{ "--i": "400ms" } as any} />

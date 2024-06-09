@@ -3,11 +3,12 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./PublicLayout.module.scss";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
-import Notification from "../components/Notification";
+import Header from "~/layouts/components/Header";
+import Footer from "~/layouts/components/Footer/Footer";
+import Notification from "~/layouts/components/Notification";
 import { usePathname } from "next/navigation";
 import Loading from "~/app/(loading)/loading";
+import Form from "~/layouts/components/Form";
 type Props = {
     children: ReactNode;
 };
@@ -39,6 +40,7 @@ const PublicLayout = function ({ children }: Props) {
                 <Footer />
             </div>
             <Notification />
+            <Form />
 
             {pageLoading && <Loading />}
         </main>
