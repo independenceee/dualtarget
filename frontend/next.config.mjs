@@ -23,13 +23,15 @@ const nextConfig = {
         DUALTARGET_CONTRACT_ADDRESS_PREPROD:
             "addr_test1zze6xz2yuzcwkt4f7kpyr4yt82xkq2kkmfj0vv54fz4kwy3a39atxwxg8ks578mqpxpsgsetvu8hx5f9nhvercv4da7s5s9p98",
         DUALTARGET_PAYMENT_ADDRESS_PREPROD: "",
-        DUALTARGET_STAKE_ADDRESS_PREPROD: "stake_test1uq7cj74n8ryrmg20rasqnqcygv4kwrmn2yjemkv3ux2k7lgqu950l",
+        DUALTARGET_STAKE_ADDRESS_PREPROD:
+            "stake_test1uq7cj74n8ryrmg20rasqnqcygv4kwrmn2yjemkv3ux2k7lgqu950l",
         EXCHANGE_ADDRESS_FREE_PREPROP: "ecc575c43fe93b158e02a176c9159afe681cd097910748fde50d33a7",
         POOL_ID_PREPROD: "pool1ke9h4mggr8ttf45ale5dv4ntkvuw2wkvm6la4mv02688xuy99qp",
         MIN_TOKEN_ASSET_PREPROD: "e16c2dc8ae937e8d3790c7fd7168d7b994621ba14ca11415f39fed724d494e",
         DJED_TOKEN_ASSET_MAINNET: "",
-        BINANCE_API_KEY: "V0popsaVcPSajStISK7DRkZsYOgMEqnlFoDwejiy28gsDMZ4Uj6Ohrr3vIxdAlby",
-        BINANCE_API_SECRET: "nItpNsxBjIgePDYGAgZ9iiMUlK1LwLLwOs4776B9vbf5HLmDm61TsT5hC9w1nrpg",
+
+        // BINANCE_API_KEY: "V0popsaVcPSajStISK7DRkZsYOgMEqnlFoDwejiy28gsDMZ4Uj6Ohrr3vIxdAlby",
+        // BINANCE_API_SECRET: "nItpNsxBjIgePDYGAgZ9iiMUlK1LwLLwOs4776B9vbf5HLmDm61TsT5hC9w1nrpg",
     },
 };
 

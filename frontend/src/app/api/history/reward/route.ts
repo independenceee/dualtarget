@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
         results.push({
             epoch: index,
             amount: amountDepositWithdraw.toFixed(5),
-            rewards: (isNaN(accountRewards * ROS) ? accountRewards * ROS : 0).toFixed(5),
+            rewards: (!isNaN(accountRewards * ROS) ? accountRewards * ROS : 0).toFixed(5),
             status: "Distributed",
         });
     }

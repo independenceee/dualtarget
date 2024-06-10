@@ -7,8 +7,6 @@ type Props = {
 
 const readTxHash = async function ({ lucid }: Props) {
     const { data } = await axios.get(`${window.location.origin}/api/transaction`);
-
-    console.log(data);
 };
 
 export default readTxHash;
