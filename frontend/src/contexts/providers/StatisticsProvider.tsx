@@ -61,7 +61,9 @@ const StatisticsProvider = function ({ children }: Props) {
         }
     }, [lucidPlatform]);
 
-    return <StatisticsContext.Provider value={{ pool, profit }}>{children}</StatisticsContext.Provider>;
+    return (
+        <StatisticsContext.Provider value={{ pool, profit }}>{children}</StatisticsContext.Provider>
+    );
 };
 
 export default StatisticsProvider;
