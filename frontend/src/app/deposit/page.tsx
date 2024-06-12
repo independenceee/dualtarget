@@ -11,7 +11,11 @@ import { SmartContractContextType } from "~/types/contexts/SmartContractContextT
 import SmartContractContext from "~/contexts/components/SmartContractContext";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
 import LucidContext from "~/contexts/components/LucidContext";
-import { CalculateSellingStrategy, ChartDataType, TransactionResponseType } from "~/types/GenericsType";
+import {
+    CalculateSellingStrategy,
+    ChartDataType,
+    TransactionResponseType,
+} from "~/types/GenericsType";
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -47,7 +51,8 @@ const Deposit = function () {
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
 
-    const { deposit, waitingDeposit, txHashDeposit } = useContext<SmartContractContextType>(SmartContractContext);
+    const { deposit, waitingDeposit, txHashDeposit } =
+        useContext<SmartContractContextType>(SmartContractContext);
     const { t } = useContext(TranslateContext);
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page, txHashDeposit],
@@ -67,7 +72,7 @@ const Deposit = function () {
         reset,
         trigger,
         getValues,
-        formState: { errors, isDirty },
+        formState: { errors, isDirty, isValid },
     } = useForm<DepositeType>({
         defaultValues: {
             income: "",
@@ -99,10 +104,14 @@ const Deposit = function () {
             });
         }
     }, [t]);
+    console.log("Invalid: ", isValid);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
-            const prices = chartDataRecords.data.map((history) => [+history.closeTime, +history.high]);
+            const prices = chartDataRecords.data.map((history) => [
+                +history.closeTime,
+                +history.high,
+            ]);
             return prices as ChartDataType;
         }
         return [];
@@ -121,13 +130,27 @@ const Deposit = function () {
                 lucid,
                 sellingStrategies,
                 currentPrice,
-            }).catch((error) => {});
+            })
+                .then(() => {
+                    reset();
+                    setSellingStrategies([]);
+                })
+                .catch((error) => {});
     });
 
     const { income, priceHight, priceLow, stake, step, totalADA } = watch();
 
     const handleCalculateSellingStrategy = function () {
-        if (income && priceHight && priceLow && stake && step && totalADA && Object.keys(errors).length === 0) {
+        console.log(totalADA);
+        if (
+            income &&
+            priceHight &&
+            priceLow &&
+            stake &&
+            step &&
+            totalADA &&
+            Object.keys(errors).length === 0
+        ) {
             const result: CalculateSellingStrategy[] = calculateSellingStrategy({
                 income: Number(income), // Bao nhiêu $ một tháng ==> Nhận bao nhiêu dola 1 tháng = 5
                 priceHight: Number(priceHight) * 1000000, //  Giá thấp nhất =  2000000
@@ -179,10 +202,15 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: t("layout.form.errors.messages.required"),
+                                                            message: t(
+                                                                "layout.form.errors.messages.required",
+                                                            ),
                                                         },
                                                         validate: (value) =>
-                                                            parseFloat(value) <= parseFloat(getValues("priceHight")) ||
+                                                            parseFloat(value) <=
+                                                                parseFloat(
+                                                                    getValues("priceHight"),
+                                                                ) ||
                                                             t("layout.form.errors.messages.min"),
                                                     }}
                                                     render={({ field }) => (
@@ -190,9 +218,15 @@ const Deposit = function () {
                                                             className={cx("input")}
                                                             {...field}
                                                             value={watch("priceLow")}
-                                                            description={t("deposit.card.fields.min price.instruction")}
-                                                            title={`${t("deposit.card.fields.min price.title")} ($)`}
-                                                            placeholder={t("deposit.card.fields.min price.placeholder")}
+                                                            description={t(
+                                                                "deposit.card.fields.min price.instruction",
+                                                            )}
+                                                            title={`${t(
+                                                                "deposit.card.fields.min price.title",
+                                                            )} ($)`}
+                                                            placeholder={t(
+                                                                "deposit.card.fields.min price.placeholder",
+                                                            )}
                                                             errorMessage={errors.priceLow?.message}
                                                         />
                                                     )}
@@ -204,10 +238,13 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: t("layout.form.errors.messages.required"),
+                                                            message: t(
+                                                                "layout.form.errors.messages.required",
+                                                            ),
                                                         },
                                                         validate: (value) =>
-                                                            parseFloat(value) >= parseFloat(getValues("priceLow")) ||
+                                                            parseFloat(value) >=
+                                                                parseFloat(getValues("priceLow")) ||
                                                             t("layout.form.errors.messages.max"),
                                                     }}
                                                     render={({ field }) => (
@@ -219,10 +256,18 @@ const Deposit = function () {
                                                                 trigger("priceLow");
                                                             }}
                                                             className={cx("input")}
-                                                            description={t("deposit.card.fields.max price.instruction")}
-                                                            title={`${t("deposit.card.fields.max price.title")} ($)`}
-                                                            placeholder={t("deposit.card.fields.max price.placeholder")}
-                                                            errorMessage={errors.priceHight?.message}
+                                                            description={t(
+                                                                "deposit.card.fields.max price.instruction",
+                                                            )}
+                                                            title={`${t(
+                                                                "deposit.card.fields.max price.title",
+                                                            )} ($)`}
+                                                            placeholder={t(
+                                                                "deposit.card.fields.max price.placeholder",
+                                                            )}
+                                                            errorMessage={
+                                                                errors.priceHight?.message
+                                                            }
                                                         />
                                                     )}
                                                 />
@@ -234,7 +279,9 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: t("layout.form.errors.messages.required"),
+                                                            message: t(
+                                                                "layout.form.errors.messages.required",
+                                                            ),
                                                         },
                                                     }}
                                                     render={({ field }) => (
@@ -261,7 +308,9 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: t("layout.form.errors.messages.required"),
+                                                            message: t(
+                                                                "layout.form.errors.messages.required",
+                                                            ),
                                                         },
                                                     }}
                                                     render={({ field }) => (
@@ -275,7 +324,7 @@ const Deposit = function () {
                                                             )}
                                                             title={`${t(
                                                                 "deposit.card.fields.stake percentage.title",
-                                                            )} ($)`}
+                                                            )} (%)`}
                                                             placeholder={t(
                                                                 "deposit.card.fields.stake percentage.placeholder",
                                                             )}
@@ -291,7 +340,9 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: t("layout.form.errors.messages.required"),
+                                                            message: t(
+                                                                "layout.form.errors.messages.required",
+                                                            ),
                                                         },
                                                     }}
                                                     render={({ field }) => (
@@ -299,9 +350,15 @@ const Deposit = function () {
                                                             {...field}
                                                             className={cx("input")}
                                                             errorMessage={errors.step?.message}
-                                                            description={t("deposit.card.fields.step.instruction")}
-                                                            title={`${t("deposit.card.fields.step.title")} ($)`}
-                                                            placeholder={t("deposit.card.fields.step.placeholder")}
+                                                            description={t(
+                                                                "deposit.card.fields.step.instruction",
+                                                            )}
+                                                            title={`${t(
+                                                                "deposit.card.fields.step.title",
+                                                            )} (%)`}
+                                                            placeholder={t(
+                                                                "deposit.card.fields.step.placeholder",
+                                                            )}
                                                         />
                                                     )}
                                                 />
@@ -313,16 +370,24 @@ const Deposit = function () {
                                                     rules={{
                                                         required: {
                                                             value: true,
-                                                            message: t("layout.form.errors.messages.required"),
+                                                            message: t(
+                                                                "layout.form.errors.messages.required",
+                                                            ),
                                                         },
                                                     }}
                                                     render={({ field }) => (
                                                         <InputNumber
                                                             tooltipPlacement="top-end"
                                                             {...field}
-                                                            description={t("deposit.card.fields.total ADA.instruction")}
-                                                            title={`${t("deposit.card.fields.total ADA.title")} ($)`}
-                                                            placeholder={t("deposit.card.fields.total ADA.placeholder")}
+                                                            description={t(
+                                                                "deposit.card.fields.total ADA.instruction",
+                                                            )}
+                                                            title={`${t(
+                                                                "deposit.card.fields.total ADA.title",
+                                                            )} ($)`}
+                                                            placeholder={t(
+                                                                "deposit.card.fields.total ADA.placeholder",
+                                                            )}
                                                             className={cx("input")}
                                                             errorMessage={errors.totalADA?.message}
                                                         />
@@ -345,7 +410,10 @@ const Deposit = function () {
                                                                 <div className={cx("stats-fee")}>
                                                                     <span>Operator Fee</span>
                                                                     <span>
-                                                                        {sellingStrategies.length > 0 ? "1.5 ₳" : "-"}
+                                                                        {sellingStrategies.length >
+                                                                        0
+                                                                            ? "1.5 ₳"
+                                                                            : "-"}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -381,7 +449,10 @@ const Deposit = function () {
                                                                 <div className={cx("stats-fee")}>
                                                                     <span>Amount MIN</span>
                                                                     <span>
-                                                                        {sellingStrategies.length > 0 ? "1.5 ₳" : "-"}
+                                                                        {sellingStrategies.length >
+                                                                        0
+                                                                            ? "1.5 ₳"
+                                                                            : "-"}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -400,8 +471,9 @@ const Deposit = function () {
                                                     <Loading />
                                                 ) : sellingStrategies.length > 0 ? (
                                                     `${
-                                                        sellingStrategies[sellingStrategies.length - 1].sumADA! /
-                                                        1000000
+                                                        sellingStrategies[
+                                                            sellingStrategies.length - 1
+                                                        ].sumADA! / 1000000
                                                     } ₳`
                                                 ) : (
                                                     "-"
@@ -413,7 +485,7 @@ const Deposit = function () {
                                                 disabled={
                                                     !lucid ||
                                                     waitingDeposit ||
-                                                    Object.keys(errors).length > 0 ||
+                                                    !isValid ||
                                                     sellingStrategies.length === 0
                                                 }
                                                 className={cx("deposite-button")}
@@ -422,7 +494,9 @@ const Deposit = function () {
                                             </Button>
                                             <Tippy
                                                 placement="top-end"
-                                                render={<div>{t("deposit.card.button calculate")} </div>}
+                                                render={
+                                                    <div>{t("deposit.card.button calculate")} </div>
+                                                }
                                             >
                                                 <Button
                                                     className={cx("calculate-button")}
