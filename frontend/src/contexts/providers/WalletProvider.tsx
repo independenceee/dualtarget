@@ -16,6 +16,7 @@ import ModalContext from "../components/ModalContext";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "../components/ToastContext";
 import { DECIMAL_PLACES } from "~/constants";
+import axios from "axios";
 
 type Props = {
     children: ReactNode;
@@ -124,6 +125,13 @@ const WalletProvider = function ({ children }: Props) {
                     poolId: poolId,
                 };
             });
+            await axios.post(
+                "/api/auth/set-wallet-address",
+                { walletAddress: address },
+                {
+                    baseURL: process.env.NEXT_PUBLIC_LOCALHOST,
+                },
+            );
             setLucid(lucid);
             toast.success("Wallet connected !");
         } catch (error) {
@@ -142,6 +150,7 @@ const WalletProvider = function ({ children }: Props) {
             }
 
             localStorage.removeItem("wallet");
+            await axios.post("/api/auth/clear-wallet-address", {});
         } catch (error) {
             console.log(error);
         }
