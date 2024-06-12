@@ -3,7 +3,7 @@
 import classNames from "classnames/bind";
 import React, { useContext, useState } from "react";
 import Link from "next/link";
-import styles from "./DelegationRewards.module.scss";
+import styles from "./Manager.module.scss";
 import Tippy from "~/components/Tippy";
 import Image from "next/image";
 import icons from "~/assets/icons";
