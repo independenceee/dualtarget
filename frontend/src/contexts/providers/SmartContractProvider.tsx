@@ -114,7 +114,6 @@ const SmartContractProvider = function ({ children }: Props) {
             });
 
             tx = await tx.complete();
-            console.log(tx);
 
             const signedTx: TxSigned = await tx.sign().complete();
             const txHash: TxHash = await signedTx.submit();

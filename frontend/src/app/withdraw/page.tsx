@@ -215,7 +215,13 @@ const Withdraw = function () {
                                         <div className={cx("balance")}>
                                             <span>
                                                 {t("withdraw.balance")}:{" "}
-                                                <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                                <CountUp
+                                                    end={wallet?.balance || 0}
+                                                    start={0}
+                                                    decimals={5}
+                                                    decimalPlaces={5}
+                                                />{" "}
+                                                ₳
                                             </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>

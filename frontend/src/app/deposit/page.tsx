@@ -65,6 +65,8 @@ const Deposit = function () {
             ),
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
+
+    console.log("sellingStrategies", sellingStrategies);
     const {
         handleSubmit,
         watch,
@@ -141,7 +143,6 @@ const Deposit = function () {
     const { income, priceHight, priceLow, stake, step, totalADA } = watch();
 
     const handleCalculateSellingStrategy = function () {
-        console.log(totalADA);
         if (
             income &&
             priceHight &&
@@ -190,8 +191,25 @@ const Deposit = function () {
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>
-                                                {t("deposit.card.balance")}:{" "}
-                                                <CountUp end={wallet?.balance || 0} start={0} /> ₳
+                                                <span>
+                                                    {t("deposit.card.balance")}:{" "}
+                                                    <CountUp
+                                                        end={wallet?.balance || 0}
+                                                        start={0}
+                                                        decimals={5}
+                                                        decimalPlaces={5}
+                                                    />{" "}
+                                                    ₳
+                                                </span>
+                                                <span>
+                                                    <CountUp
+                                                        end={wallet?.djed || 0}
+                                                        start={0}
+                                                        decimals={5}
+                                                        decimalPlaces={5}
+                                                    />{" "}
+                                                    DJED
+                                                </span>
                                             </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>

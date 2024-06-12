@@ -6,5 +6,5 @@ export async function GET(request: NextRequest) {
         _tx_hashes: ["fcb9cf2638779b75c371c66449e433675298b56aabb3c2f19610d14cc61eaabf"],
     });
 
-    return Response.json(data[0].ouputs);
+    return Response.json({});
 }
