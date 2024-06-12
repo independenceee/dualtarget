@@ -74,7 +74,7 @@ const Deposit = function () {
         reset,
         trigger,
         getValues,
-        formState: { errors, isDirty },
+        formState: { errors, isDirty, isValid },
     } = useForm<DepositeType>({
         defaultValues: {
             income: "",
@@ -107,6 +107,7 @@ const Deposit = function () {
             });
         }
     }, [t]);
+    console.log("Invalid: ", isValid);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
@@ -132,7 +133,12 @@ const Deposit = function () {
                 lucid,
                 sellingStrategies,
                 currentPrice,
-            }).catch((error) => {});
+            })
+                .then(() => {
+                    reset();
+                    setSellingStrategies([]);
+                })
+                .catch((error) => {});
     });
 
     const { income, priceHight, priceLow, stake, step, totalADA } = watch();
@@ -337,7 +343,7 @@ const Deposit = function () {
                                                             )}
                                                             title={`${t(
                                                                 "deposit.card.fields.stake percentage.title",
-                                                            )} ($)`}
+                                                            )} (%)`}
                                                             placeholder={t(
                                                                 "deposit.card.fields.stake percentage.placeholder",
                                                             )}
@@ -368,7 +374,7 @@ const Deposit = function () {
                                                             )}
                                                             title={`${t(
                                                                 "deposit.card.fields.step.title",
-                                                            )} ($)`}
+                                                            )} (%)`}
                                                             placeholder={t(
                                                                 "deposit.card.fields.step.placeholder",
                                                             )}
@@ -498,7 +504,7 @@ const Deposit = function () {
                                                 disabled={
                                                     !lucid ||
                                                     waitingDeposit ||
-                                                    Object.keys(errors).length > 0 ||
+                                                    !isValid ||
                                                     sellingStrategies.length === 0
                                                 }
                                                 className={cx("deposite-button")}
