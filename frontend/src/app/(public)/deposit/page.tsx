@@ -93,7 +93,8 @@ const Deposit = function () {
         isSuccess: isGetChartRecordsSuccess,
     } = useQuery({
         queryKey: ["ChartData"],
-        queryFn: () => axios.get<ChartHistoryRecord[] | null>(`${window.location.origin}/chart`),
+        queryFn: () =>
+            axios.get<ChartHistoryRecord[] | null>(`${window.location.origin}/api/chart`),
         refetchInterval: 1 * 60 * 1000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: true,
