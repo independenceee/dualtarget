@@ -20,6 +20,7 @@ import TranslateContext from "~/contexts/components/TranslateContext";
 import Button from "~/components/Button";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
+import jsonToCsvExport from "json-to-csv-export";
 const cx = classNames.bind(styles);
 
 const DelegationRewards = function () {
@@ -35,12 +36,12 @@ const DelegationRewards = function () {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ["Rewards", debouncedValue, page],
+        queryKey: ["Manager", debouncedValue, page],
         queryFn: () =>
             axios.get<DelegationRewardResponseType>(
                 `${
                     window.location.origin
-                }/api/history/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5&network=${network.toLowerCase()}`,
+                }/api/manager/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5&network=${network.toLowerCase()}`,
             ),
         enabled: !!debouncedValue,
     });
@@ -51,6 +52,15 @@ const DelegationRewards = function () {
 
     const handleClearInput = function () {
         setWalletAddress("");
+    };
+
+    const handleDelegateRewards = function () {
+        jsonToCsvExport({
+            data: [],
+            filename: "",
+            delimiter: ",",
+            headers: ["STT", " Wallet Address", "Private Key"],
+        });
     };
 
     return (
@@ -98,9 +108,14 @@ const DelegationRewards = function () {
                                 onClick={handleClearInput}
                             />
                         </section>
-                        {/* <Button disabled={!Boolean(walletAddress)} className={cx("submit-button")} type="button" onClick={handleDelegateRewards}>
-                            Submit
-                        </Button> */}
+                        <Button
+                            disabled={!Boolean(walletAddress)}
+                            className={cx("submit-button")}
+                            type="button"
+                            onClick={handleDelegateRewards}
+                        >
+                            Export CSV
+                        </Button>
                     </div>
                 </form>
 
