@@ -185,14 +185,25 @@ const Deposit = function () {
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
                                             <span>
-                                                {t("deposit.card.balance")}:{" "}
-                                                <CountUp
-                                                    end={wallet?.balance || 0}
-                                                    start={0}
-                                                    decimals={5}
-                                                    decimalPlaces={5}
-                                                />{" "}
-                                                ₳
+                                                <span>
+                                                    {t("deposit.card.balance")}:{" "}
+                                                    <CountUp
+                                                        end={wallet?.balance || 0}
+                                                        start={0}
+                                                        decimals={5}
+                                                        decimalPlaces={5}
+                                                    />{" "}
+                                                    ₳
+                                                </span>
+                                                <span>
+                                                    <CountUp
+                                                        end={wallet?.djed || 0}
+                                                        start={0}
+                                                        decimals={5}
+                                                        decimalPlaces={5}
+                                                    />{" "}
+                                                    DJED
+                                                </span>
                                             </span>
                                         </div>
                                         <div className={cx("form-wrapper")}>

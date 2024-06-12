@@ -1,6 +1,5 @@
 @import "../../styles/layouts.scss";
 
-
 .wrapper {
     padding: 17.2rem 4rem 0;
     overflow: hidden;
@@ -107,6 +106,12 @@
     font-weight: 500;
     margin: 8px 4px;
     text-align: end;
+}
+
+.balance span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .form-wrapper {

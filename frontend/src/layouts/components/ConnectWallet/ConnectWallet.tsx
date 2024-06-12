@@ -138,7 +138,15 @@ const ConnectWallet = function ({ className }: Props) {
                                                 Cardano
                                             </p>
                                         </div>
-                                        <div className={cx("data-number")}>{wallet?.balance}</div>
+                                        <div className={cx("data-number")}>
+                                            <CountUp
+                                                end={wallet?.balance || 0}
+                                                start={0}
+                                                decimals={5}
+                                                decimalPlaces={5}
+                                            />{" "}
+                                            ₳
+                                        </div>
                                     </section>
                                 </div>
                                 <div className={cx("item-wallet")}>
@@ -154,7 +162,15 @@ const ConnectWallet = function ({ className }: Props) {
                                             <p className={cx("item-data-name-symbol")}>DJED</p>
                                             <p className={cx("item-data-name-description")}>DJED</p>
                                         </div>
-                                        <div className={cx("data-number")}>{wallet?.djed}</div>
+                                        <div className={cx("data-number")}>
+                                            <CountUp
+                                                end={wallet?.djed || 0}
+                                                start={0}
+                                                decimals={5}
+                                                decimalPlaces={5}
+                                            />{" "}
+                                            DJED
+                                        </div>
                                     </section>
                                 </div>
 
