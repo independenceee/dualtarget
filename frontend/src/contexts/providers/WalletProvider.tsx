@@ -15,6 +15,7 @@ import { ModalContextType } from "~/types/contexts/ModalContextType";
 import ModalContext from "../components/ModalContext";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "../components/ToastContext";
+import { DECIMAL_PLACES } from "~/constants";
 
 type Props = {
     children: ReactNode;
@@ -98,10 +99,19 @@ const WalletProvider = function ({ children }: Props) {
             const stakeKey: string = (await lucid.wallet.rewardAddress()) as string;
             const utxos: Array<UTxO> = (await lucid.wallet.getUtxos()) as Array<UTxO>;
             const { poolId } = await lucid.delegationAt(stakeKey as string);
+
             const balance: number = utxos.reduce(function (balance: number, utxo: UTxO) {
-                return balance + Number(utxo.assets.lovelace) / 1000000;
+                return balance + Number(utxo.assets.lovelace) / DECIMAL_PLACES;
             }, 0);
 
+            const djed: number = utxos.reduce(function (balance: number, utxo, UTxO) {
+                const amount: number = isNaN(
+                    Number(utxo?.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]),
+                )
+                    ? 0
+                    : Number(Number(utxo?.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]));
+                return balance + amount;
+            }, 0);
             setWallet(function (previous: WalletType) {
                 return {
                     ...previous,
@@ -109,6 +119,7 @@ const WalletProvider = function ({ children }: Props) {
                     image: image,
                     address: address,
                     balance: balance,
+                    djed: djed,
                     stakeKey: stakeKey,
                     poolId: poolId,
                 };

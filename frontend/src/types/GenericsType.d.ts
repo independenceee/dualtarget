@@ -58,6 +58,7 @@ export type AccountType = {
 export type WalletType = {
     name: string;
     image: string;
+    djed?: number;
     balance?: number;
     address?: string;
     downloadApi?: string;

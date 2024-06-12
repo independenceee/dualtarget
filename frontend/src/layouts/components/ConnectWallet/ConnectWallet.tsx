@@ -28,6 +28,7 @@ import Toast from "~/components/Toast";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "~/contexts/components/ToastContext";
 import TranslateContext from "~/contexts/components/TranslateContext";
+import CountUp from "react-countup";
 
 const cx = classNames.bind(styles);
 type Props = {
@@ -37,8 +38,14 @@ type Props = {
 const ConnectWallet = function ({ className }: Props) {
     const { t } = useContext(TranslateContext);
 
-    const { isShowingErrorNetwork, toogleErrorNetwork, isShowingWallet, toggleShowingWallet, isShowingTestNetwork, toggleTestNetwork } =
-        useContext<ModalContextType>(ModalContext);
+    const {
+        isShowingErrorNetwork,
+        toogleErrorNetwork,
+        isShowingWallet,
+        toggleShowingWallet,
+        isShowingTestNetwork,
+        toggleTestNetwork,
+    } = useContext<ModalContextType>(ModalContext);
     const { toasts } = useContext<ToastContextType>(ToastContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const { lucid } = useContext<LucidContextType>(LucidContext);
@@ -67,25 +74,50 @@ const ConnectWallet = function ({ className }: Props) {
                             <section className={cx("wallet-open")}>
                                 <div className={cx("top-wallet")}>
                                     <div className={cx("icon-wallet")}>
-                                        <Image className={cx("icon-wallet-image")} src={wallet?.image} alt="" />
+                                        <Image
+                                            className={cx("icon-wallet-image")}
+                                            src={wallet?.image}
+                                            alt=""
+                                        />
                                     </div>
                                     <div className={cx("data-wallet")}>
                                         <div className={cx("data-wallet-top")}>
-                                            <p className={cx("data-wallet-top-name")}>{wallet.name}</p>
+                                            <p className={cx("data-wallet-top-name")}>
+                                                {wallet.name}
+                                            </p>
                                             <p className={cx("data-wallet-top-network")}>
                                                 <span className={cx("dot")}></span>
                                                 {network}
                                             </p>
                                         </div>
                                         <div className={cx("data-wallet-address")}>
-                                            {convertString({ inputString: String(wallet.address), numberOfFirstChar: 13, numberOfLastChar: -16 })}
+                                            {convertString({
+                                                inputString: String(wallet.address),
+                                                numberOfFirstChar: 13,
+                                                numberOfLastChar: -16,
+                                            })}
                                             <Tippy
                                                 hideOnClick={false}
                                                 placement={"top-end"}
-                                                render={isCopied ? <div>Copied.</div> : <div>Copy to clipboard.</div>}
+                                                render={
+                                                    isCopied ? (
+                                                        <div>Copied.</div>
+                                                    ) : (
+                                                        <div>Copy to clipboard.</div>
+                                                    )
+                                                }
                                             >
-                                                <CopyToClipboard onCopy={() => setIsCopied(true)} text={wallet?.address as string}>
-                                                    <Image className={cx("icon-help-circle")} src={icons.copy} width={18} height={18} alt="" />
+                                                <CopyToClipboard
+                                                    onCopy={() => setIsCopied(true)}
+                                                    text={wallet?.address as string}
+                                                >
+                                                    <Image
+                                                        className={cx("icon-help-circle")}
+                                                        src={icons.copy}
+                                                        width={18}
+                                                        height={18}
+                                                        alt=""
+                                                    />
                                                 </CopyToClipboard>
                                             </Tippy>
                                         </div>
@@ -93,26 +125,36 @@ const ConnectWallet = function ({ className }: Props) {
                                 </div>
                                 <div className={cx("item-wallet")}>
                                     <section className={cx("item-icon")}>
-                                        <Image className={cx("item-icon-image")} src={images.ada} alt="" />
+                                        <Image
+                                            className={cx("item-icon-image")}
+                                            src={images.ada}
+                                            alt=""
+                                        />
                                     </section>
                                     <section className={cx("item-data")}>
                                         <div className={cx("item-data-name")}>
                                             <p className={cx("item-data-name-symbol")}>ADA</p>
-                                            <p className={cx("item-data-name-description")}>Cardano</p>
+                                            <p className={cx("item-data-name-description")}>
+                                                Cardano
+                                            </p>
                                         </div>
                                         <div className={cx("data-number")}>{wallet?.balance}</div>
                                     </section>
                                 </div>
                                 <div className={cx("item-wallet")}>
                                     <section className={cx("item-icon")}>
-                                        <Image className={cx("item-icon-image")} src={images.djed} alt="" />
+                                        <Image
+                                            className={cx("item-icon-image")}
+                                            src={images.djed}
+                                            alt=""
+                                        />
                                     </section>
                                     <section className={cx("item-data")}>
                                         <div className={cx("item-data-name")}>
-                                            <p className={cx("item-data-name-symbol")}>ADA</p>
-                                            <p className={cx("item-data-name-description")}>Cardano</p>
+                                            <p className={cx("item-data-name-symbol")}>DJED</p>
+                                            <p className={cx("item-data-name-description")}>DJED</p>
                                         </div>
-                                        <div className={cx("data-number")}>{wallet?.balance}</div>
+                                        <div className={cx("data-number")}>{wallet?.djed}</div>
                                     </section>
                                 </div>
 
@@ -135,22 +177,44 @@ const ConnectWallet = function ({ className }: Props) {
                         <div>
                             <section className={cx("connected-wallet-container")}>
                                 <div className={cx("connected-wallet-total-ada")}>
-                                    {wallet?.balance && wallet.balance.toFixed(5)} {" ₳"}
+                                    <CountUp
+                                        end={wallet?.balance || 0}
+                                        start={0}
+                                        decimals={5}
+                                        decimalPlaces={5}
+                                    />{" "}
+                                    ₳
                                 </div>
 
                                 <div className={cx("connected-wallet-image-container")}>
-                                    <Image className={cx("connected-wallet-image")} src={wallet?.image} alt="image-connected" />
+                                    <Image
+                                        className={cx("connected-wallet-image")}
+                                        src={wallet?.image}
+                                        alt="image-connected"
+                                    />
                                 </div>
                                 <div className={cx("connected-wallet-address")}>
-                                    {convertString({ inputString: String(wallet?.address), numberOfFirstChar: 7, numberOfLastChar: -6 })}
+                                    {convertString({
+                                        inputString: String(wallet?.address),
+                                        numberOfFirstChar: 7,
+                                        numberOfLastChar: -6,
+                                    })}
                                 </div>
                                 <div className={cx("connected-wallet-icon-container")}>
-                                    <Image className={cx("connected-wallet-icon")} src={icons.arrowBottom} alt="" />
+                                    <Image
+                                        className={cx("connected-wallet-icon")}
+                                        src={icons.arrowBottom}
+                                        alt=""
+                                    />
                                 </div>
                             </section>
                         </div>
                     ) : (
-                        <span>{isShowingErrorNetwork ? t("layout.wallet.button wrong network") : t("layout.wallet.button connect")}</span>
+                        <span>
+                            {isShowingErrorNetwork
+                                ? t("layout.wallet.button wrong network")
+                                : t("layout.wallet.button connect")}
+                        </span>
                     )}
                 </Button>
             </Tippy>
@@ -162,19 +226,35 @@ const ConnectWallet = function ({ className }: Props) {
             {!lucid && (
                 <Modal isShowing={isShowingWallet} toggle={toggleShowingWallet}>
                     <div className={cx("connect-wallet-wrapper")}>
-                        <section onClick={toggleShowingWallet} className={cx("connect-wallet-close")}>
-                            <Image className={cx("connect-wallet-close-icon")} src={icons.close} alt="" />
+                        <section
+                            onClick={toggleShowingWallet}
+                            className={cx("connect-wallet-close")}
+                        >
+                            <Image
+                                className={cx("connect-wallet-close-icon")}
+                                src={icons.close}
+                                alt=""
+                            />
                         </section>
                         <section className={cx("connect-wallet-title")}>
                             <h1> {t("layout.wallet.button connect")}</h1>
                         </section>
                         <section className={cx("connect-wallet-accept")}>
                             <div className={cx("connect-wallet-input")}>
-                                <input onChange={handleAccept} type="checkbox" placeholder="" className={cx("connect-wallet-checkbox")} />
+                                <input
+                                    onChange={handleAccept}
+                                    type="checkbox"
+                                    placeholder=""
+                                    className={cx("connect-wallet-checkbox")}
+                                />
                             </div>
                             <label className={cx("connect-wallet-input")} htmlFor="">
                                 {t("layout.wallet.terms and conditions")}
-                                <Link className={cx("connect-wallet-input-link")} target="_blank" href={configs.routes.term}>
+                                <Link
+                                    className={cx("connect-wallet-input-link")}
+                                    target="_blank"
+                                    href={configs.routes.term}
+                                >
                                     {t("layout.wallet.terms and conditions link")}
                                 </Link>
                                 .
@@ -191,8 +271,12 @@ const ConnectWallet = function ({ className }: Props) {
 
             <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>
-                    <h2 className={cx("connect-wallet-error-title")}>{t("layout.wallet.network error")}</h2>
-                    <p className={cx("connect-wallet-error-description")}>{t("layout.wallet.change network")}</p>
+                    <h2 className={cx("connect-wallet-error-title")}>
+                        {t("layout.wallet.network error")}
+                    </h2>
+                    <p className={cx("connect-wallet-error-description")}>
+                        {t("layout.wallet.change network")}
+                    </p>
                     <div className={cx("connect-wallet-error-button-wrapper")}>
                         <Button onClick={disconnect} className={cx("connect-wallet-error-button")}>
                             Disconnect
