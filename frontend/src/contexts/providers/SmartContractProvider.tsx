@@ -87,7 +87,9 @@ const SmartContractProvider = function ({ children }: Props) {
                 );
             });
 
-            let tx: any = lucid.newTx();
+            let tx: any = lucid.newTx().payToAddress(datums[0].feeAddress, {
+                lovelace: BigInt(datums[0].batcherFee) as Lovelace,
+            });
 
             sellingStrategies.forEach(async function (
                 sellingStrategy: CalculateSellingStrategy,
@@ -248,7 +250,7 @@ const SmartContractProvider = function ({ children }: Props) {
                         case 1:
                             if (
                                 String(params.odOwner) === String(paymentAddress) &&
-                                Number(params.isLimitOrder) !== 0
+                                Number(params.isLimitOrder) === 0
                             ) {
                                 let winter_addr: Credential = {
                                     type: "Key",

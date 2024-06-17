@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         const pools = await api.getPools({
             page: i,
         });
-        console.log(pools);
+        console.log("pools ", pools);
         if (pools.length === 0) {
             // last page
             break;
@@ -22,10 +22,13 @@ export async function GET(request: NextRequest) {
         const minADAPool = pools.find(
             (p) =>
                 p.assetA === "lovelace" &&
-                p.assetB === "29d222ce763455e3d7a09a665ce554f00ac89d2e99a1a83d267170c64d494e",
+                p.assetB ===
+                    "8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61.446a65644d6963726f555344",
         );
+
+        const djedAdaPool: any = "d944eda9d4fd8c26171a4362539bfd4ccf35f5a4d0cc7525b22327b997a4f4b9";
         if (minADAPool) {
-            const [a, b] = await api.getPoolPrice({ pool: minADAPool });
+            const [a, b] = await api.getPoolPrice({ pool: djedAdaPool });
             console.log(`ADA/MIN price: ${a.toString()}; MIN/ADA price: ${b.toString()}`);
             // we can later use this ID to call getPoolById
             console.log(`ADA/MIN pool ID: ${minADAPool.id}`);

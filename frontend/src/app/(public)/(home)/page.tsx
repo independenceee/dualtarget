@@ -37,9 +37,12 @@ export default function Home() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions"],
         queryFn: () =>
-            axios.get<StatisticsType>(`${window.location.origin}/api/statistics?network=${network.toLowerCase()}`, {
-                timeout: 5000,
-            }),
+            axios.get<StatisticsType>(
+                `${window.location.origin}/api/statistics?network=${network.toLowerCase()}`,
+                {
+                    timeout: 5000,
+                },
+            ),
         enabled: true,
     });
 
@@ -54,16 +57,32 @@ export default function Home() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("background-gallaxy-wrapper")}>
-                <Image src={images.galaxy} alt="background-gallaxy" className={cx("home-background-image")} />
+                <Image
+                    src={images.galaxy}
+                    alt="background-gallaxy"
+                    className={cx("home-background-image")}
+                />
             </div>
             <div className={cx("background-cardano-side-wrapper")}>
-                <Image src={images.cardanoSide} alt="cardano-side" className={cx("cardano-side-background-image")} />
+                <Image
+                    src={images.cardanoSide}
+                    alt="cardano-side"
+                    className={cx("cardano-side-background-image")}
+                />
             </div>
             <div className={cx("background-floating-coins-wrapper")}>
-                <Image src={images.djedHeaderCoins} alt="djed-coins" className={cx("djed-coins-background-image")} />
+                <Image
+                    src={images.djedHeaderCoins}
+                    alt="djed-coins"
+                    className={cx("djed-coins-background-image")}
+                />
             </div>
             <div className={cx("background-floating-coins-mobile-wrapper")}>
-                <Image src={images.djedHeaderCoinsMobile} alt="djed-coins" className={cx("djed-coins-mobile-background-image")} />
+                <Image
+                    src={images.djedHeaderCoinsMobile}
+                    alt="djed-coins"
+                    className={cx("djed-coins-mobile-background-image")}
+                />
             </div>
             <section className={cx("content")}>
                 <div className={cx("introduction")}>
@@ -85,8 +104,17 @@ export default function Home() {
             <section className={cx("stats")}>
                 <div className={cx("stats-inner")}>
                     <div className={cx("stats")}>
-                        <Card title={t("home.card pool.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
-                            <Coin title={t("home.card pool.total wallet")} decimals={0} amount={pool.totalWallet} loading={loading || isLoading} />
+                        <Card
+                            title={t("home.card pool.title")}
+                            icon={images.logo}
+                            className={cx("stat-djed-stablecoin")}
+                        >
+                            <Coin
+                                title={t("home.card pool.total wallet")}
+                                decimals={0}
+                                amount={pool.totalWallet}
+                                loading={loading || isLoading}
+                            />
                             <Coin
                                 title={t("home.card pool.total UTxO")}
                                 decimals={0}
@@ -106,11 +134,21 @@ export default function Home() {
                                 denominations="DJED"
                                 loading={loading || isLoading}
                             />
+                            <Coin
+                                title={"Profit"}
+                                amount={pool.totalDJED}
+                                denominations="DJED"
+                                loading={loading || isLoading}
+                            />
                             <Button className={cx("stat-button")} href={routes.deposit}>
                                 {t("home.card pool.button")}
                             </Button>
                         </Card>
-                        <Card title={t("home.card statistics.title")} icon={images.logo} className={cx("stat-djed-stablecoin")}>
+                        <Card
+                            title={t("home.card statistics.title")}
+                            icon={images.logo}
+                            className={cx("stat-djed-stablecoin")}
+                        >
                             <Coin
                                 title={t("home.card statistics.total transactions")}
                                 decimals={0}
@@ -135,6 +173,12 @@ export default function Home() {
                                 denominations="DJED"
                                 loading={loading || isLoading}
                             />
+                            <Coin
+                                title={"Profit"}
+                                amount={data?.data.totalVolumeWithdrawsDJED}
+                                denominations="DJED"
+                                loading={loading || isLoading}
+                            />
                             <Button className={cx("stat-button")} href={routes.withdraw}>
                                 {t("home.card statistics.button")}
                             </Button>
@@ -155,7 +199,12 @@ export default function Home() {
                                         <h2>ROS</h2>
                                     </div>
                                     <div className={cx("reserves-value-ratio")}>
-                                        <CountUp decimals={2} enableScrollSpy start={0} end={Number(0.04)} />
+                                        <CountUp
+                                            decimals={2}
+                                            enableScrollSpy
+                                            start={0}
+                                            end={Number(0.04)}
+                                        />
                                         <span className="suffix">%</span>
                                     </div>
                                 </div>
@@ -165,17 +214,30 @@ export default function Home() {
                                     </div>
                                     <div className={cx("reserves-value-base")}>
                                         <div className={cx("base-reserves-value")}>
-                                            <CountUp decimals={6} enableScrollSpy start={0} end={Number(data?.data.totalVolumeDepositsADA)} /> ₳
+                                            <CountUp
+                                                decimals={6}
+                                                enableScrollSpy
+                                                start={0}
+                                                end={Number(data?.data.totalVolumeDepositsADA)}
+                                            />{" "}
+                                            ₳
                                         </div>
                                         <span className={cx("approximate")}>
-                                            ≈ <CountUp decimals={6} enableScrollSpy start={0} end={Number(data?.data.totalVolumeWithdrawsDJED)} />{" "}
+                                            ≈{" "}
+                                            <CountUp
+                                                decimals={6}
+                                                enableScrollSpy
+                                                start={0}
+                                                end={Number(data?.data.totalVolumeWithdrawsDJED)}
+                                            />{" "}
                                             DJED
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div className={cx("last-updated-mobile")}>
-                                {t("home.card profit.update")} {convertDatetime(Date.now() / 1000)} UTC
+                                {t("home.card profit.update")} {convertDatetime(Date.now() / 1000)}{" "}
+                                UTC
                             </div>
                         </div>
                     </Gutter>
@@ -195,10 +257,18 @@ export default function Home() {
                             ></iframe>
                         </div>
                         <div className={cx("about-content-wrapper")}>
-                            <h2 className={cx("about-title")}>{t("home.about dualtarget.title")}</h2>
-                            <p className={cx("about-description")}>{t("home.about dualtarget.sub title")}</p>
-                            <span className={cx("about-content")}>{t("home.about dualtarget.content.paragraph 1")}</span>
-                            <span className={cx("about-content")}>{t("home.about dualtarget.content.paragraph 2")}</span>
+                            <h2 className={cx("about-title")}>
+                                {t("home.about dualtarget.title")}
+                            </h2>
+                            <p className={cx("about-description")}>
+                                {t("home.about dualtarget.sub title")}
+                            </p>
+                            <span className={cx("about-content")}>
+                                {t("home.about dualtarget.content.paragraph 1")}
+                            </span>
+                            <span className={cx("about-content")}>
+                                {t("home.about dualtarget.content.paragraph 2")}
+                            </span>
                             <Button className={cx("stat-button")} href={routes.about}>
                                 {t("home.about dualtarget.button")}
                             </Button>
