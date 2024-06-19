@@ -46,8 +46,6 @@ const SmartContractProvider = function ({ children }: Props) {
             const contractAddress: string = process.env
                 .DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
-
-            console.log(datumParams);
             const vkeyOwnerHash: string = lucid.utils.getAddressDetails(
                 await lucid.wallet.address(),
             ).paymentCredential?.hash as string;
@@ -100,13 +98,13 @@ const SmartContractProvider = function ({ children }: Props) {
                 sellingStrategy: CalculateSellingStrategy,
                 index: number,
             ) {
-                if (Number(sellingStrategy.buyPrice) <= Number(currentPrice * 1000000)) {
+                if (Number(sellingStrategy.buyPrice) <= Number(currentPrice * DECIMAL_PLACES)) {
                     tx = await tx.payToContract(
                         contractAddress,
                         { inline: datums[index] },
                         {
                             [process.env.MIN_TOKEN_ASSET_PREPROD!]: BigInt(
-                                Math.round(sellingStrategy.amountSend! / 1000000),
+                                Math.round(sellingStrategy.amountSend! / DECIMAL_PLACES),
                             ),
                         },
                     );
@@ -202,7 +200,6 @@ const SmartContractProvider = function ({ children }: Props) {
                 .DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
-            console.log(datumParams);
             const claimableUtxos: ClaimableUTxO[] = [];
             for (const scriptUtxo of scriptUtxos) {
                 if (scriptUtxo.datum) {
@@ -355,9 +352,33 @@ const SmartContractProvider = function ({ children }: Props) {
         return sellingStrategies;
     };
 
+    const previewDeposit = async function ({
+        sellingStrategies,
+        currentPrice,
+    }: {
+        sellingStrategies: Array<CalculateSellingStrategy>;
+        currentPrice: number;
+    }) {
+        let amountADA = 0;
+        let amountDJED = 0;
+
+        sellingStrategies.forEach(function (sellingStrategy: CalculateSellingStrategy) {
+            if (Number(sellingStrategy.buyPrice) / DECIMAL_PLACES > currentPrice) {
+                amountADA += Number(sellingStrategy.amountSend) / DECIMAL_PLACES;
+            } else {
+                amountDJED += Number(sellingStrategy.amountSend) / DECIMAL_PLACES;
+            }
+        });
+        return {
+            amountADA,
+            amountDJED,
+        };
+    };
+
     return (
         <SmartContractContext.Provider
             value={{
+                previewDeposit,
                 deposit,
                 calculateClaimEUTxO,
                 withdraw,

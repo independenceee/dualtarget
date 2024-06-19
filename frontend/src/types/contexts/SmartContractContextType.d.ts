@@ -13,6 +13,16 @@ export type SmartContractContextType = {
         lucid: Lucid;
         range: [number, number];
     }) => Promise<CalculateSellingStrategy[]>;
+    previewDeposit: ({
+        sellingStrategies,
+        currentPrice,
+    }: {
+        sellingStrategies: Array<CalculateSellingStrategy>;
+        currentPrice: number;
+    }) => Promise<{
+        amountADA: number;
+        amountDJED: number;
+    }>;
     calculateClaimEUTxO: ({
         lucid,
         mode,

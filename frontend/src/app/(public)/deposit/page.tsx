@@ -66,7 +66,6 @@ const Deposit = function () {
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
 
-    console.log("sellingStrategies", sellingStrategies);
     const {
         handleSubmit,
         watch,

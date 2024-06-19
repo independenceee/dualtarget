@@ -26,9 +26,9 @@ const cx = classNames.bind(styles);
 const DelegationRewards = function () {
     const [page, setPage] = useState<number>(1);
     const { t } = useContext(TranslateContext);
-    const [walletAddress, setWalletAddress] = useState<string>("");
+    const [epoch, setEpoch] = useState<string>("");
     const { network } = useContext<NetworkContextType>(NetworkContext);
-    const debouncedValue = useDebounce(walletAddress);
+    const debouncedValue = useDebounce(epoch);
 
     const {
         data: rewards,
@@ -41,17 +41,18 @@ const DelegationRewards = function () {
             axios.get<DelegationRewardResponseType>(
                 `${
                     window.location.origin
-                }/api/manager/reward?wallet_address=${debouncedValue}&page=${page}&page_size=5&network=${network.toLowerCase()}`,
+                }/api/manager?wallet_address=${debouncedValue}&page=${page}&page_size=5&network=${network.toLowerCase()}&epoch=${epoch}`,
             ),
         enabled: !!debouncedValue,
     });
+    console.log(rewards);
 
-    const handleChangeWalletAddress = function (e: React.ChangeEvent<HTMLInputElement>) {
-        setWalletAddress(e.target.value);
+    const handleChangeEpoch = function (e: React.ChangeEvent<HTMLInputElement>) {
+        setEpoch(e.target.value);
     };
 
     const handleClearInput = function () {
-        setWalletAddress("");
+        setEpoch("");
     };
 
     const handleDelegateRewards = function () {
@@ -93,8 +94,8 @@ const DelegationRewards = function () {
                             <div className={cx("search-input")}>
                                 <input
                                     className={cx("input")}
-                                    value={walletAddress}
-                                    onChange={handleChangeWalletAddress}
+                                    value={epoch}
+                                    onChange={handleChangeEpoch}
                                     type="text"
                                     placeholder={t(
                                         "delegation rewards.card.fields.address.placeholder",
@@ -103,13 +104,13 @@ const DelegationRewards = function () {
                             </div>
                             <div
                                 className={cx("search-delete", {
-                                    show: walletAddress,
+                                    show: epoch,
                                 })}
                                 onClick={handleClearInput}
                             />
                         </section>
                         <Button
-                            disabled={!Boolean(walletAddress)}
+                            disabled={!Boolean(epoch)}
                             className={cx("submit-button")}
                             type="button"
                             onClick={handleDelegateRewards}
@@ -129,14 +130,16 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <div>
-                                    {isSuccess && rewards.data.histories.length > 0 ? (
+                                    {isSuccess && rewards?.data?.histories?.length > 0 ? (
                                         <Link
                                             className={cx("summary-link")}
                                             href={""}
                                             target="_blank"
                                         >
                                             {Math.max(
-                                                ...rewards.data.histories.map(({ epoch }) => epoch),
+                                                ...rewards?.data?.histories.map(
+                                                    ({ epoch }) => epoch,
+                                                ),
                                             )}
                                         </Link>
                                     ) : (
@@ -155,13 +158,13 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards.data.histories.length > 0 ? (
+                                    {isSuccess && rewards?.data?.histories?.length > 0 ? (
                                         <Link
                                             className={cx("summary-link")}
                                             href={""}
                                             target="_blank"
                                         >
-                                            {rewards.data.histories.reduce(
+                                            {rewards?.data?.histories?.reduce(
                                                 (acc, history) =>
                                                     Number(acc) + Number(history.rewards),
                                                 0,
@@ -184,7 +187,7 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards.data.histories.length > 0 ? (
+                                    {isSuccess && rewards?.data?.histories?.length > 0 ? (
                                         <Link
                                             className={cx("summary-link")}
                                             href={""}
@@ -209,7 +212,7 @@ const DelegationRewards = function () {
                     <div>
                         {isSuccess && (
                             <div>
-                                {rewards.data.histories.length === 0 ? (
+                                {rewards?.data?.histories?.length === 0 ? (
                                     <section className={cx("status")}>
                                         <div className={cx("no-data")} />
                                         <span>{t("layout.notification.no data")}</span>
@@ -219,20 +222,20 @@ const DelegationRewards = function () {
                                         <Table
                                             center
                                             titles={historyRewards}
-                                            data={rewards?.data.histories}
+                                            data={rewards?.data?.histories}
                                             className={cx("desktop-tx-history")}
                                         />
                                         <div className={cx("reponsive-tx-history")}>
-                                            {rewards.data.histories.map(function (item, index) {
+                                            {rewards?.data?.histories?.map(function (item, index) {
                                                 return <Reward data={item} key={index} />;
                                             })}
                                         </div>
-                                        {rewards.data.histories.length > 0 && (
+                                        {rewards?.data?.histories?.length > 0 && (
                                             <Pagination
                                                 totalPages={rewards.data.totalPage}
                                                 page={page}
                                                 setPage={setPage}
-                                                totalItems={rewards.data.totalItems}
+                                                totalItems={rewards?.data.totalItems}
                                             />
                                         )}
 
