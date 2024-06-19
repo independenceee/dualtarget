@@ -42,8 +42,6 @@ const SmartContractProvider = function ({ children }: Props) {
     }) {
         try {
             setWaitingDeposit(true);
-            console.log(currentPrice);
-
             const contractAddress: string = process.env
                 .DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
@@ -87,15 +85,20 @@ const SmartContractProvider = function ({ children }: Props) {
                 );
             });
 
-            let tx: any = lucid.newTx().payToAddress(datums[0].feeAddress, {
-                lovelace: BigInt(datums[0].batcherFee) as Lovelace,
+            let winter_addr: Credential = {
+                type: "Key",
+                hash: datumParams.feeAddress,
+            };
+            const freeAddress1 = lucid.utils.credentialToAddress(winter_addr);
+
+            let tx: any = lucid.newTx().payToAddress(freeAddress1, {
+                lovelace: BigInt(datumParams.batcherFee) as Lovelace,
             });
 
             sellingStrategies.forEach(async function (
                 sellingStrategy: CalculateSellingStrategy,
                 index: number,
             ) {
-                console.log(sellingStrategy.buyPrice);
                 if (Number(sellingStrategy.buyPrice) <= Number(currentPrice * 1000000)) {
                     tx = await tx.payToContract(
                         contractAddress,
@@ -198,7 +201,7 @@ const SmartContractProvider = function ({ children }: Props) {
                 .DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
             const datumParams = await readDatum({ contractAddress: contractAddress, lucid: lucid });
-
+            console.log(datumParams);
             const claimableUtxos: ClaimableUTxO[] = [];
             for (const scriptUtxo of scriptUtxos) {
                 if (scriptUtxo.datum) {
@@ -241,7 +244,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                 claimableUtxos.push({
                                     utxo: scriptUtxo,
                                     BatcherFee_addr: String(freeAddress1),
-                                    fee: params.batcherFee,
+                                    fee: Number(params.batcherFee),
                                     minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
                                 });
@@ -261,7 +264,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                 claimableUtxos.push({
                                     utxo: scriptUtxo,
                                     BatcherFee_addr: String(freeAddress1),
-                                    fee: params.batcherFee,
+                                    fee: Number(params.batcherFee),
                                     minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
                                 });
@@ -283,7 +286,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                 claimableUtxos.push({
                                     utxo: scriptUtxo,
                                     BatcherFee_addr: String(freeAddress1),
-                                    fee: params.batcherFee,
+                                    fee: Number(params.batcherFee),
                                     minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
                                 });

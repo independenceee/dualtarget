@@ -19,12 +19,15 @@ export async function GET(request: NextRequest) {
             : process.env.DUALTARGET_CONTRACT_ADDRESS_MAINNET!,
     );
 
-    const totalVolumeDepositsADA = addressesTotal.received_sum.reduce((accumulator, currentValue) => {
-        if (currentValue.unit === "lovelace") {
-            return accumulator + parseInt(currentValue.quantity) / 1000000;
-        }
-        return accumulator;
-    }, 0);
+    const totalVolumeDepositsADA = addressesTotal.received_sum.reduce(
+        (accumulator, currentValue) => {
+            if (currentValue.unit === "lovelace") {
+                return accumulator + parseInt(currentValue.quantity) / 1000000;
+            }
+            return accumulator;
+        },
+        0,
+    );
 
     const totalVolumeWithdrawsADA = addressesTotal.sent_sum.reduce((accumulator, currentValue) => {
         if (currentValue.unit === "lovelace") {
@@ -33,19 +36,43 @@ export async function GET(request: NextRequest) {
         return accumulator;
     }, 0);
 
-    const totalVolumeWithdrawsDJED = addressesTotal.received_sum.reduce((accumulator, currentValue) => {
-        if (currentValue.unit === process.env.MIN_TOKEN_ASSET_PREPROD) {
-            return accumulator + parseInt(currentValue.quantity) / 1000000;
-        }
-        return accumulator;
-    }, 0);
+    const totalVolumeWithdrawsDJED = addressesTotal.received_sum.reduce(
+        (accumulator, currentValue) => {
+            if (currentValue.unit === process.env.MIN_TOKEN_ASSET_PREPROD) {
+                return accumulator + parseInt(currentValue.quantity) / 1000000;
+            }
+            return accumulator;
+        },
+        0,
+    );
 
     const totalTransaction: number = addressesTotal.tx_count;
 
+    const totalTxHash = await Promise.all(
+        [...new Array(1)].map(async (element, index: number) => {
+            console.log(index);
+            const txHashes = await blockfrost.addressesTransactions(
+                network === "preprod"
+                    ? process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD!
+                    : process.env.DUALTARGET_CONTRACT_ADDRESS_MAINNET!,
+                {
+                    page: index,
+                },
+            );
+            const utxos = await Promise.all(
+                txHashes.map(async function ({ tx_hash }) {
+                    const utxo = await blockfrost.txsUtxos(tx_hash);
+                    console.log(utxo);
+                }),
+            );
+            return utxos;
+        }),
+    );
     return Response.json({
         totalTransaction: totalTransaction,
         totalVolumeWithdrawsDJED: totalVolumeWithdrawsDJED,
         totalVolumeWithdrawsADA: totalVolumeWithdrawsADA,
         totalVolumeDepositsADA: totalVolumeDepositsADA,
+        totalVolumnProfits: totalTxHash,
     });
 }
