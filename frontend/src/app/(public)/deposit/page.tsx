@@ -107,7 +107,6 @@ const Deposit = function () {
             });
         }
     }, [t]);
-    console.log("Invalid: ", isValid);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
@@ -191,16 +190,16 @@ const Deposit = function () {
                                 >
                                     <form onSubmit={onDeposite} className={"card-service"}>
                                         <div className={cx("balance")}>
-                                            <span>
+                                            {t("deposit.card.balance")}:&nbsp;
+                                            <div className={cx("balance-quanlity")}>
                                                 <span>
-                                                    {t("deposit.card.balance")}:&npbs;
                                                     <CountUp
                                                         end={wallet?.balance || 0}
                                                         start={0}
                                                         decimals={5}
                                                         decimalPlaces={5}
-                                                    />{" "}
-                                                    ₳
+                                                    />
+                                                    <span className={cx("currency")}>&nbsp;₳</span>
                                                 </span>
                                                 <span>
                                                     <CountUp
@@ -209,9 +208,11 @@ const Deposit = function () {
                                                         decimals={5}
                                                         decimalPlaces={5}
                                                     />
-                                                    DJED
+                                                    <span className={cx("currency")}>
+                                                        &nbsp;DJED
+                                                    </span>
                                                 </span>
-                                            </span>
+                                            </div>
                                         </div>
                                         <div className={cx("form-wrapper")}>
                                             <div className={cx("row-wrapper")}>

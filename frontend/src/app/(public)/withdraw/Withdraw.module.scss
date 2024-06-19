@@ -70,8 +70,19 @@
     font-size: 1.4rem;
     font-weight: 500;
     margin: 8px 4px;
-    text-align: end;
+    display: flex;
+    justify-content: flex-end;
 }
+
+.balance-quanlity {
+    min-width: 100px;
+    text-align: end;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .form {
     margin-bottom: 2.3rem;
 }

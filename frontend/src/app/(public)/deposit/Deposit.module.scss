@@ -105,17 +105,24 @@
     font-size: 1.4rem;
     font-weight: 500;
     margin: 8px 4px;
-    text-align: end;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.balance span {
+.balance-quanlity {
+    min-width: 100px;
+    text-align: end;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .form-wrapper {
     margin-bottom: 2.4rem;
+}
+.currency {
+    font-weight: 600;
 }
 
 .service-stats {

@@ -121,8 +121,6 @@ const Withdraw = function () {
         return 0;
     }, [sellingStrategies]);
 
-    console.log(maxOfSellingStrategies);
-
     useEffect(() => {
         setWithdrawableProfit([0, maxOfSellingStrategies]);
     }, [maxOfSellingStrategies]);
@@ -226,16 +224,29 @@ const Withdraw = function () {
                                 >
                                     <form onSubmit={onWithdraw} className={"card-service"}>
                                         <div className={cx("balance")}>
-                                            <span>
-                                                {t("withdraw.balance")}:{" "}
-                                                <CountUp
-                                                    end={wallet?.balance || 0}
-                                                    start={0}
-                                                    decimals={5}
-                                                    decimalPlaces={5}
-                                                />
-                                                ₳
-                                            </span>
+                                            {t("deposit.card.balance")}:&nbsp;
+                                            <div className={cx("balance-quanlity")}>
+                                                <span>
+                                                    <CountUp
+                                                        end={wallet?.balance || 0}
+                                                        start={0}
+                                                        decimals={5}
+                                                        decimalPlaces={5}
+                                                    />
+                                                    <span className={cx("currency")}>&nbsp;₳</span>
+                                                </span>
+                                                <span>
+                                                    <CountUp
+                                                        end={wallet?.djed || 0}
+                                                        start={0}
+                                                        decimals={5}
+                                                        decimalPlaces={5}
+                                                    />
+                                                    <span className={cx("currency")}>
+                                                        &nbsp;DJED
+                                                    </span>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div className={cx("form-wrapper")}>
                                             <DropdownMenu
