@@ -48,31 +48,31 @@ export async function GET(request: NextRequest) {
 
     const totalTransaction: number = addressesTotal.tx_count;
 
-    const totalTxHash = await Promise.all(
-        [...new Array(1)].map(async (element, index: number) => {
-            console.log(index);
-            const txHashes = await blockfrost.addressesTransactions(
-                network === "preprod"
-                    ? process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD!
-                    : process.env.DUALTARGET_CONTRACT_ADDRESS_MAINNET!,
-                {
-                    page: index,
-                },
-            );
-            const utxos = await Promise.all(
-                txHashes.map(async function ({ tx_hash }) {
-                    const utxo = await blockfrost.txsUtxos(tx_hash);
-                    console.log(utxo);
-                }),
-            );
-            return utxos;
-        }),
-    );
+    // const totalTxHash = await Promise.all(
+    //     [...new Array(1)].map(async (element, index: number) => {
+    //         console.log(index);
+    //         const txHashes = await blockfrost.addressesTransactions(
+    //             network === "preprod"
+    //                 ? process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD!
+    //                 : process.env.DUALTARGET_CONTRACT_ADDRESS_MAINNET!,
+    //             {
+    //                 page: index,
+    //             },
+    //         );
+    //         const utxos = await Promise.all(
+    //             txHashes.map(async function ({ tx_hash }) {
+    //                 const utxo = await blockfrost.txsUtxos(tx_hash);
+    //                 console.log(utxo);
+    //             }),
+    //         );
+    //         return utxos;
+    //     }),
+    // );
     return Response.json({
         totalTransaction: totalTransaction,
         totalVolumeWithdrawsDJED: totalVolumeWithdrawsDJED,
         totalVolumeWithdrawsADA: totalVolumeWithdrawsADA,
         totalVolumeDepositsADA: totalVolumeDepositsADA,
-        totalVolumnProfits: totalTxHash,
+        totalVolumnProfits: 0,
     });
 }
