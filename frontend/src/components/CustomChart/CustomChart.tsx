@@ -45,7 +45,7 @@ const CustomChart = function ({ data, preview, isLoading, onRefresh }: Props) {
         }
         return [];
     }, [data]);
-
+    console.log("Preview: ", preview);
     const previewStepsChartData = useMemo(() => {
         if (!preview) return [];
         if (preview.length > 0) {

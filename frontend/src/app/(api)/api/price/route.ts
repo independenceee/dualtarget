@@ -14,7 +14,6 @@ export async function GET(request: NextRequest) {
         const pools = await api.getPools({
             page: i,
         });
-        console.log("pools ", pools);
         if (pools.length === 0) {
             // last page
             break;

@@ -193,7 +193,7 @@ const Deposit = function () {
                                         <div className={cx("balance")}>
                                             <span>
                                                 <span>
-                                                    {t("deposit.card.balance")}:{" "}
+                                                    {t("deposit.card.balance")}:&npbs;
                                                     <CountUp
                                                         end={wallet?.balance || 0}
                                                         start={0}
@@ -208,7 +208,7 @@ const Deposit = function () {
                                                         start={0}
                                                         decimals={5}
                                                         decimalPlaces={5}
-                                                    />{" "}
+                                                    />
                                                     DJED
                                                 </span>
                                             </span>

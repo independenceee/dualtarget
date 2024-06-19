@@ -115,7 +115,7 @@
         padding: 2px;
     }
 }
-
+.preview-button,
 .withdraw-button {
     align-items: center;
     background: transparent;
@@ -153,6 +153,22 @@
 
 .input-amount {
     margin-top: 1.6rem;
+}
+
+.actions-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.preview-button {
+    width: 70px;
+    margin-left: 1.6rem;
+}
+
+.preview-icon {
+    width: 2.4rem;
+    height: 2.4rem;
 }
 
 @media (max-width: 1024px) {

@@ -121,6 +121,8 @@ const Withdraw = function () {
         return 0;
     }, [sellingStrategies]);
 
+    console.log(maxOfSellingStrategies);
+
     useEffect(() => {
         setWithdrawableProfit([0, maxOfSellingStrategies]);
     }, [maxOfSellingStrategies]);
@@ -145,21 +147,15 @@ const Withdraw = function () {
     }, [currentWithdrawMode, lucid, debouncedValue]);
 
     useEffect(() => {
-        if (lucid) {
-            console.log("Refresh Chart");
-            previewWithdraw({ lucid }).then((response) => {
-                console.log(response);
-                setSellingStrategies(response);
-            });
-        }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lucid]);
-
-    useEffect(() => {
         const timeout = setTimeout(() => {
             if (Boolean(txHashWithdraw) && lucid) {
-                previewWithdraw({ lucid }).then((response) => {
+                previewWithdraw({
+                    lucid,
+                    range:
+                        withdrawableProfit.length === 0
+                            ? [0, maxOfSellingStrategies]
+                            : (withdrawableProfit as [number, number]),
+                }).then((response) => {
                     setWithdrawableProfit([0, maxOfSellingStrategies]);
                     setSellingStrategies(response);
                 });
@@ -169,6 +165,7 @@ const Withdraw = function () {
         return () => clearTimeout(timeout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lucid, txHashWithdraw, maxOfSellingStrategies]);
+
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [
@@ -179,6 +176,21 @@ const Withdraw = function () {
         }
         return [];
     }, [chartDataRecords, isGetChartRecordsSuccess]);
+
+    const previewSellingStrategies = function () {
+        if (lucid) {
+            previewWithdraw({
+                lucid,
+                range:
+                    withdrawableProfit.length === 0
+                        ? [0, maxOfSellingStrategies]
+                        : (withdrawableProfit as [number, number]),
+            }).then((response) => {
+                setWithdrawableProfit([0, maxOfSellingStrategies]);
+                setSellingStrategies(response);
+            });
+        }
+    };
 
     const onWithdraw = handleSubmit(async (data) => {
         try {
@@ -221,7 +233,7 @@ const Withdraw = function () {
                                                     start={0}
                                                     decimals={5}
                                                     decimalPlaces={5}
-                                                />{" "}
+                                                />
                                                 ₳
                                             </span>
                                         </div>
@@ -255,7 +267,8 @@ const Withdraw = function () {
                                                 max={Number(maxOfSellingStrategies.toFixed(4))}
                                                 disabled={
                                                     currentWithdrawMode.id === 0 ||
-                                                    currentWithdrawMode.id === 1
+                                                    currentWithdrawMode.id === 1 ||
+                                                    maxOfSellingStrategies === 0
                                                 }
                                             />
                                         </div>
@@ -315,23 +328,54 @@ const Withdraw = function () {
                                             </div>
                                         </div>
 
-                                        <Button
-                                            disabled={
-                                                !lucid || waitingWithdraw || waitingCalculateEUTxO
-                                            }
-                                            onClick={onWithdraw}
-                                            RightIcon={
-                                                <Loading
-                                                    className={cx("withdraw-loading", {
-                                                        withdrawing: waitingWithdraw,
-                                                    })}
-                                                />
-                                            }
-                                            className={cx("withdraw-button")}
-                                        >
-                                            {(!waitingWithdraw || !waitingCalculateEUTxO) &&
-                                                t("withdraw.card.button")}
-                                        </Button>
+                                        <div className={cx("actions-wrapper")}>
+                                            <Button
+                                                disabled={
+                                                    !lucid ||
+                                                    waitingWithdraw ||
+                                                    waitingCalculateEUTxO
+                                                }
+                                                onClick={onWithdraw}
+                                                RightIcon={
+                                                    <Loading
+                                                        className={cx("withdraw-loading", {
+                                                            withdrawing: waitingWithdraw,
+                                                        })}
+                                                    />
+                                                }
+                                                className={cx("withdraw-button")}
+                                            >
+                                                {(!waitingWithdraw || !waitingCalculateEUTxO) &&
+                                                    t("withdraw.card.button")}
+                                            </Button>
+                                            <Tippy
+                                                placement="top-end"
+                                                render={
+                                                    <div>{t("deposit.card.button calculate")} </div>
+                                                }
+                                            >
+                                                <Button
+                                                    className={cx("preview-button")}
+                                                    type="button"
+                                                    onClick={previewSellingStrategies}
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth={1.5}
+                                                        stroke="currentColor"
+                                                        className={cx("preview-icon")}
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V13.5Zm0 2.25h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V18Zm2.498-6.75h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V13.5Zm0 2.25h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V18Zm2.504-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5Zm0 2.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V18Zm2.498-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5ZM8.25 6h7.5v2.25h-7.5V6ZM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0 0 12 2.25Z"
+                                                        />
+                                                    </svg>
+                                                </Button>
+                                            </Tippy>
+                                        </div>
                                     </form>
                                 </Card>
                                 <Image

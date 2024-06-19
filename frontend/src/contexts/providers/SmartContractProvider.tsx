@@ -18,6 +18,7 @@ import { DualtargetDatum } from "~/constants/datum";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
+import { DECIMAL_PLACES } from "~/constants";
 
 type Props = {
     children: ReactNode;
@@ -307,8 +308,10 @@ const SmartContractProvider = function ({ children }: Props) {
 
     const previewWithdraw = async function ({
         lucid,
+        range: [min, max],
     }: {
         lucid: Lucid;
+        range: [number, number];
     }): Promise<CalculateSellingStrategy[]> {
         const paymentAddress: string = lucid.utils.getAddressDetails(await lucid.wallet.address())
             .paymentCredential?.hash as string;
@@ -328,12 +331,24 @@ const SmartContractProvider = function ({ children }: Props) {
                 };
 
                 if (String(params.odOwner) === String(paymentAddress)) {
-                    sellingStrategies.push({
-                        minimumAmountOut: Number(params.minimumAmountOut),
-                        minimumAmountOutProfit: Number(params.minimumAmountOutProfit),
-                        buyPrice: Number(params.buyPrice),
-                        sellPrice: Number(params.sellPrice),
-                    });
+                    const price = Number(params.buyPrice) / DECIMAL_PLACES;
+                    if ((max !== 0 && price > max) || (price < min && min > 0)) {
+                        sellingStrategies.push({
+                            minimumAmountOut: Number(params.minimumAmountOut),
+                            minimumAmountOutProfit: Number(params.minimumAmountOutProfit),
+                            buyPrice: Number(params.buyPrice),
+                            sellPrice: Number(params.sellPrice),
+                        });
+                    }
+
+                    if (min === 0 && max === 0) {
+                        sellingStrategies.push({
+                            minimumAmountOut: Number(params.minimumAmountOut),
+                            minimumAmountOutProfit: Number(params.minimumAmountOutProfit),
+                            buyPrice: Number(params.buyPrice),
+                            sellPrice: Number(params.sellPrice),
+                        });
+                    }
                 }
             }
         }

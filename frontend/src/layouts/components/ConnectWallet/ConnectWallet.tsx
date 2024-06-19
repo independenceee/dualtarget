@@ -58,6 +58,10 @@ const ConnectWallet = function ({ className }: Props) {
         setAccept(event.target.checked);
     };
 
+    const handleDisconnect = () => {
+        disconnect();
+        setAccept(false);
+    };
     return (
         <div className={cx("wrapper", className)}>
             <Tippy
@@ -144,7 +148,7 @@ const ConnectWallet = function ({ className }: Props) {
                                                 start={0}
                                                 decimals={5}
                                                 decimalPlaces={5}
-                                            />{" "}
+                                            />
                                             ₳
                                         </div>
                                     </section>
@@ -258,6 +262,7 @@ const ConnectWallet = function ({ className }: Props) {
                         <section className={cx("connect-wallet-accept")}>
                             <div className={cx("connect-wallet-input")}>
                                 <input
+                                    checked={accept}
                                     onChange={handleAccept}
                                     type="checkbox"
                                     placeholder=""
@@ -294,7 +299,10 @@ const ConnectWallet = function ({ className }: Props) {
                         {t("layout.wallet.change network")}
                     </p>
                     <div className={cx("connect-wallet-error-button-wrapper")}>
-                        <Button onClick={disconnect} className={cx("connect-wallet-error-button")}>
+                        <Button
+                            onClick={handleDisconnect}
+                            className={cx("connect-wallet-error-button")}
+                        >
                             Disconnect
                         </Button>
                     </div>
