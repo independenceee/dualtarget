@@ -18,11 +18,13 @@ export type StatisticsType = {
     totalUTxO?: number;
     totalADA?: number;
     totalDJED?: number;
+    totalProfit?: number;
 
     totalTransaction?: number;
     totalVolumeWithdrawsDJED?: number;
     totalVolumeWithdrawsADA?: number;
     totalVolumeDepositsADA?: number;
+    totalVolumnProfits?: number;
 
     ROS?: number;
 };
@@ -30,7 +32,8 @@ export type StatisticsType = {
 export type TransactionHistoryType = {
     type: string;
     txHash: string;
-    amount: number;
+    amountADA: number;
+    amountDJED: number;
     status: string;
     fee: number;
     blockTime: string;
@@ -58,6 +61,7 @@ export type AccountType = {
 export type WalletType = {
     name: string;
     image: string;
+    djed?: number;
     balance?: number;
     address?: string;
     downloadApi?: string;
