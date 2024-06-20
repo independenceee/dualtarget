@@ -19,10 +19,10 @@ export type SmartContractContextType = {
     }: {
         sellingStrategies: Array<CalculateSellingStrategy>;
         currentPrice: number;
-    }) => Promise<{
+    }) => {
         amountADA: number;
         amountDJED: number;
-    }>;
+    };
     calculateClaimEUTxO: ({
         lucid,
         mode,

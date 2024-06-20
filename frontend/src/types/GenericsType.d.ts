@@ -40,14 +40,17 @@ export type TransactionHistoryType = {
 };
 
 export type TransactionResponseType = {
+    p;
     totalPage: number;
     histories: TransactionHistoryType[];
     totalItems: number;
 };
 
 export type ToastType = {
-    icon: string | any;
+    icon?: string | any;
     message?: string;
+    duration?: number;
+    id: string;
 };
 
 export type AccountType = {

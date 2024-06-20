@@ -133,7 +133,7 @@ const WalletProvider = function ({ children }: Props) {
                 },
             );
             setLucid(lucid);
-            toast.success("Wallet connected !");
+            toast.success({ message: "Wallet connected!" });
         } catch (error) {
             console.log(error);
         } finally {
@@ -151,6 +151,7 @@ const WalletProvider = function ({ children }: Props) {
 
             localStorage.removeItem("wallet");
             await axios.post("/api/auth/clear-wallet-address", {});
+            toast.success({ message: "Wallet disconnected!" });
         } catch (error) {
             console.log(error);
         }

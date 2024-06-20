@@ -10,7 +10,7 @@ import icons from "~/assets/icons";
 import configs from "~/configs";
 import styles from "./ConnectWallet.module.scss";
 import wallets from "~/constants/wallets";
-import { ToastType, WalletType } from "~/types/GenericsType";
+import { WalletType } from "~/types/GenericsType";
 import WalletItem from "~/components/WalletItem";
 import Button from "~/components/Button";
 import { LucidContextType } from "~/types/contexts/LucidContextType";
@@ -24,9 +24,6 @@ import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
 import { ModalContextType } from "~/types/contexts/ModalContextType";
 import ModalContext from "~/contexts/components/ModalContext";
-import Toast from "~/components/Toast";
-import { ToastContextType } from "~/types/contexts/ToastContextType";
-import ToastContext from "~/contexts/components/ToastContext";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import CountUp from "react-countup";
 
@@ -43,10 +40,8 @@ const ConnectWallet = function ({ className }: Props) {
         toogleErrorNetwork,
         isShowingWallet,
         toggleShowingWallet,
-        isShowingTestNetwork,
         toggleTestNetwork,
     } = useContext<ModalContextType>(ModalContext);
-    const { toasts } = useContext<ToastContextType>(ToastContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet, disconnect } = useContext<WalletContextType>(WalletContext);
@@ -58,8 +53,8 @@ const ConnectWallet = function ({ className }: Props) {
         setAccept(event.target.checked);
     };
 
-    const handleDisconnect = () => {
-        disconnect();
+    const handleDisconnect = async () => {
+        await disconnect();
         setAccept(false);
     };
     return (
@@ -189,7 +184,7 @@ const ConnectWallet = function ({ className }: Props) {
                 <Button
                     onClick={toggleShowingWallet}
                     className={cx("connect-wallet-button", {
-                        "wallet-show": isShowTippy,
+                        "wallet-show": isShowTippy && lucid,
                         isShowingErrorNetwork: isShowingErrorNetwork,
                     })}
                 >
@@ -238,11 +233,6 @@ const ConnectWallet = function ({ className }: Props) {
                     )}
                 </Button>
             </Tippy>
-
-            {toasts.map(function (toast: ToastType, index: number) {
-                return <Toast key={index} message={toast.message} icon={toast.icon} />;
-            })}
-
             {!lucid && (
                 <Modal isShowing={isShowingWallet} toggle={toggleShowingWallet}>
                     <div className={cx("connect-wallet-wrapper")}>
@@ -289,7 +279,6 @@ const ConnectWallet = function ({ className }: Props) {
                     </div>
                 </Modal>
             )}
-
             <Modal toggle={toogleErrorNetwork} isShowing={isShowingErrorNetwork}>
                 <div className={cx("connect-wallet-error-wrapper")}>
                     <h2 className={cx("connect-wallet-error-title")}>
