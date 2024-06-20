@@ -1,5 +1,6 @@
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
+import { DECIMAL_PLACES } from "~/constants";
 import convertDatetime from "~/helpers/convert-datetime";
 import Blockfrost from "~/services/blockfrost";
 
@@ -19,12 +20,14 @@ export async function GET(request: NextRequest) {
     );
 
     const results = await Promise.all(
-        (await blockfrost.addressesTransactions(walletAddress)).reverse().map(async function ({ tx_hash, block_time }) {
-            return {
-                block_time: convertDatetime(block_time),
-                utxos: await blockfrost.txsUtxos(tx_hash),
-            };
-        }),
+        (await blockfrost.addressesTransactions(walletAddress))
+            .reverse()
+            .map(async function ({ tx_hash, block_time }) {
+                return {
+                    block_time: convertDatetime(block_time),
+                    utxos: await blockfrost.txsUtxos(tx_hash),
+                };
+            }),
     );
 
     const addressToFind =
@@ -35,29 +38,49 @@ export async function GET(request: NextRequest) {
     const transactionsWithTargetAddress = await Promise.all(
         results
             .map((transaction) => {
-                const hasInput = transaction.utxos.inputs.some((input) => input.address === addressToFind);
+                const hasInput = transaction.utxos.inputs.some(
+                    (input) => input.address === addressToFind,
+                );
 
-                const hasOutput = transaction.utxos.outputs.some((output) => output.address === addressToFind);
+                const hasOutput = transaction.utxos.outputs.some(
+                    (output) => output.address === addressToFind,
+                );
                 if (hasInput) {
-                    let amount: number = -39000000;
+                    let amountADA: number = -39000000;
+                    let amountDJED: number = 0;
 
                     transaction.utxos.inputs.forEach(function (input) {
                         if (input.address === addressToFind) {
-                            const quantity = input.amount.reduce(function (total: number, { unit, quantity }) {
+                            const quantityADA = input.amount.reduce(function (
+                                total: number,
+                                { unit, quantity },
+                            ) {
                                 if (unit === "lovelace") {
                                     return total + Number(quantity);
                                 }
-
                                 return total;
-                            }, 0);
+                            },
+                            0);
+                            const quantityDJED = input.amount.reduce(function (
+                                total: number,
+                                { quantity, unit },
+                            ) {
+                                if (unit === process.env.MIN_TOKEN_ASSET_PREPROD) {
+                                    return total + Number(quantity);
+                                }
+                                return total;
+                            },
+                            0);
 
-                            amount += quantity;
+                            amountADA += quantityADA;
+                            amountDJED += quantityDJED;
                         }
                     }, 0);
                     return {
                         type: "Withdraw",
                         txHash: transaction.utxos.hash,
-                        amount: +(amount / 1000000).toFixed(5),
+                        amountADA: +(amountADA / DECIMAL_PLACES).toFixed(5),
+                        amountDJED: +amountDJED,
                         status: "Completed",
                         fee: 1.5,
                         blockTime: transaction.block_time,
@@ -65,25 +88,43 @@ export async function GET(request: NextRequest) {
                 }
 
                 if (hasOutput) {
-                    let amount: number = 0;
+                    let amountADA: number = 0;
+                    let amountDJED: number = 0;
                     transaction.utxos.outputs.forEach(function (output) {
                         if (output.address === addressToFind) {
-                            const quantity = output.amount.reduce(function (total: number, { unit, quantity }) {
+                            const quantityADA: number = output.amount.reduce(function (
+                                total: number,
+                                { unit, quantity },
+                            ) {
                                 if (unit === "lovelace") {
                                     return total + Number(quantity);
                                 }
 
                                 return total;
-                            }, 0);
+                            },
+                            0);
+                            const quantityDJED: number = output.amount.reduce(function (
+                                total: number,
+                                { unit, quantity },
+                            ) {
+                                if (unit === process.env.MIN_TOKEN_ASSET_PREPROD) {
+                                    return total + Number(quantity);
+                                }
 
-                            amount += quantity;
+                                return total;
+                            },
+                            0);
+
+                            amountADA += quantityADA;
+                            amountDJED += quantityDJED;
                         }
                     }, 0);
                     return {
                         blockTime: transaction.block_time,
                         txHash: transaction.utxos.hash,
                         type: "Deposit",
-                        amount: +(amount / 1000000).toFixed(5),
+                        amountADA: +(amountADA / DECIMAL_PLACES).toFixed(5),
+                        amountDJED: +amountDJED,
                         status: "Completed",
                         fee: 1.5,
                     };

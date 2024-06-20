@@ -32,7 +32,8 @@ export type StatisticsType = {
 export type TransactionHistoryType = {
     type: string;
     txHash: string;
-    amount: number;
+    amountADA: number;
+    amountDJED: number;
     status: string;
     fee: number;
     blockTime: string;
