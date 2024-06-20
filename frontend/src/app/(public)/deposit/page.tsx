@@ -161,6 +161,8 @@ const Deposit = function () {
             });
 
             setSellingStrategies(result);
+
+            
         } else {
             trigger();
         }
