@@ -37,6 +37,7 @@ import { useDebounce } from "~/hooks";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
+import { DECIMAL_PLACES } from "~/constants";
 
 type WithdrawType = {
     amount: number;
@@ -134,12 +135,36 @@ const Withdraw = function () {
                 min,
                 max,
             }).then((res: ClaimableUTxO[]) => {
-                setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
-                const amount = (res as ClaimableUTxO[]).reduce(
+                setClaimableUtxos(res);
+                const amountADA = (res as ClaimableUTxO[]).reduce(
                     (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
                     0,
                 );
-                setValue("amount", amount / 1000000);
+
+                const amountDJED: number = (res as ClaimableUTxO[]).reduce(function (acc, claim) {
+                    const amount: number = isNaN(
+                        Number(claim.utxo.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]),
+                    )
+                        ? 0
+                        : Number(Number(claim.utxo.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]));
+                    return acc + amount;
+                }, 0);
+
+                const amountProfit: number = (res as Array<ClaimableUTxO>).reduce(function (
+                    acc,
+                    claim,
+                ) {
+                    const amount: number = isNaN(Number(claim.minimumAmountOutProfit))
+                        ? 0
+                        : Number(claim.minimumAmountOutProfit);
+                    return acc + amount / DECIMAL_PLACES;
+                },
+                0);
+
+                console.log(amountDJED);
+                console.log(amountProfit);
+
+                setValue("amount", amountADA / 1000000);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentWithdrawMode, lucid, debouncedValue]);
