@@ -352,7 +352,7 @@ const SmartContractProvider = function ({ children }: Props) {
         return sellingStrategies;
     };
 
-    const previewDeposit = async function ({
+    const previewDeposit = function ({
         sellingStrategies,
         currentPrice,
     }: {

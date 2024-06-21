@@ -16,6 +16,9 @@ import {
     ChartDataType,
     TransactionResponseType,
 } from "~/types/GenericsType";
+import { ToastContextType } from "~/types/contexts/ToastContextType";
+import ToastContext from "~/contexts/components/ToastContext";
+
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -50,8 +53,11 @@ const Deposit = function () {
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
-
-    const { deposit, waitingDeposit, txHashDeposit } =
+    const [fees, setFees] = useState<{
+        amountADA: number;
+        amountDJED: number;
+    }>({ amountADA: 0, amountDJED: 0 });
+    const { deposit, waitingDeposit, txHashDeposit, previewDeposit } =
         useContext<SmartContractContextType>(SmartContractContext);
     const { t } = useContext(TranslateContext);
     const { data, isLoading, isError } = useQuery({
@@ -65,6 +71,8 @@ const Deposit = function () {
             ),
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
+
+    const { toast } = useContext<ToastContextType>(ToastContext);
 
     const {
         handleSubmit,
@@ -126,17 +134,41 @@ const Deposit = function () {
     }, [historyPrices]);
 
     const onDeposite = handleSubmit((data) => {
-        lucid &&
+        const amountDJED = wallet?.djed;
+        const amountADA = wallet?.balance;
+        if (sellingStrategies.length > 20) {
+            toast.error({
+                message: "You need to divide the steps into smaller than 20 steps to deposit.",
+            });
+            return;
+        }
+        if (
+            (lucid &&
+                amountDJED &&
+                amountADA &&
+                fees.amountADA == 0 &&
+                amountDJED >= fees.amountDJED) ||
+            (fees.amountDJED == 0 && (amountADA as number) >= fees.amountADA)
+        ) {
             deposit({
                 lucid,
                 sellingStrategies,
                 currentPrice,
             })
                 .then(() => {
+                    toast.success({
+                        message: "Deposit sucessfully completed.",
+                    });
                     reset();
                     setSellingStrategies([]);
                 })
-                .catch((error) => {});
+
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+            toast.warn({ message: "Insufficient assets in your wallet" });
+        }
     });
 
     const { income, priceHight, priceLow, stake, step, totalADA } = watch();
@@ -159,8 +191,9 @@ const Deposit = function () {
                 step: Number(step), // Bước nhảy theo giá (%) = 10
                 totalADA: Number(totalADA) * 1000000, // Tổng ada = 24000000
             });
-
             setSellingStrategies(result);
+            const _fees = previewDeposit({ sellingStrategies: result, currentPrice });
+            setFees(_fees);
         } else {
             trigger();
         }
@@ -486,17 +519,32 @@ const Deposit = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                {waitingDeposit ? (
-                                                    <Loading />
-                                                ) : sellingStrategies.length > 0 ? (
-                                                    `${
-                                                        sellingStrategies[
-                                                            sellingStrategies.length - 1
-                                                        ].sumADA! / 1000000
-                                                    } ₳`
-                                                ) : (
-                                                    "-"
-                                                )}
+                                                <div className={cx("fees")}>
+                                                    <span className={cx("fee-wrapper")}>
+                                                        {waitingDeposit ? (
+                                                            <Loading />
+                                                        ) : sellingStrategies.length > 0 ? (
+                                                            <span className={cx("fee-currency")}>
+                                                                {fees.amountADA.toFixed(5)}&nbsp;₳
+                                                            </span>
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </span>
+
+                                                    <span className={cx("fee-wrapper")}>
+                                                        {waitingDeposit ? (
+                                                            <Loading />
+                                                        ) : sellingStrategies.length > 0 ? (
+                                                            <span className={cx("fee-currency")}>
+                                                                &nbsp;{fees.amountDJED}
+                                                                &nbsp;DJED
+                                                            </span>
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className={cx("actions-wrapper")}>

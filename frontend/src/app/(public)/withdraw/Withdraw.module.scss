@@ -90,7 +90,6 @@
 .service-stats {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     color: #fff;
     margin-bottom: 14px;
     padding: 0 0 14px;
@@ -180,6 +179,19 @@
 .preview-icon {
     width: 2.4rem;
     height: 2.4rem;
+}
+
+.fees {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+
+    .fee-wrapper {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
 }
 
 @media (max-width: 1024px) {

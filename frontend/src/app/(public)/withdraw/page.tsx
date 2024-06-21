@@ -37,6 +37,9 @@ import { useDebounce } from "~/hooks";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
+import { DECIMAL_PLACES } from "~/constants";
+import { ToastContextType } from "~/types/contexts/ToastContextType";
+import ToastContext from "~/contexts/components/ToastContext";
 
 type WithdrawType = {
     amount: number;
@@ -54,6 +57,7 @@ const FEE = 1.5;
 
 const Withdraw = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
+    const { toast } = useContext<ToastContextType>(ToastContext);
     const {
         waitingWithdraw,
         waitingCalculateEUTxO,
@@ -70,7 +74,11 @@ const Withdraw = function () {
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
     const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([0, 0]);
     const debouncedValue = useDebounce<number[]>(withdrawableProfit);
-
+    const [fees, setFees] = useState<{
+        amountADA: number;
+        amountDJED: number;
+        amountProfit: number;
+    }>({ amountADA: 0, amountDJED: 0, amountProfit: 0 });
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page, txHashWithdraw],
         queryFn: () =>
@@ -134,12 +142,48 @@ const Withdraw = function () {
                 min,
                 max,
             }).then((res: ClaimableUTxO[]) => {
-                setClaimableUtxos(res); // TODO: CÓA ĐI KHÔNG THÌ SAI
-                const amount = (res as ClaimableUTxO[]).reduce(
+                setClaimableUtxos(res);
+                const amountADA = (res as ClaimableUTxO[]).reduce(
                     (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
                     0,
                 );
-                setValue("amount", amount / 1000000);
+
+                const amountDJED: number = (res as ClaimableUTxO[]).reduce(function (acc, claim) {
+                    const amount: number = isNaN(
+                        Number(claim.utxo.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]),
+                    )
+                        ? 0
+                        : Number(Number(claim.utxo.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]));
+                    return acc + amount;
+                }, 0);
+
+                setFees(function (previous) {
+                    return {
+                        ...previous,
+                        amountDJED: amountDJED,
+                    };
+                });
+
+                const amountProfit: number = (res as Array<ClaimableUTxO>).reduce(function (
+                    acc,
+                    claim,
+                ) {
+                    const amount: number = isNaN(Number(claim.minimumAmountOutProfit))
+                        ? 0
+                        : Number(claim.minimumAmountOutProfit);
+                    return acc + amount / DECIMAL_PLACES;
+                },
+                0);
+                setFees(function (previous) {
+                    return {
+                        ...previous,
+                        amountADA: amountADA,
+                        amountDJED: amountDJED,
+                        amountProfit: amountProfit,
+                    };
+                });
+
+                setValue("amount", amountADA / 1000000);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentWithdrawMode, lucid, debouncedValue]);
@@ -177,6 +221,13 @@ const Withdraw = function () {
 
     const previewSellingStrategies = function () {
         if (lucid) {
+            if (claimableUtxos.length > 17) {
+                toast.warn({
+                    message: `You need to divide it into ${
+                        Math.ceil(calculateClaimEUTxO.length / 15) + 1
+                    } transactions or you can choose to withdraw each part to withdraw your assets`,
+                });
+            }
             previewWithdraw({
                 lucid,
                 range:
@@ -311,7 +362,7 @@ const Withdraw = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                {waitingCalculateEUTxO ? (
+                                                {/* {waitingCalculateEUTxO ? (
                                                     <Loading />
                                                 ) : (
                                                     <>
@@ -319,7 +370,7 @@ const Withdraw = function () {
                                                             ? "-"
                                                             : `${FEE} ₳`}
                                                     </>
-                                                )}
+                                                )} */}
                                             </div>
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
@@ -327,15 +378,44 @@ const Withdraw = function () {
                                                         {t("withdraw.card.you will receive")}
                                                     </span>
                                                 </div>
-                                                {waitingCalculateEUTxO ? (
-                                                    <Loading />
-                                                ) : (
-                                                    <>
-                                                        {claimableUtxos.length === 0
-                                                            ? "-"
-                                                            : `${Number(watch("amount")) - FEE} ₳`}
-                                                    </>
-                                                )}
+                                                <div className={cx("fees")}>
+                                                    <span className={cx("fee-wrapper")}>
+                                                        {waitingCalculateEUTxO ? (
+                                                            <Loading />
+                                                        ) : sellingStrategies.length > 0 ? (
+                                                            <span className={cx("fee-currency")}>
+                                                                {fees.amountADA.toFixed(5)}&nbsp;₳
+                                                            </span>
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </span>
+
+                                                    <span className={cx("fee-wrapper")}>
+                                                        {waitingCalculateEUTxO ? (
+                                                            <Loading />
+                                                        ) : sellingStrategies.length > 0 ? (
+                                                            <span className={cx("fee-currency")}>
+                                                                &nbsp;{fees.amountDJED}
+                                                                &nbsp;DJED
+                                                            </span>
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </span>
+                                                    <span className={cx("fee-wrapper")}>
+                                                        {waitingCalculateEUTxO ? (
+                                                            <Loading />
+                                                        ) : sellingStrategies.length > 0 ? (
+                                                            <span className={cx("fee-currency")}>
+                                                                &nbsp;{fees.amountProfit}
+                                                                &nbsp;DJED
+                                                            </span>
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -346,14 +426,8 @@ const Withdraw = function () {
                                                     waitingWithdraw ||
                                                     waitingCalculateEUTxO
                                                 }
+                                                loading={waitingWithdraw || waitingCalculateEUTxO}
                                                 onClick={onWithdraw}
-                                                RightIcon={
-                                                    <Loading
-                                                        className={cx("withdraw-loading", {
-                                                            withdrawing: waitingWithdraw,
-                                                        })}
-                                                    />
-                                                }
                                                 className={cx("withdraw-button")}
                                             >
                                                 {(!waitingWithdraw || !waitingCalculateEUTxO) &&
