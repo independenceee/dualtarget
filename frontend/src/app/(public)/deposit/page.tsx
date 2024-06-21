@@ -72,7 +72,7 @@ const Deposit = function () {
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
 
-    const { toasts, toast } = useContext<ToastContextType>(ToastContext);
+    const { toast } = useContext<ToastContextType>(ToastContext);
 
     const {
         handleSubmit,
@@ -136,6 +136,12 @@ const Deposit = function () {
     const onDeposite = handleSubmit((data) => {
         const amountDJED = wallet?.djed;
         const amountADA = wallet?.balance;
+        if (sellingStrategies.length > 20) {
+            toast.error({
+                message: "You need to divide the steps into smaller than 20 steps to deposit.",
+            });
+            return;
+        }
         if (
             (lucid &&
                 amountDJED &&
@@ -150,9 +156,13 @@ const Deposit = function () {
                 currentPrice,
             })
                 .then(() => {
+                    toast.success({
+                        message: "Deposit sucessfully completed.",
+                    });
                     reset();
                     setSellingStrategies([]);
                 })
+
                 .catch((error) => {
                     console.log(error);
                 });
@@ -527,7 +537,7 @@ const Deposit = function () {
                                                             <Loading />
                                                         ) : sellingStrategies.length > 0 ? (
                                                             <span className={cx("fee-currency")}>
-                                                                &nbsp;{fees.amountDJED.toFixed(5)}
+                                                                &nbsp;{fees.amountDJED}
                                                                 &nbsp;DJED
                                                             </span>
                                                         ) : (
