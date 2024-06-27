@@ -36,7 +36,7 @@ import images from "~/assets/images";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
-import { COUNTER_UTXO, DECIMAL_PLACES } from "~/constants";
+import { BATCHER_FEE, COUNTER_UTXO, DECIMAL_PLACES } from "~/constants";
 const cx = classNames.bind(styles);
 
 type DepositeType = {
@@ -474,7 +474,10 @@ const Deposit = function () {
                                                                     <span>
                                                                         {sellingStrategies.length >
                                                                         0
-                                                                            ? "1.5 ₳"
+                                                                            ? `${
+                                                                                  BATCHER_FEE /
+                                                                                  DECIMAL_PLACES
+                                                                              } ₳`
                                                                             : "-"}
                                                                     </span>
                                                                 </div>
@@ -493,7 +496,7 @@ const Deposit = function () {
                                                 {waitingDeposit ? (
                                                     <Loading />
                                                 ) : sellingStrategies.length > 0 ? (
-                                                    "1.5 ₳"
+                                                    `${BATCHER_FEE / DECIMAL_PLACES} ₳`
                                                 ) : (
                                                     "-"
                                                 )}
@@ -513,7 +516,10 @@ const Deposit = function () {
                                                                     <span>
                                                                         {sellingStrategies.length >
                                                                         0
-                                                                            ? "1.5 ₳"
+                                                                            ? `${
+                                                                                  BATCHER_FEE /
+                                                                                  DECIMAL_PLACES
+                                                                              } ₳`
                                                                             : "-"}
                                                                     </span>
                                                                 </div>
