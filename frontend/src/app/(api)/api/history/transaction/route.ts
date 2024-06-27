@@ -34,7 +34,6 @@ export async function GET(request: NextRequest) {
         network === "preprod"
             ? (process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string)
             : (process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD! as string);
-
     const transactionsWithTargetAddress = await Promise.all(
         results
             .map((transaction) => {
@@ -45,8 +44,9 @@ export async function GET(request: NextRequest) {
                 const hasOutput = transaction.utxos.outputs.some(
                     (output) => output.address === addressToFind,
                 );
+
                 if (hasInput) {
-                    let amountADA: number = -39000000;
+                    let amountADA: number = 0;
                     let amountDJED: number = 0;
 
                     transaction.utxos.inputs.forEach(function (input) {
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
                                 total: number,
                                 { unit, quantity },
                             ) {
-                                if (unit === "lovelace") {
+                                if (unit === "lovelace" && !input.reference_script_hash) {
                                     return total + Number(quantity);
                                 }
                                 return total;
@@ -80,9 +80,8 @@ export async function GET(request: NextRequest) {
                         type: "Withdraw",
                         txHash: transaction.utxos.hash,
                         amountADA: +(amountADA / DECIMAL_PLACES).toFixed(5),
-                        amountDJED: +amountDJED,
+                        amountDJED: +(amountDJED / DECIMAL_PLACES).toFixed(6),
                         status: "Completed",
-                        fee: 1.5,
                         blockTime: transaction.block_time,
                     };
                 }
@@ -123,15 +122,15 @@ export async function GET(request: NextRequest) {
                         blockTime: transaction.block_time,
                         txHash: transaction.utxos.hash,
                         type: "Deposit",
-                        amountADA: +(amountADA / DECIMAL_PLACES).toFixed(5),
-                        amountDJED: +amountDJED,
+                        amountADA: +(amountADA / DECIMAL_PLACES).toFixed(6),
+                        amountDJED: +(amountDJED / DECIMAL_PLACES).toFixed(6),
                         status: "Completed",
-                        fee: 1.5,
                     };
                 }
             })
             .filter((output) => output != null),
     );
+
     const totalPage = Math.ceil(transactionsWithTargetAddress.length / Number(pageSize));
     const histories = [...transactionsWithTargetAddress].slice(
         (Number(page) - 1) * Number(pageSize),

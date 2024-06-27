@@ -37,7 +37,7 @@ import { useDebounce } from "~/hooks";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
-import { DECIMAL_PLACES } from "~/constants";
+import { COUNTER_UTXO, DECIMAL_PLACES } from "~/constants";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "~/contexts/components/ToastContext";
 
@@ -168,18 +168,21 @@ const Withdraw = function () {
                     acc,
                     claim,
                 ) {
-                    const amount: number = isNaN(Number(claim.minimumAmountOutProfit))
-                        ? 0
-                        : Number(claim.minimumAmountOutProfit);
-                    return acc + amount / DECIMAL_PLACES;
+                    let balance: number = 0;
+                    if (claim.isLimitOrder == 0) {
+                        balance = isNaN(Number(claim.minimumAmountOutProfit))
+                            ? 0
+                            : Number(claim.minimumAmountOutProfit);
+                    }
+                    return acc + balance;
                 },
                 0);
                 setFees(function (previous) {
                     return {
                         ...previous,
-                        amountADA: amountADA,
-                        amountDJED: amountDJED,
-                        amountProfit: amountProfit,
+                        amountADA: amountADA / DECIMAL_PLACES,
+                        amountDJED: amountDJED / DECIMAL_PLACES,
+                        amountProfit: amountProfit / DECIMAL_PLACES,
                     };
                 });
 
@@ -212,7 +215,7 @@ const Withdraw = function () {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [
                 +history.closeTime,
-                +history.high,
+                +history.close,
             ]);
             return prices as ChartDataType;
         }
@@ -221,10 +224,10 @@ const Withdraw = function () {
 
     const previewSellingStrategies = function () {
         if (lucid) {
-            if (claimableUtxos.length > 17) {
+            if (claimableUtxos.length > COUNTER_UTXO) {
                 toast.warn({
                     message: `You need to divide it into ${
-                        Math.ceil(calculateClaimEUTxO.length / 15) + 1
+                        Math.ceil(calculateClaimEUTxO.length / COUNTER_UTXO) + 1
                     } transactions or you can choose to withdraw each part to withdraw your assets`,
                 });
             }
@@ -362,7 +365,7 @@ const Withdraw = function () {
                                                         />
                                                     </Tippy>
                                                 </div>
-                                                {/* {waitingCalculateEUTxO ? (
+                                                {waitingCalculateEUTxO ? (
                                                     <Loading />
                                                 ) : (
                                                     <>
@@ -370,13 +373,36 @@ const Withdraw = function () {
                                                             ? "-"
                                                             : `${FEE} ₳`}
                                                     </>
-                                                )} */}
+                                                )}
                                             </div>
+
                                             <div className={cx("service-stats")}>
                                                 <div className={cx("title-wrapper")}>
                                                     <span>
                                                         {t("withdraw.card.you will receive")}
                                                     </span>
+                                                    <Tippy
+                                                        render={
+                                                            <div>
+                                                                <div className={cx("stats-fee")}>
+                                                                    <span>Request Fee</span>
+                                                                    <span>-</span>
+                                                                </div>
+                                                                <div className={cx("stats-fee")}>
+                                                                    <span>Operator Fee</span>
+                                                                    <span>-</span>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <Image
+                                                            className={cx("icon-help-circle")}
+                                                            src={icons.helpCircle}
+                                                            width={12}
+                                                            height={12}
+                                                            alt=""
+                                                        />
+                                                    </Tippy>
                                                 </div>
                                                 <div className={cx("fees")}>
                                                     <span className={cx("fee-wrapper")}>
@@ -403,12 +429,41 @@ const Withdraw = function () {
                                                             "-"
                                                         )}
                                                     </span>
+                                                </div>
+                                            </div>
+                                            <div className={cx("service-stats")}>
+                                                <div className={cx("title-wrapper")}>
+                                                    <span>Profit</span>
+                                                    <Tippy
+                                                        render={
+                                                            <div>
+                                                                <div className={cx("stats-fee")}>
+                                                                    <span>Request Fee</span>
+                                                                    <span>-</span>
+                                                                </div>
+                                                                <div className={cx("stats-fee")}>
+                                                                    <span>Operator Fee</span>
+                                                                    <span>-</span>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <Image
+                                                            className={cx("icon-help-circle")}
+                                                            src={icons.helpCircle}
+                                                            width={12}
+                                                            height={12}
+                                                            alt=""
+                                                        />
+                                                    </Tippy>
+                                                </div>
+                                                <div className={cx("fees")}>
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
                                                         ) : sellingStrategies.length > 0 ? (
                                                             <span className={cx("fee-currency")}>
-                                                                &nbsp;{fees.amountProfit}
+                                                                {fees.amountProfit.toFixed(5)}
                                                                 &nbsp;DJED
                                                             </span>
                                                         ) : (
