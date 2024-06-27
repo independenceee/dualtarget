@@ -226,9 +226,9 @@ const Withdraw = function () {
         if (lucid) {
             if (claimableUtxos.length > COUNTER_UTXO) {
                 toast.warn({
-                    message: `You need to divide it into ${
+                    message: `${t("layout.toast.warn.divide_transactions.1")} ${
                         Math.ceil(calculateClaimEUTxO.length / COUNTER_UTXO) + 1
-                    } transactions or you can choose to withdraw each part to withdraw your assets`,
+                    } ${t("layout.toast.warn.divide_transactions.2")}`,
                 });
             }
             previewWithdraw({

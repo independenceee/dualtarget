@@ -17,6 +17,7 @@ import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "../components/ToastContext";
 import { DECIMAL_PLACES } from "~/constants";
 import axios from "axios";
+import TranslateContext from "../components/TranslateContext";
 
 type Props = {
     children: ReactNode;
@@ -36,7 +37,7 @@ const WalletProvider = function ({ children }: Props) {
     const [wallet, setWallet] = useState<WalletType>(null!);
     const [loading, setLoading] = useState<boolean>(false);
     const { network } = useContext<NetworkContextType>(NetworkContext);
-
+    const { t } = useContext(TranslateContext);
     useEffect(() => {
         const walletConnecttion = localStorage.getItem("wallet");
         if (walletConnecttion) {
@@ -135,11 +136,11 @@ const WalletProvider = function ({ children }: Props) {
             );
             setLucid(lucid);
             toast.success({
-                message: "Wallet connected!",
+                message: t("layout.toast.success.connect_wallet"),
             });
         } catch (error) {
             toast.success({
-                message: "Wallet connected error!",
+                message: t("layout.toast.success.disconnect_wallet"),
             });
         } finally {
             setLoading(false);
@@ -155,7 +156,7 @@ const WalletProvider = function ({ children }: Props) {
             }
             localStorage.removeItem("wallet");
             await axios.post("/api/auth/clear-wallet-address", {});
-            toast.success({ message: "Wallet disconnected!" });
+            toast.success({ message: t("layout.toast.success.disconnect_wallet") });
         } catch (error) {
             console.log(error);
         }

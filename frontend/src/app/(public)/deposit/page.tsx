@@ -147,7 +147,7 @@ const Deposit = function () {
             })
                 .then(() => {
                     toast.success({
-                        message: "Deposit sucessfully completed.",
+                        message: t("layout.toast.success.deposit"),
                     });
                     reset();
                     setSellingStrategies([]);
@@ -157,7 +157,7 @@ const Deposit = function () {
                     console.log(error);
                 });
         } else {
-            toast.warn({ message: "You can connect wallets." });
+            toast.warn({ message: t("layout.toast.warn.connect_wallet") });
         }
     });
 
@@ -189,14 +189,16 @@ const Deposit = function () {
                 _fees.amountDJED > Number(wallet?.djed)
             ) {
                 toast.error({
-                    message: "Insufficient assets in your wallet",
+                    message: t("layout.toast.error.insufficient_assets"),
                 });
                 return;
             }
 
             if (result.length > COUNTER_UTXO) {
                 toast.error({
-                    message: `You need to divide the steps into smaller than ${COUNTER_UTXO} steps to deposit.`,
+                    message: `${t("layout.toast.error.counter_utxo.1")}${COUNTER_UTXO}${t(
+                        "layout.toast.error.counter_utxo.2",
+                    )}`,
                 });
                 return;
             }
