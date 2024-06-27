@@ -10,6 +10,7 @@ type Props = {
 
 const NetworkProvider = function ({ children }: Props) {
     const [network, setNetwork] = useState<Network>("Preprod");
+    const [env, setEnv] = useState("Preprod");
 
     useEffect(() => {
         const networkConnection = localStorage.getItem("network");
