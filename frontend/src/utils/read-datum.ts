@@ -1,4 +1,4 @@
-import { Address, Data, Lucid, UTxO } from "lucid-cardano";
+import { Address, Data, Lucid, TxHash, UTxO } from "lucid-cardano";
 import { DualtargetDatum } from "~/constants/datum";
 
 type Props = {
@@ -11,8 +11,16 @@ export type ReadDatumType = {};
 const readDatum = async function ({ contractAddress, lucid }: Props) {
     const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress as Address);
 
+    const txHashRef =
+        lucid.network === "Mainnet"
+            ? process.env.DUALTARGET_TXHASH_REFRENCE_SCRIPT_MAINNET
+            : process.env.DUALTARGET_TXHASH_REFRENCE_SCRIPT_PREPROD;
+
     const smartcontractUtxo: UTxO | undefined = scriptUtxos.find(function (scriptUtxo) {
-        return scriptUtxo.scriptRef?.script;
+
+        console.log(scriptUtxo.txHash, txHashRef, scriptUtxo.txHash === txHashRef);
+
+        return scriptUtxo.scriptRef?.script && scriptUtxo.txHash === txHashRef;
     });
 
     if (!smartcontractUtxo) throw new Error("Cound not find smart contract utxo");

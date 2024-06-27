@@ -18,7 +18,7 @@ import { DualtargetDatum } from "~/constants/datum";
 import readDatum from "~/utils/read-datum";
 import { WalletContextType } from "~/types/contexts/WalletContextType";
 import WalletContext from "~/contexts/components/WalletContext";
-import { DECIMAL_PLACES } from "~/constants";
+import { DECIMAL_PLACES, OUTPUT_ADA } from "~/constants";
 
 type Props = {
     children: ReactNode;
@@ -101,11 +101,14 @@ const SmartContractProvider = function ({ children }: Props) {
                 if (Number(sellingStrategy.buyPrice) <= Number(currentPrice * DECIMAL_PLACES)) {
                     tx = await tx.payToContract(
                         contractAddress,
-                        { inline: datums[index] },
+                        {
+                            inline: datums[index],
+                        },
                         {
                             [process.env.MIN_TOKEN_ASSET_PREPROD!]: BigInt(
-                                Math.round(sellingStrategy.amountSend! / DECIMAL_PLACES),
+                                Math.round(sellingStrategy.amountSend!),
                             ),
+                            lovelace: BigInt(OUTPUT_ADA / 2),
                         },
                     );
                 } else {
@@ -244,6 +247,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                     fee: Number(params.batcherFee),
                                     minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                    isLimitOrder: params.isLimitOrder,
                                 });
                                 break;
                             }
@@ -264,6 +268,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                     fee: Number(params.batcherFee),
                                     minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                    isLimitOrder: params.isLimitOrder,
                                 });
                             }
                             break;
@@ -286,6 +291,7 @@ const SmartContractProvider = function ({ children }: Props) {
                                     fee: Number(params.batcherFee),
                                     minimumAmountOut: params.minimumAmountOut, // Số lượng profit
                                     minimumAmountOutProfit: params.minimumAmountOutProfit,
+                                    isLimitOrder: params.isLimitOrder,
                                 });
                             }
                             break;

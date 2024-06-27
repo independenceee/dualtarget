@@ -111,7 +111,7 @@ const WalletProvider = function ({ children }: Props) {
                 )
                     ? 0
                     : Number(Number(utxo?.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]));
-                return balance + amount;
+                return balance + amount / DECIMAL_PLACES;
             }, 0);
             setWallet(function (previous: WalletType) {
                 return {

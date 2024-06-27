@@ -168,18 +168,21 @@ const Withdraw = function () {
                     acc,
                     claim,
                 ) {
-                    const amount: number = isNaN(Number(claim.minimumAmountOutProfit))
-                        ? 0
-                        : Number(claim.minimumAmountOutProfit);
-                    return acc + amount / DECIMAL_PLACES;
+                    let balance: number = 0;
+                    if (claim.isLimitOrder == 0) {
+                        balance = isNaN(Number(claim.minimumAmountOutProfit))
+                            ? 0
+                            : Number(claim.minimumAmountOutProfit);
+                    }
+                    return acc + balance;
                 },
                 0);
                 setFees(function (previous) {
                     return {
                         ...previous,
                         amountADA: amountADA / DECIMAL_PLACES,
-                        amountDJED: amountDJED,
-                        amountProfit: amountProfit,
+                        amountDJED: amountDJED / DECIMAL_PLACES,
+                        amountProfit: amountProfit / DECIMAL_PLACES,
                     };
                 });
 
@@ -212,7 +215,7 @@ const Withdraw = function () {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [
                 +history.closeTime,
-                +history.high,
+                +history.close,
             ]);
             return prices as ChartDataType;
         }
