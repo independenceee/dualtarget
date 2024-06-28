@@ -167,14 +167,14 @@ const Deposit = function () {
 
     useEffect(() => {
         if (income && priceHight && priceLow && stake && step) {
-            const result = calculateSellingStrategy({
+            const result: CalculateSellingStrategy[] = calculateSellingStrategy({
                 income: Number(income),
                 priceHight: Number(priceHight) * DECIMAL_PLACES,
                 priceLow: Number(priceLow) * DECIMAL_PLACES,
                 stake: Number(stake),
                 step: Number(step),
             });
-            const _totalADA = result[result.length - 1].USDTPool / +priceLow;
+            const _totalADA = result[result.length - 1]?.USDTPool || 0 / +priceLow;
 
             setValue("totalADA", String(_totalADA));
         }
