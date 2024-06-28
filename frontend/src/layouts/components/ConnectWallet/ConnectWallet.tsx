@@ -141,8 +141,8 @@ const ConnectWallet = function ({ className }: Props) {
                                             <CountUp
                                                 end={wallet?.balance || 0}
                                                 start={0}
-                                                decimals={5}
-                                                decimalPlaces={5}
+                                                decimals={3}
+                                                decimalPlaces={3}
                                             />
                                             ₳
                                         </div>
@@ -165,9 +165,9 @@ const ConnectWallet = function ({ className }: Props) {
                                             <CountUp
                                                 end={wallet?.djed || 0}
                                                 start={0}
-                                                decimals={5}
-                                                decimalPlaces={5}
-                                            />{" "}
+                                                decimals={3}
+                                                decimalPlaces={3}
+                                            />
                                             DJED
                                         </div>
                                     </section>
@@ -195,8 +195,8 @@ const ConnectWallet = function ({ className }: Props) {
                                     <CountUp
                                         end={wallet?.balance || 0}
                                         start={0}
-                                        decimals={5}
-                                        decimalPlaces={5}
+                                        decimals={3}
+                                        decimalPlaces={3}
                                     />{" "}
                                     ₳
                                 </div>

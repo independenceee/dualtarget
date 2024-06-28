@@ -37,7 +37,7 @@ import { useDebounce } from "~/hooks";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
-import { COUNTER_UTXO, DECIMAL_PLACES } from "~/constants";
+import { BATCHER_FEE, COUNTER_UTXO, DECIMAL_PLACES } from "~/constants";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "~/contexts/components/ToastContext";
 
@@ -52,8 +52,6 @@ const WITHDRAW_MODES: Item[] = [
     { name: "Only profit", id: 1 },
     { name: "Select parts", id: 2 },
 ];
-
-const FEE = 1.5;
 
 const Withdraw = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
@@ -168,18 +166,21 @@ const Withdraw = function () {
                     acc,
                     claim,
                 ) {
-                    const amount: number = isNaN(Number(claim.minimumAmountOutProfit))
-                        ? 0
-                        : Number(claim.minimumAmountOutProfit);
-                    return acc + amount / DECIMAL_PLACES;
+                    let balance: number = 0;
+                    if (claim.isLimitOrder == 0) {
+                        balance = isNaN(Number(claim.minimumAmountOutProfit))
+                            ? 0
+                            : Number(claim.minimumAmountOutProfit);
+                    }
+                    return acc + balance;
                 },
                 0);
                 setFees(function (previous) {
                     return {
                         ...previous,
                         amountADA: amountADA / DECIMAL_PLACES,
-                        amountDJED: amountDJED,
-                        amountProfit: amountProfit,
+                        amountDJED: amountDJED / DECIMAL_PLACES,
+                        amountProfit: amountProfit / DECIMAL_PLACES,
                     };
                 });
 
@@ -212,7 +213,7 @@ const Withdraw = function () {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [
                 +history.closeTime,
-                +history.high,
+                +history.close,
             ]);
             return prices as ChartDataType;
         }
@@ -223,9 +224,9 @@ const Withdraw = function () {
         if (lucid) {
             if (claimableUtxos.length > COUNTER_UTXO) {
                 toast.warn({
-                    message: `You need to divide it into ${
+                    message: `${t("layout.toast.warn.divide_transactions.1")} ${
                         Math.ceil(calculateClaimEUTxO.length / COUNTER_UTXO) + 1
-                    } transactions or you can choose to withdraw each part to withdraw your assets`,
+                    } ${t("layout.toast.warn.divide_transactions.2")}`,
                 });
             }
             previewWithdraw({
@@ -368,7 +369,7 @@ const Withdraw = function () {
                                                     <>
                                                         {claimableUtxos.length === 0
                                                             ? "-"
-                                                            : `${FEE} ₳`}
+                                                            : `${BATCHER_FEE / DECIMAL_PLACES} ₳`}
                                                     </>
                                                 )}
                                             </div>
