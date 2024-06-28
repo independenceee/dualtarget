@@ -139,7 +139,7 @@ export type CalculateSellingStrategy = {
     amountSell?: number;
     amountBuy?: number;
     amountEntry?: number;
-    USDTPool?: number;
+    USDTPool: number;
     sumADA?: number;
 };
 

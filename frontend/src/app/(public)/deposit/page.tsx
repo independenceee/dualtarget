@@ -73,8 +73,6 @@ const Deposit = function () {
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
 
-    console.log(sellingStrategies[length - 1].USDTPool / );
-
     const { toast } = useContext<ToastContextType>(ToastContext);
     const {
         handleSubmit,
@@ -82,6 +80,7 @@ const Deposit = function () {
         control,
         reset,
         trigger,
+        setValue,
         getValues,
         formState: { errors, isDirty, isValid },
     } = useForm<DepositeType>({
@@ -117,6 +116,8 @@ const Deposit = function () {
             });
         }
     }, [t]);
+
+    useEffect(() => {}, []);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
@@ -164,6 +165,21 @@ const Deposit = function () {
 
     const { income, priceHight, priceLow, stake, step, totalADA } = watch();
 
+    useEffect(() => {
+        if (income && priceHight && priceLow && stake && step) {
+            const result = calculateSellingStrategy({
+                income: Number(income),
+                priceHight: Number(priceHight) * DECIMAL_PLACES,
+                priceLow: Number(priceLow) * DECIMAL_PLACES,
+                stake: Number(stake),
+                step: Number(step),
+            });
+            const _totalADA = result[result.length - 1].USDTPool / +priceLow;
+
+            setValue("totalADA", String(_totalADA));
+        }
+    }, [income, priceHight, priceLow, stake, step]);
+
     const handleCalculateSellingStrategy = function () {
         if (
             income &&
@@ -180,7 +196,7 @@ const Deposit = function () {
                 priceLow: Number(priceLow) * DECIMAL_PLACES,
                 stake: Number(stake),
                 step: Number(step),
-                totalADA: Number(totalADA) * DECIMAL_PLACES,
+                // totalADA: Number(totalADA) * DECIMAL_PLACES,
             });
             const _fees = previewDeposit({ sellingStrategies: result, currentPrice });
             setFees(_fees);
@@ -430,6 +446,7 @@ const Deposit = function () {
                                                 <Controller
                                                     control={control}
                                                     name="totalADA"
+                                                    disabled
                                                     rules={{
                                                         required: {
                                                             value: true,

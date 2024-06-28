@@ -6,7 +6,7 @@ type Props = {
     priceHight: number;
     step: number;
     income: number;
-    totalADA: number;
+    totalADA?: number;
     stake: number;
 };
 
