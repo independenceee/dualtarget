@@ -73,6 +73,8 @@ const Deposit = function () {
         enabled: Boolean(wallet?.address) || (Boolean(wallet?.address) && Boolean(txHashDeposit)),
     });
 
+    console.log(sellingStrategies[length - 1].USDTPool / );
+
     const { toast } = useContext<ToastContextType>(ToastContext);
     const {
         handleSubmit,
