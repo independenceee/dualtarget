@@ -1,28 +1,28 @@
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
+import { DECIMAL_PLACES } from "~/constants";
 import Blockfrost from "~/services/blockfrost";
+import { EnviromentType } from "~/types/GenericsType";
+import readEnviroment from "~/utils/read-enviroment";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const network: CardanoNetwork = searchParams.get("network") as CardanoNetwork;
+    const enviroment: EnviromentType = readEnviroment({
+        network: network,
+    });
 
     const blockfrost = new Blockfrost(
-        network === "preprod"
-            ? process.env.BLOCKFROST_PROJECT_API_KEY_PREPROD!
-            : process.env.BLOCKFROST_PROJECT_API_KEY_MAINNET!,
+        enviroment.BLOCKFROST_PROJECT_API_KEY,
         network as CardanoNetwork,
     );
 
-    const addressesTotal = await blockfrost.addressesTotal(
-        network === "preprod"
-            ? process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD!
-            : process.env.DUALTARGET_CONTRACT_ADDRESS_MAINNET!,
-    );
+    const addressesTotal = await blockfrost.addressesTotal(enviroment.DUALTARGET_CONTRACT_ADDRESS);
 
     const totalVolumeDepositsADA = addressesTotal.received_sum.reduce(
         (accumulator, currentValue) => {
             if (currentValue.unit === "lovelace") {
-                return accumulator + parseInt(currentValue.quantity) / 1000000;
+                return accumulator + parseInt(currentValue.quantity) / DECIMAL_PLACES;
             }
             return accumulator;
         },
@@ -31,15 +31,15 @@ export async function GET(request: NextRequest) {
 
     const totalVolumeWithdrawsADA = addressesTotal.sent_sum.reduce((accumulator, currentValue) => {
         if (currentValue.unit === "lovelace") {
-            return accumulator + parseInt(currentValue.quantity) / 1000000;
+            return accumulator + parseInt(currentValue.quantity) / DECIMAL_PLACES;
         }
         return accumulator;
     }, 0);
 
     const totalVolumeWithdrawsDJED = addressesTotal.received_sum.reduce(
         (accumulator, currentValue) => {
-            if (currentValue.unit === process.env.MIN_TOKEN_ASSET_PREPROD) {
-                return accumulator + parseInt(currentValue.quantity) / 1000000;
+            if (currentValue.unit === enviroment.DJED_TOKEN_ASSET) {
+                return accumulator + parseInt(currentValue.quantity) / DECIMAL_PLACES;
             }
             return accumulator;
         },
@@ -51,9 +51,7 @@ export async function GET(request: NextRequest) {
     const totalTxHash = await Promise.all(
         [...new Array(1)].map(async (element, index: number) => {
             const txHashes = await blockfrost.addressesTransactions(
-                network === "preprod"
-                    ? process.env.DUALTARGET_CONTRACT_ADDRESS_PREPROD!
-                    : process.env.DUALTARGET_CONTRACT_ADDRESS_MAINNET!,
+                enviroment.DUALTARGET_CONTRACT_ADDRESS,
                 {
                     page: index,
                 },

@@ -3,23 +3,16 @@ import { DualtargetDatum } from "~/constants/datum";
 
 type Props = {
     lucid: Lucid;
+    txHashRef: TxHash;
     contractAddress: string;
 };
 
 export type ReadDatumType = {};
 
-const readDatum = async function ({ contractAddress, lucid }: Props) {
+const readDatum = async function ({ contractAddress, txHashRef, lucid }: Props) {
     const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress as Address);
 
-    const txHashRef =
-        lucid.network === "Mainnet"
-            ? process.env.DUALTARGET_TXHASH_REFRENCE_SCRIPT_MAINNET
-            : process.env.DUALTARGET_TXHASH_REFRENCE_SCRIPT_PREPROD;
-
     const smartcontractUtxo: UTxO | undefined = scriptUtxos.find(function (scriptUtxo) {
-
-        console.log(scriptUtxo.txHash, txHashRef, scriptUtxo.txHash === txHashRef);
-
         return scriptUtxo.scriptRef?.script && scriptUtxo.txHash === txHashRef;
     });
 

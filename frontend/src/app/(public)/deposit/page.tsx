@@ -74,7 +74,6 @@ const Deposit = function () {
     });
 
     const { toast } = useContext<ToastContextType>(ToastContext);
-
     const {
         handleSubmit,
         watch,

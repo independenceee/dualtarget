@@ -38,7 +38,6 @@ const CustomChart = function ({ data, preview, isLoading, onRefresh }: Props) {
         refetchInterval: 1000,
     });
 
-    console.log("Current market price: ", currentPrice);
     const chartId = useId();
     const dataObject = useMemo(() => {
         if (data && data.length > 0) {

@@ -2,7 +2,10 @@
 
 import { Network } from "lucid-cardano";
 import React, { ReactNode, useEffect, useState } from "react";
+import enviroments from "~/constants/enviroment";
 import NetworkContext from "~/contexts/components/NetworkContext";
+import { EnviromentType } from "~/types/GenericsType";
+import readEnviroment from "~/utils/read-enviroment";
 
 type Props = {
     children: ReactNode;
@@ -10,7 +13,16 @@ type Props = {
 
 const NetworkProvider = function ({ children }: Props) {
     const [network, setNetwork] = useState<Network>("Preprod");
-    const [env, setEnv] = useState("Preprod");
+    const [enviroment, setEnviroment] = useState<EnviromentType>(enviroments.PREPROD[0]);
+
+    useEffect(() => {
+        setEnviroment(
+            readEnviroment({
+                network: network,
+                index: 0,
+            }),
+        );
+    }, [network]);
 
     useEffect(() => {
         const networkConnection = localStorage.getItem("network");
@@ -29,6 +41,7 @@ const NetworkProvider = function ({ children }: Props) {
         <NetworkContext.Provider
             value={{
                 network,
+                enviroment,
                 setNetwork,
             }}
         >

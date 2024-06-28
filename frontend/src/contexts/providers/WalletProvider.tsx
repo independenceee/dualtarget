@@ -24,6 +24,7 @@ type Props = {
 };
 
 const WalletProvider = function ({ children }: Props) {
+    const { enviroment } = useContext<NetworkContextType>(NetworkContext);
     const { lucid, setLucid } = useContext<LucidContextType>(LucidContext);
     const {
         toogleErrorNetwork,
@@ -107,11 +108,9 @@ const WalletProvider = function ({ children }: Props) {
             }, 0);
 
             const djed: number = utxos.reduce(function (balance: number, utxo, UTxO) {
-                const amount: number = isNaN(
-                    Number(utxo?.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]),
-                )
+                const amount: number = isNaN(Number(utxo?.assets[enviroment.DJED_TOKEN_ASSET!]))
                     ? 0
-                    : Number(Number(utxo?.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]));
+                    : Number(Number(utxo?.assets[enviroment.DJED_TOKEN_ASSET!]));
                 return balance + amount / DECIMAL_PLACES;
             }, 0);
             setWallet(function (previous: WalletType) {
