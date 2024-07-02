@@ -10,6 +10,8 @@ import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "../components/NetworkContext";
 import { DualtargetDatum } from "~/constants/datum";
 import { DECIMAL_PLACES } from "~/constants";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 type Props = {
     children: ReactNode;
@@ -71,6 +73,24 @@ const StatisticsProvider = function ({ children }: Props) {
             })();
         }
     }, [lucidPlatform]);
+
+    const { data: poolHistory } = useQuery({
+        queryKey: ["Transactions"],
+        queryFn: () =>
+            axios.get<string[]>(
+                `${window.location.origin}/api/pool?network=${network.toLowerCase()}`,
+                {
+                    timeout: 5000,
+                },
+            ),
+        enabled: true,
+    });
+    console.log(poolHistory);
+    // poolHistory?.data?.map(async function (data: any) {
+    //     const datum = Data.to(data!);
+    //     console.log(datum);
+    //     return data;
+    // });
 
     return (
         <StatisticsContext.Provider value={{ pool, profit }}>{children}</StatisticsContext.Provider>

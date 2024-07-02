@@ -26,14 +26,17 @@ import CountUp from "react-countup";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
+import { Data } from "lucid-cardano";
+import { DualtargetDatum } from "~/constants/datum";
 
 const cx = classNames.bind(styles);
 
 export default function Home() {
-    const { t } = useContext<TranslateContextType>(TranslateContext);
     const { loading } = useContext<LucidContextType>(LucidContext);
-    const { pool } = useContext<StatisticContextType>(StatisticsContext);
+    const { t } = useContext<TranslateContextType>(TranslateContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
+    const { pool } = useContext<StatisticContextType>(StatisticsContext);
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions"],
         queryFn: () =>
@@ -196,7 +199,7 @@ export default function Home() {
                             <div className={cx("reserves")}>
                                 <div className={cx("reserve-ratio")}>
                                     <div className={cx("title-wrapper")}>
-                                        <h2>ROS</h2>
+                                        <h2>Profit</h2>
                                     </div>
                                     <div className={cx("reserves-value-ratio")}>
                                         <CountUp
