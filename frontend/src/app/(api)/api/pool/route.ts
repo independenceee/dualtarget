@@ -52,7 +52,5 @@ export async function GET(request: NextRequest) {
         });
     });
 
-    console.log(inlineDatums);
-
     return Response.json(inlineDatums);
 }

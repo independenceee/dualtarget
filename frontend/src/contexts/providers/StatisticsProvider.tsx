@@ -27,9 +27,11 @@ const StatisticsProvider = function ({ children }: Props) {
         totalADA: 0,
         totalDJED: 0,
         totalProfit: 0,
+        totalVolumnProfits: 0,
+        profitMargin: 0,
     });
 
-    const [profit, setprofit] = useState<StatisticsType>({});
+    // const [profit, setprofit] = useState<StatisticsType>({});
 
     useEffect(() => {
         if (lucidPlatform) {
@@ -58,8 +60,6 @@ const StatisticsProvider = function ({ children }: Props) {
                     return balance + Number(dattum.minimumAmountOutProfit) / DECIMAL_PLACES;
                 },
                 0);
-                console.log(totalProfit);
-
                 setPool(function (prev) {
                     return {
                         ...prev,
@@ -75,7 +75,7 @@ const StatisticsProvider = function ({ children }: Props) {
     }, [lucidPlatform]);
 
     const { data: poolHistory } = useQuery({
-        queryKey: ["Transactions"],
+        queryKey: ["Pools"],
         queryFn: () =>
             axios.get<string[]>(
                 `${window.location.origin}/api/pool?network=${network.toLowerCase()}`,
@@ -85,16 +85,38 @@ const StatisticsProvider = function ({ children }: Props) {
             ),
         enabled: true,
     });
-    console.log(poolHistory);
-    // poolHistory?.data?.map(async function (data: any) {
-    //     const datum = Data.to(data!);
-    //     console.log(datum);
-    //     return data;
-    // });
+    useEffect(() => {
+        const datums = poolHistory?.data?.map(function (data: string) {
+            return Data.from<DualtargetDatum>(data!, DualtargetDatum);
+        });
 
-    return (
-        <StatisticsContext.Provider value={{ pool, profit }}>{children}</StatisticsContext.Provider>
-    );
+        const totalVolumnProfits: number | undefined = datums?.reduce(function (
+            balance: number,
+            amount: DualtargetDatum,
+        ) {
+            return balance + Number(amount.minimumAmountOutProfit) / DECIMAL_PLACES;
+        },
+        0);
+        const profitMargin = datums?.reduce(function (balance: number, amount: DualtargetDatum) {
+            if (Number(amount.isLimitOrder) === 0) {
+                return balance + Number(amount.minimumAmountOutProfit) / DECIMAL_PLACES;
+            }
+
+            return balance;
+        }, 0);
+
+        console.log(profitMargin, totalVolumnProfits);
+
+        setPool(function (previous) {
+            return {
+                ...previous,
+                totalVolumnProfits: totalVolumnProfits,
+                profitMargin: profitMargin,
+            };
+        });
+    }, [poolHistory]);
+
+    return <StatisticsContext.Provider value={{ pool }}>{children}</StatisticsContext.Provider>;
 };
 
 export default StatisticsProvider;

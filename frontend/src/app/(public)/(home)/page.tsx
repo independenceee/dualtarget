@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Image from "next/image";
 import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
@@ -26,8 +26,6 @@ import CountUp from "react-countup";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
-import { Data } from "lucid-cardano";
-import { DualtargetDatum } from "~/constants/datum";
 
 const cx = classNames.bind(styles);
 
@@ -178,7 +176,7 @@ export default function Home() {
                             />
                             <Coin
                                 title={"Profit"}
-                                amount={data?.data.totalVolumeWithdrawsDJED}
+                                amount={pool?.totalVolumnProfits}
                                 denominations="DJED"
                                 loading={loading || isLoading}
                             />
@@ -199,16 +197,15 @@ export default function Home() {
                             <div className={cx("reserves")}>
                                 <div className={cx("reserve-ratio")}>
                                     <div className={cx("title-wrapper")}>
-                                        <h2>Profit</h2>
+                                        <h2>Profit 7 Day</h2>
                                     </div>
                                     <div className={cx("reserves-value-ratio")}>
                                         <CountUp
-                                            decimals={2}
-                                            enableScrollSpy
                                             start={0}
-                                            end={Number(0.04)}
+                                            decimals={3}
+                                            end={Number(pool?.profitMargin)}
                                         />
-                                        <span className="suffix">%</span>
+                                        <span className="suffix">DJED</span>
                                     </div>
                                 </div>
                                 <div className={cx("base-reserves")}>
