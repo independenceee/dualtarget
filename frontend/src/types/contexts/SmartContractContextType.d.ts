@@ -31,6 +31,7 @@ export type SmartContractContextType = {
         mode: number;
         min: number;
         max: number;
+        walletAddress: string;
     }) => Promise<ClaimableUTxO[]>;
     deposit: ({
         lucid,

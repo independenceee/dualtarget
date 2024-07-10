@@ -1,5 +1,6 @@
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
+import { BATCHER_FEE, DECIMAL_PLACES } from "~/constants";
 import Blockfrost from "~/services/blockfrost";
 import Koios from "~/services/koios";
 import caculateDepositWithdraw from "~/utils/calculate-deposit-withdraw";
@@ -12,35 +13,21 @@ export async function GET(request: NextRequest) {
     const pageSize: string = searchParams.get("page_size") as string;
     const walletAddress: string = searchParams.get("wallet_address") as string;
     const network: CardanoNetwork = searchParams.get("network") as CardanoNetwork;
+    const adaPool: string = searchParams.get("ada_pool") as string;
 
-    const enviroment = readEnviroment({
-        network: network,
-        index: 0,
-    });
+    const enviroment = readEnviroment({ network: network, index: 0 });
 
     const poolId: string = enviroment.HADA_POOL_ID;
     const stakeAddress: string = enviroment.DUALTARGET_STAKE_ADDRESS;
     const smartcontractAddress: string = enviroment.DUALTARGET_CONTRACT_ADDRESS;
-
     const koios = new Koios(enviroment.KOIOS_RPC_URL);
-
     const blockfrost = new Blockfrost(
         enviroment.BLOCKFROST_PROJECT_API_KEY as string,
         network as CardanoNetwork,
     );
 
-    const utxos = await Promise.all(
-        (await blockfrost.addressesTransactions(walletAddress))
-            .reverse()
-            .map(async function ({ tx_hash, block_time }) {
-                return {
-                    block_time: block_time,
-                    utxos: await blockfrost.txsUtxos(tx_hash),
-                };
-            }),
-    );
-
     const accountsDelegation = await blockfrost.accountsDelegations(stakeAddress);
+
     const specificTransaction = await blockfrost.txs(
         accountsDelegation[accountsDelegation.length - 1].tx_hash,
     );
@@ -48,55 +35,75 @@ export async function GET(request: NextRequest) {
     const currentEpoch = await blockfrost.epochsLatest();
 
     let results: any = [];
+    const addrTsx = (
+        await Promise.all(
+            Array.from({ length: 5 }, async function (_, index: number) {
+                return await blockfrost.addressesTransactions(smartcontractAddress, {
+                    order: "desc",
+                    count: 100,
+                    page: index + 1,
+                });
+            }),
+        )
+    ).flat();
 
-    for (let index = currentEpoch.epoch; index >= currentEpoch.epoch - 10; index--) {
-        const epochInfomation = await koios.epochInfomation({ epochNo: index });
+    for (let index = currentEpoch.epoch; index >= currentEpoch.epoch - 5; index--) {
         const amountStake: number = await koios.poolDelegatorsHistory({
             poolId: poolId,
             stakeAddress: stakeAddress,
             epochNo: index,
         });
-
         const accountRewards: number = await koios.accountRewards({
             stakeAddress,
             epochNo: index,
         });
-
-        if (index === currentEpoch.epoch) {
-            const amountDepositWithdraw: number = await caculateDepositWithdraw({
-                utxos: utxos,
-                address: smartcontractAddress,
-                endTime: epochInfomation.start_time,
-                startTimeStake: specificTransaction.block_time,
-            });
-            console.log(epochInfomation.start_time, amountDepositWithdraw);
-
-            const ROS: number = amountDepositWithdraw / amountStake;
-
-            results.push({
-                epoch: index,
-                amount: +amountDepositWithdraw.toFixed(5),
-                rewards: +(!isNaN(accountRewards * ROS) ? accountRewards * ROS : 0).toFixed(5),
-                status: "Distributed",
-            });
-        }
-
-        const amountDepositWithdraw: number = await caculateDepositWithdraw({
-            utxos: utxos,
-            address: smartcontractAddress,
-            endTime: epochInfomation.end_time,
-            startTimeStake: specificTransaction.block_time,
+        const { start_time, end_time } = await koios.epochInfomation({ epochNo: index });
+        const addrTsxFilter = addrTsx.filter(function ({ block_time }, index: number) {
+            return block_time >= start_time && block_time <= end_time;
         });
-        const ROS: number = amountDepositWithdraw / amountStake;
 
-        if (amountDepositWithdraw !== 0) {
-            results.push({
-                epoch: index + 3,
-                amount: +amountDepositWithdraw.toFixed(5),
-                rewards: +(!isNaN(accountRewards * ROS) ? accountRewards * ROS : 0).toFixed(5),
-                status: "Distributed",
-            });
-        }
+        const utxos = await Promise.all(
+            addrTsxFilter.map(async function ({ tx_hash }) {
+                return await blockfrost.txsUtxos(tx_hash);
+            }),
+        );
+
+        const transactions: any[] = await Promise.all(
+            utxos
+                .map((transaction) => {
+                    const hasInput: any = transaction.inputs.some(
+                        (input: any) => input.address === walletAddress,
+                    );
+                    const hasOutput = transaction.outputs.some(
+                        (output: any) => output.address === walletAddress,
+                    );
+                    if (hasInput) {
+                        let amount: number = 0;
+                        transaction.inputs.forEach(function (input: any) {
+                            if (input.address === walletAddress) {
+                                const quantity = input.amount.reduce(function (
+                                    total: number,
+                                    { unit, quantity }: any,
+                                ) {
+                                    if (unit === "lovelace" && !input.reference_script_hash) {
+                                        return total + Number(quantity);
+                                    }
+                                    return total;
+                                },
+                                0);
+                                amount += quantity;
+                            }
+                        }, 0);
+                        return {
+                            amount: +(amount / DECIMAL_PLACES).toFixed(5),
+                        };
+                    }
+                })
+                .filter((output) => output != null),
+        );
+        console.log(transactions);
+
+        results.push(utxos);
     }
 
     const totalPage = Math.ceil(results.length / Number(pageSize));

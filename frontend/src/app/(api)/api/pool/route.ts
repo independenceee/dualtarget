@@ -8,47 +8,89 @@ import readEnviroment from "~/utils/read-enviroment";
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const network: CardanoNetwork = searchParams.get("network") as CardanoNetwork;
-    const enviroment: EnviromentType = readEnviroment({
-        network: network,
-    });
+    const enviroment: EnviromentType = readEnviroment({ network: network });
 
     const blockfrost = new Blockfrost(
         enviroment.BLOCKFROST_PROJECT_API_KEY,
         network as CardanoNetwork,
     );
-    const now = Date.now();
-    const sevenDaysAgo = now - HISTORY_DAYS * 24 * 60 * 60 * 1000;
-    const txHashes = await Promise.all(
-        await blockfrost.addressesTransactions(enviroment.DUALTARGET_CONTRACT_ADDRESS, {
-            order: "desc",
-        }),
-    );
+
+    let profitMargin: number = 0;
     const contractAddress = enviroment.DUALTARGET_CONTRACT_ADDRESS;
 
-    const txHashesFilter = txHashes.filter(function (txHashFilter) {
+    const addrTsx = (
+        await Promise.all(
+            Array.from({ length: 5 }, async function (_, index: number) {
+                return await blockfrost.addressesTransactions(contractAddress, {
+                    order: "desc",
+                    count: 100,
+                    page: index + 1,
+                });
+            }),
+        )
+    ).flat();
+
+    const addrTsxFilter = addrTsx.filter(function ({ block_time }) {
         return (
-            txHashFilter.block_time * 1000 >= sevenDaysAgo && txHashFilter.block_time * 1000 < now
+            block_time * 1000 >= Date.now() - HISTORY_DAYS * 24 * 60 * 60 * 1000 &&
+            block_time * 1000 <= Date.now()
         );
     });
 
-    const inputs = await Promise.all(
-        txHashesFilter.map(async function ({ tx_hash }) {
-            const utxo = await blockfrost.txsUtxos(tx_hash);
-
-            return utxo.inputs;
+    const utxos = await Promise.all(
+        addrTsxFilter.map(async function ({ tx_hash }) {
+            const { inputs, outputs } = await blockfrost.txsUtxos(tx_hash);
+            return { inputs, outputs };
         }),
     );
 
-    let inlineDatums: any[] = [];
-
-    inputs.map((input) => {
-        input.map((item) => {
+    utxos.map((utxo) => {
+        utxo.inputs.map(async (input) => {
             if (
-                item.address === enviroment.DUALTARGET_CONTRACT_ADDRESS &&
-                !item.reference_script_hash &&
-                item.inline_datum
+                input.address === contractAddress &&
+                !input.reference_script_hash &&
+                input.inline_datum
             ) {
-                inlineDatums.push(item.inline_datum);
+                const datum: any = await blockfrost.scriptsDatum(input.data_hash!);
+
+                if (datum.json_value.fields[15].int === 0) {
+                    const profit = input.amount.reduce(function (
+                        total: number,
+                        { quantity, unit },
+                    ) {
+                        if (unit === enviroment.DJED_TOKEN_ASSET) {
+                            return total + Number(quantity);
+                        }
+                        return total;
+                    },
+                    0);
+                    profitMargin += profit;
+                }
+            }
+        });
+    });
+
+    utxos.map((utxo) => {
+        utxo.outputs.map(async (output) => {
+            if (
+                output.address === contractAddress &&
+                !output.reference_script_hash &&
+                output.inline_datum
+            ) {
+                const datum: any = await blockfrost.scriptsDatum(output.data_hash!);
+                if (datum.json_value.fields[15].int === 0) {
+                    const profit = output.amount.reduce(function (
+                        total: number,
+                        { quantity, unit },
+                    ) {
+                        if (unit === enviroment.DJED_TOKEN_ASSET) {
+                            return total + Number(quantity);
+                        }
+                        return total;
+                    },
+                    0);
+                    profitMargin += profit;
+                }
             }
         });
     });
@@ -150,7 +192,7 @@ export async function GET(request: NextRequest) {
     );
 
     return Response.json({
-        inlineDatums: inlineDatums,
+        profitMargin: +(profitMargin / DECIMAL_PLACES).toFixed(6),
         adaMargin: +(adaMargin / DECIMAL_PLACES).toFixed(6),
         djedMargin: +(djedMargin / DECIMAL_PLACES).toFixed(6),
     });

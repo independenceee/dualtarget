@@ -193,17 +193,18 @@ const SmartContractProvider = function ({ children }: Props) {
         mode,
         min,
         max,
+        walletAddress,
     }: {
         lucid: Lucid;
+        walletAddress: string;
         mode: number;
         min: number;
         max: number;
     }) {
         setWaitingCalculateEUTxO(true);
         try {
-            const paymentAddress: string = lucid.utils.getAddressDetails(
-                await lucid.wallet.address(),
-            ).paymentCredential?.hash as string;
+            const paymentAddress: string = lucid.utils.getAddressDetails(walletAddress)
+                .paymentCredential?.hash as string;
             const contractAddress: string = enviroment.DUALTARGET_CONTRACT_ADDRESS! as string;
             const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
             const datumParams = await readDatum({
