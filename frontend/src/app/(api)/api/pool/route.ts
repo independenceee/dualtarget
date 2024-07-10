@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
         network as CardanoNetwork,
     );
 
-    let profitMargin: number = 0;
     const contractAddress = enviroment.DUALTARGET_CONTRACT_ADDRESS;
 
     const addrTsx = (
@@ -30,12 +29,14 @@ export async function GET(request: NextRequest) {
         )
     ).flat();
 
-    const addrTsxFilter = addrTsx.filter(function ({ block_time }) {
-        return (
-            block_time * 1000 >= Date.now() - HISTORY_DAYS * 24 * 60 * 60 * 1000 &&
-            block_time * 1000 <= Date.now()
-        );
-    });
+    const addrTsxFilter = await Promise.all(
+        addrTsx.filter(function ({ block_time }) {
+            return (
+                block_time * 1000 >= Date.now() - HISTORY_DAYS * 24 * 60 * 60 * 1000 &&
+                block_time * 1000 <= Date.now()
+            );
+        }),
+    );
 
     const utxos = await Promise.all(
         addrTsxFilter.map(async function ({ tx_hash }) {
@@ -43,90 +44,99 @@ export async function GET(request: NextRequest) {
             return { inputs, outputs };
         }),
     );
-
-    utxos.map((utxo) => {
-        utxo.inputs.map(async (input) => {
-            if (
-                input.address === contractAddress &&
-                !input.reference_script_hash &&
-                input.inline_datum
-            ) {
-                const datum: any = await blockfrost.scriptsDatum(input.data_hash!);
-
-                if (datum.json_value.fields[15].int === 0) {
-                    const profit = input.amount.reduce(function (
-                        total: number,
-                        { quantity, unit },
-                    ) {
-                        if (unit === enviroment.DJED_TOKEN_ASSET) {
-                            return total + Number(quantity);
-                        }
-                        return total;
-                    },
-                    0);
-                    profitMargin += profit;
-                }
-            }
-        });
-    });
-
-    utxos.map((utxo) => {
-        utxo.outputs.map(async (output) => {
-            if (
-                output.address === contractAddress &&
-                !output.reference_script_hash &&
-                output.inline_datum
-            ) {
-                const datum: any = await blockfrost.scriptsDatum(output.data_hash!);
-                if (datum.json_value.fields[15].int === 0) {
-                    const profit = output.amount.reduce(function (
-                        total: number,
-                        { quantity, unit },
-                    ) {
-                        if (unit === enviroment.DJED_TOKEN_ASSET) {
-                            return total + Number(quantity);
-                        }
-                        return total;
-                    },
-                    0);
-                    profitMargin += profit;
-                }
-            }
-        });
-    });
-
-    const results = await Promise.all(
-        (
-            await blockfrost.addressesTransactions(contractAddress, {
-                order: "desc",
-            })
-        )
-            .reverse()
-            .map(async function ({ tx_hash }) {
-                return {
-                    utxos: await blockfrost.txsUtxos(tx_hash),
-                };
-            }),
-    );
-
-    let adaMargin = 0;
-    let djedMargin = 0;
+    let profitMargin = 0;
+    let adaMargin: number = 0;
+    let djedMargin: number = 0;
 
     await Promise.all(
-        results.map((transaction) => {
-            const hasInput = transaction.utxos.inputs.some(
-                (input) => input.address === contractAddress,
-            );
+        addrTsxFilter.map(async ({ tx_hash }) => {
+            const { inputs, outputs } = await blockfrost.txsUtxos(tx_hash);
 
-            const hasOutput = transaction.utxos.outputs.some(
+            inputs.forEach(async (input) => {
+                if (
+                    input.address === contractAddress &&
+                    !input.reference_script_hash &&
+                    input.inline_datum
+                ) {
+                    try {
+                        const datum: any = await blockfrost.scriptsDatum(input.data_hash!);
+
+                        if (
+                            datum.json_value &&
+                            datum.json_value.fields &&
+                            datum.json_value.fields.length > 15
+                        ) {
+                            if (datum.json_value.fields[15].int === 0) {
+                                const profit: number = input.amount.reduce(
+                                    (total, { quantity, unit }) => {
+                                        if (unit === enviroment.DJED_TOKEN_ASSET) {
+                                            return total + Number(quantity);
+                                        }
+                                        return total;
+                                    },
+                                    0,
+                                );
+
+                                profitMargin += profit;
+                            }
+                        } else {
+                            console.warn("Unexpected datum structure:", datum);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching script datum for input:", error);
+                    }
+                }
+            });
+
+            outputs.forEach(async (output) => {
+                if (
+                    output.address === contractAddress &&
+                    !output.reference_script_hash &&
+                    output.inline_datum
+                ) {
+                    try {
+                        const datum: any = await blockfrost.scriptsDatum(output.data_hash!);
+
+                        if (
+                            datum.json_value &&
+                            datum.json_value.fields &&
+                            datum.json_value.fields.length > 15
+                        ) {
+                            if (datum.json_value.fields[15].int === 0) {
+                                const profit: number = output.amount.reduce(
+                                    (total, { quantity, unit }) => {
+                                        if (unit === enviroment.DJED_TOKEN_ASSET) {
+                                            return total + Number(quantity);
+                                        }
+                                        return total;
+                                    },
+                                    0,
+                                );
+
+                                profitMargin += profit;
+                            }
+                        } else {
+                            console.warn("Unexpected datum structure:", datum);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching script datum for output:", error);
+                    }
+                }
+            });
+        }),
+    );
+    console.log(profitMargin);
+
+    await Promise.all(
+        utxos.map((transaction) => {
+            const hasInput = transaction.inputs.some((input) => input.address === contractAddress);
+
+            const hasOutput = transaction.outputs.some(
                 (output) => output.address === contractAddress,
             );
 
             if (hasInput) {
-                let amountADA: number = 0;
-                let amountDJED: number = 0;
-
-                transaction.utxos.inputs.forEach(function (input) {
+                transaction.inputs.forEach(function (input) {
                     if (input.address === contractAddress) {
                         const quantityADA = input.amount.reduce(function (
                             total: number,
@@ -158,7 +168,7 @@ export async function GET(request: NextRequest) {
             if (hasOutput) {
                 let amountADA: number = 0;
                 let amountDJED: number = 0;
-                transaction.utxos.outputs.forEach(function (output) {
+                transaction.outputs.forEach(function (output) {
                     if (output.address === contractAddress) {
                         const quantityADA: number = output.amount.reduce(function (
                             total: number,

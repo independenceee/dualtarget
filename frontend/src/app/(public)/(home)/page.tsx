@@ -51,10 +51,11 @@ export default function Home() {
         queryKey: ["Pools"],
         queryFn: () =>
             axios.get<any>(`${window.location.origin}/api/pool?network=${network.toLowerCase()}`, {
-                timeout: 5000,
+                timeout: 10000,
             }),
         enabled: true,
     });
+
 
     const words = [t("home.title")];
     const [text, count] = useTypewriter({
