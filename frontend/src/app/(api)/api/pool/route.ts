@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
             return { inputs, outputs };
         }),
     );
-    let profitMargin = 0;
+    let profitMargin: number = 0;
     let adaMargin: number = 0;
     let djedMargin: number = 0;
 
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
                                     },
                                     0,
                                 );
-
+                                console.log(profit);
                                 profitMargin += profit;
                             }
                         } else {
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
                                     },
                                     0,
                                 );
-
+                                console.log(profit);
                                 profitMargin += profit;
                             }
                         } else {
