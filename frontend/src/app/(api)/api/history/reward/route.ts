@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
             stakeAddress,
             epochNo: index,
         });
+
         const { start_time, end_time } = await koios.epochInfomation({ epochNo: index });
         const addrTsxFilter = addrTsx.filter(function ({ block_time }, index: number) {
             return block_time >= start_time && block_time <= end_time;
@@ -93,8 +94,40 @@ export async function GET(request: NextRequest) {
                                 0);
                                 amount += quantity;
                             }
-                        }, 0);
+                        });
                         return {
+                            type: "input",
+                            epoch: index,
+                            amountStake: amountStake,
+                            accountRewards: accountRewards,
+                            adaPool: adaPool,
+                            amount: +(amount / DECIMAL_PLACES).toFixed(5),
+                        };
+                    }
+
+                    if (hasOutput) {
+                        let amount = 0;
+                        transaction.outputs.forEach(function (output) {
+                            if (output.address === walletAddress) {
+                                const quantity = output.amount.reduce(function (
+                                    total: number,
+                                    { unit, quantity }: any,
+                                ) {
+                                    if (unit === "lovelace" && !output.reference_script_hash) {
+                                        return total + Number(quantity);
+                                    }
+                                    return total;
+                                },
+                                0);
+                                amount += quantity;
+                            }
+                        });
+                        return {
+                            type: "output",
+                            epoch: index,
+                            amountStake: amountStake,
+                            accountRewards: accountRewards,
+                            adaPool: adaPool,
                             amount: +(amount / DECIMAL_PLACES).toFixed(5),
                         };
                     }
@@ -102,8 +135,6 @@ export async function GET(request: NextRequest) {
                 .filter((output) => output != null),
         );
         console.log(transactions);
-
-        results.push(utxos);
     }
 
     const totalPage = Math.ceil(results.length / Number(pageSize));
@@ -112,7 +143,7 @@ export async function GET(request: NextRequest) {
         Number(page) * Number(pageSize),
     );
 
-    console.log(histories);
+    // console.log(histories);
 
     return Response.json({
         totalPage,
