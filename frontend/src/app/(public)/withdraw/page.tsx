@@ -139,7 +139,6 @@ const Withdraw = function () {
                 mode: currentWithdrawMode.id,
                 min,
                 max,
-                walletAddress: wallet?.address!,
             }).then((res: ClaimableUTxO[]) => {
                 setClaimableUtxos(res);
                 const amountADA = (res as ClaimableUTxO[]).reduce(
