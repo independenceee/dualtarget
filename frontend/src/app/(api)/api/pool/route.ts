@@ -1,6 +1,7 @@
 import { CardanoNetwork } from "@blockfrost/blockfrost-js/lib/types";
 import { NextRequest } from "next/server";
 import { DECIMAL_PLACES, HISTORY_DAYS } from "~/constants";
+import convertInlineDatum from "~/helpers/convert-inline-datum";
 import Blockfrost from "~/services/blockfrost";
 import { EnviromentType } from "~/types/GenericsType";
 import readEnviroment from "~/utils/read-enviroment";
@@ -59,28 +60,22 @@ export async function GET(request: NextRequest) {
                     input.inline_datum
                 ) {
                     try {
-                        const datum: any = await blockfrost.scriptsDatum(input.data_hash!);
+                        const datum = await convertInlineDatum({
+                            inlineDatum: input.inline_datum,
+                        });
 
-                        if (
-                            datum.json_value &&
-                            datum.json_value.fields &&
-                            datum.json_value.fields.length > 15
-                        ) {
-                            if (datum.json_value.fields[15].int === 0) {
-                                const profit: number = input.amount.reduce(
-                                    (total, { quantity, unit }) => {
-                                        if (unit === enviroment.DJED_TOKEN_ASSET) {
-                                            return total + Number(quantity);
-                                        }
-                                        return total;
-                                    },
-                                    0,
-                                );
-                                console.log(profit);
-                                profitMargin += profit;
-                            }
-                        } else {
-                            console.warn("Unexpected datum structure:", datum);
+                        if (datum?.fields[15].int === 0) {
+                            const profit: number = input.amount.reduce(
+                                (total, { quantity, unit }) => {
+                                    if (unit === enviroment.DJED_TOKEN_ASSET) {
+                                        return total + Number(quantity);
+                                    }
+                                    return total;
+                                },
+                                0,
+                            );
+                            console.log(profit);
+                            profitMargin += profit;
                         }
                     } catch (error) {
                         console.error("Error fetching script datum for input:", error);
@@ -95,28 +90,21 @@ export async function GET(request: NextRequest) {
                     output.inline_datum
                 ) {
                     try {
-                        const datum: any = await blockfrost.scriptsDatum(output.data_hash!);
+                        const datum = await convertInlineDatum({
+                            inlineDatum: output.inline_datum,
+                        });
 
-                        if (
-                            datum.json_value &&
-                            datum.json_value.fields &&
-                            datum.json_value.fields.length > 15
-                        ) {
-                            if (datum.json_value.fields[15].int === 0) {
-                                const profit: number = output.amount.reduce(
-                                    (total, { quantity, unit }) => {
-                                        if (unit === enviroment.DJED_TOKEN_ASSET) {
-                                            return total + Number(quantity);
-                                        }
-                                        return total;
-                                    },
-                                    0,
-                                );
-                                console.log(profit);
-                                profitMargin += profit;
-                            }
-                        } else {
-                            console.warn("Unexpected datum structure:", datum);
+                        if (datum?.fields[15].int === 0) {
+                            const profit: number = output.amount.reduce(
+                                (total, { quantity, unit }) => {
+                                    if (unit === enviroment.DJED_TOKEN_ASSET) {
+                                        return total + Number(quantity);
+                                    }
+                                    return total;
+                                },
+                                0,
+                            );
+                            profitMargin += profit;
                         }
                     } catch (error) {
                         console.error("Error fetching script datum for output:", error);
@@ -125,7 +113,6 @@ export async function GET(request: NextRequest) {
             });
         }),
     );
-    console.log(profitMargin);
 
     await Promise.all(
         utxos.map((transaction) => {
