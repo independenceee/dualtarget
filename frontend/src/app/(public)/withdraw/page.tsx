@@ -143,7 +143,7 @@ const Withdraw = function () {
         return [];
     }, [chartDataRecords, isGetChartRecordsSuccess]);
 
-    const previewSellingStrategies = function () {
+    const previewSellingStrategies = async function () {
         if (lucid) {
             if (claimableUtxos.length > COUNTER_UTXO) {
                 toast.warn({
@@ -153,67 +153,74 @@ const Withdraw = function () {
                 });
             }
 
-            previewWithdraw({
+            const _withdrawableProfit =
+                currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1
+                    ? ([0, 0] as [number, number])
+                    : (withdrawableProfit as [number, number]);
+            const response = await previewWithdraw({
                 lucid,
-                range: withdrawableProfit as [number, number],
-            }).then((response) => {
-                setSellingStrategies(response);
+                range: _withdrawableProfit,
             });
+            setSellingStrategies(response);
 
             const [min, max] = withdrawableProfit;
 
-            calculateClaimEUTxO({
+            const claimEUTxO = await calculateClaimEUTxO({
                 lucid,
                 mode: currentWithdrawMode.id,
                 min,
                 max,
-            }).then((res: ClaimableUTxO[]) => {
-                setClaimableUtxos(res);
-                const amountADA = (res as ClaimableUTxO[]).reduce(
-                    (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
-                    0,
-                );
-
-                const amountDJED: number = (res as ClaimableUTxO[]).reduce(function (acc, claim) {
-                    if (claim.isLimitOrder == 2) {
-                        const amount: number = isNaN(
-                            Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]),
-                        )
-                            ? 0
-                            : Number(Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]));
-                        return acc + amount;
-                    }
-
-                    return acc;
-                }, 0);
-
-                const amountProfit: number = (res as Array<ClaimableUTxO>).reduce(function (
-                    acc,
-                    claim,
-                ) {
-                    if (claim.isLimitOrder == 0) {
-                        const amount: number = isNaN(
-                            Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]),
-                        )
-                            ? 0
-                            : Number(Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]));
-                        return acc + amount;
-                    }
-                    return acc;
-                },
-                0);
-
-                setFees(function (previous) {
-                    return {
-                        ...previous,
-                        amountADA: amountADA / DECIMAL_PLACES,
-                        amountDJED: amountDJED / DECIMAL_PLACES,
-                        amountProfit: amountProfit / DECIMAL_PLACES,
-                    };
-                });
-
-                setValue("amount", amountADA / 1000000);
             });
+
+            setClaimableUtxos(claimEUTxO);
+            const amountADA = (claimEUTxO as ClaimableUTxO[]).reduce(
+                (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
+                0,
+            );
+
+            const amountDJED: number = (claimEUTxO as ClaimableUTxO[]).reduce(function (
+                acc,
+                claim,
+            ) {
+                if (claim.isLimitOrder == 2) {
+                    const amount: number = isNaN(
+                        Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]),
+                    )
+                        ? 0
+                        : Number(Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]));
+                    return acc + amount;
+                }
+
+                return acc;
+            },
+            0);
+
+            const amountProfit: number = (claimEUTxO as Array<ClaimableUTxO>).reduce(function (
+                acc,
+                claim,
+            ) {
+                if (claim.isLimitOrder == 0) {
+                    const amount: number = isNaN(
+                        Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]),
+                    )
+                        ? 0
+                        : Number(Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]));
+                    return acc + amount;
+                }
+                return acc;
+            },
+            0);
+
+            setFees(function (previous) {
+                return {
+                    ...previous,
+                    amountADA: amountADA / DECIMAL_PLACES,
+                    amountDJED: amountDJED / DECIMAL_PLACES,
+                    amountProfit: amountProfit / DECIMAL_PLACES,
+                };
+            });
+
+            setValue("amount", amountADA / 1000000);
         }
     };
 
