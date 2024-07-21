@@ -158,12 +158,16 @@ const Withdraw = function () {
                     ? ([0, 0] as [number, number])
                     : (withdrawableProfit as [number, number]);
 
-            const response = await previewWithdraw({
+            const _caculateSellingStrategy: CalculateSellingStrategy[] = await previewWithdraw({
                 lucid,
                 range: _withdrawableProfit,
             });
 
-            setSellingStrategies(response);
+            const uniqueCaculateSellingStrategy = Array.from(
+                new Map(_caculateSellingStrategy.map((res, index) => [index, res])).values(),
+            ).reverse();
+
+            setSellingStrategies(uniqueCaculateSellingStrategy);
 
             const [min, max] = withdrawableProfit;
 
