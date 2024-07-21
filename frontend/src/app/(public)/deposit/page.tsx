@@ -18,7 +18,6 @@ import {
 } from "~/types/GenericsType";
 import { ToastContextType } from "~/types/contexts/ToastContextType";
 import ToastContext from "~/contexts/components/ToastContext";
-
 import Tippy from "~/components/Tippy";
 import { Controller, useForm } from "react-hook-form";
 import Button from "~/components/Button";
@@ -37,6 +36,7 @@ import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
 import { BATCHER_FEE, COUNTER_UTXO, DECIMAL_PLACES } from "~/constants";
+import { getCurrentPrice } from "~/utils/current-price";
 const cx = classNames.bind(styles);
 
 type DepositeType = {
@@ -53,6 +53,7 @@ const Deposit = function () {
     const { lucid } = useContext<LucidContextType>(LucidContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
+    const [currentPrice, setCurrentPrice] = useState<number>(null!);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
     const [fees, setFees] = useState<{
         amountADA: number;
@@ -117,8 +118,6 @@ const Deposit = function () {
         }
     }, [t]);
 
-    useEffect(() => {}, []);
-
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
             const prices = chartDataRecords.data.map((history) => [
@@ -130,11 +129,11 @@ const Deposit = function () {
         return [];
     }, [chartDataRecords, isGetChartRecordsSuccess]);
 
-    const currentPrice = useMemo(() => {
-        if (historyPrices && historyPrices.length > 0) {
-            return historyPrices[historyPrices.length - 1][1];
-        }
-        return 0;
+    useEffect(() => {
+        (async function () {
+            const { price } = await getCurrentPrice();
+            setCurrentPrice(Number(price));
+        })();
     }, [historyPrices]);
 
     const onDeposite = handleSubmit((data) => {
@@ -145,7 +144,6 @@ const Deposit = function () {
             deposit({
                 lucid,
                 sellingStrategies,
-                currentPrice,
             })
                 .then(() => {
                     toast.success({
@@ -180,7 +178,7 @@ const Deposit = function () {
         }
     }, [income, priceHight, priceLow, stake, step]);
 
-    const handleCalculateSellingStrategy = function () {
+    const handleCalculateSellingStrategy = async function () {
         if (
             income &&
             priceHight &&
@@ -198,7 +196,7 @@ const Deposit = function () {
                 step: Number(step),
                 // totalADA: Number(totalADA) * DECIMAL_PLACES,
             });
-            const _fees = previewDeposit({ sellingStrategies: result, currentPrice });
+            const _fees = previewDeposit({ sellingStrategies: result, currentPrice: currentPrice });
             setFees(_fees);
 
             if (

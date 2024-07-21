@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Card from "~/components/Card";
 import icons from "~/assets/icons";
 import Orders from "~/components/Orders/Orders";
@@ -33,7 +33,6 @@ import {
 import axios from "axios";
 import CustomChart from "~/components/CustomChart";
 import CountUp from "react-countup";
-import { useDebounce } from "~/hooks";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
@@ -65,18 +64,19 @@ const Withdraw = function () {
         txHashWithdraw,
     } = useContext<SmartContractContextType>(SmartContractContext);
     const { wallet } = useContext<WalletContextType>(WalletContext);
-    const { network } = useContext<NetworkContextType>(NetworkContext);
+    const { network, enviroment } = useContext<NetworkContextType>(NetworkContext);
     const [page, setPage] = useState<number>(1);
     const [claimableUtxos, setClaimableUtxos] = useState<Array<ClaimableUTxO>>([]);
     const [sellingStrategies, setSellingStrategies] = useState<CalculateSellingStrategy[]>([]);
     const [currentWithdrawMode, setCurrentWithdrawMode] = useState<Item>(WITHDRAW_MODES[0]);
     const [withdrawableProfit, setWithdrawableProfit] = useState<number[]>([0, 0]);
-    const debouncedValue = useDebounce<number[]>(withdrawableProfit);
+    const [maxRangeValue, setMaxRangeValue] = useState<number>(0);
     const [fees, setFees] = useState<{
         amountADA: number;
         amountDJED: number;
         amountProfit: number;
     }>({ amountADA: 0, amountDJED: 0, amountProfit: 0 });
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ["Transactions", page, txHashWithdraw],
         queryFn: () =>
@@ -88,7 +88,7 @@ const Withdraw = function () {
             ),
         enabled: !!Boolean(wallet?.address) || (!!Boolean(wallet?.address) && !!txHashWithdraw),
     });
-
+    const maxRef = useRef<number>(0);
     const { t } = useContext(TranslateContext);
 
     const {
@@ -106,109 +106,31 @@ const Withdraw = function () {
     });
 
     const {
-        watch,
         register,
         setValue,
         handleSubmit,
         formState: { errors },
     } = useForm<WithdrawType>();
 
-    const maxOfSellingStrategies = useMemo(() => {
+    useEffect(() => {
+        setWithdrawableProfit([0, maxRangeValue]);
+    }, [currentWithdrawMode, maxRangeValue]);
+
+    useEffect(() => {
         if (sellingStrategies.length > 0) {
-            return (
+            const _maxRangeValue =
                 Math.max(
                     ...sellingStrategies.map(({ buyPrice }) => {
                         return (Number(buyPrice) as number) / 1000000;
                     }),
-                ) + 0.1
-            );
-        }
+                ) + 0.1;
 
-        return 0;
-    }, [sellingStrategies]);
-
-    useEffect(() => {
-        setWithdrawableProfit([0, maxOfSellingStrategies]);
-    }, [maxOfSellingStrategies]);
-
-    useEffect(() => {
-        const [min, max] = debouncedValue;
-        lucid &&
-            calculateClaimEUTxO({
-                lucid,
-                mode: currentWithdrawMode.id,
-                min,
-                max,
-                walletAddress: wallet?.address!,
-            }).then((res: ClaimableUTxO[]) => {
-                setClaimableUtxos(res);
-                const amountADA = (res as ClaimableUTxO[]).reduce(
-                    (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
-                    0,
-                );
-
-                const amountDJED: number = (res as ClaimableUTxO[]).reduce(function (acc, claim) {
-                    const amount: number = isNaN(
-                        Number(claim.utxo.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]),
-                    )
-                        ? 0
-                        : Number(Number(claim.utxo.assets[process.env.MIN_TOKEN_ASSET_PREPROD!]));
-                    return acc + amount;
-                }, 0);
-
-                setFees(function (previous) {
-                    return {
-                        ...previous,
-                        amountDJED: amountDJED,
-                    };
-                });
-
-                const amountProfit: number = (res as Array<ClaimableUTxO>).reduce(function (
-                    acc,
-                    claim,
-                ) {
-                    let balance: number = 0;
-                    if (claim.isLimitOrder == 0) {
-                        balance = isNaN(Number(claim.minimumAmountOutProfit))
-                            ? 0
-                            : Number(claim.minimumAmountOutProfit);
-                    }
-                    return acc + balance;
-                },
-                0);
-                setFees(function (previous) {
-                    return {
-                        ...previous,
-                        amountADA: amountADA / DECIMAL_PLACES,
-                        amountDJED: amountDJED / DECIMAL_PLACES,
-                        amountProfit: amountProfit / DECIMAL_PLACES,
-                    };
-                });
-
-                setValue("amount", amountADA / 1000000);
-            });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentWithdrawMode, lucid, debouncedValue]);
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (Boolean(txHashWithdraw) && lucid) {
-                previewWithdraw({
-                    lucid,
-                    range:
-                        withdrawableProfit.length === 0
-                            ? [0, maxOfSellingStrategies]
-                            : (withdrawableProfit as [number, number]),
-                }).then((response) => {
-                    setWithdrawableProfit([0, maxOfSellingStrategies]);
-                    setSellingStrategies(response);
-                });
+            if (maxRef.current < _maxRangeValue) {
+                maxRef.current = _maxRangeValue;
+                setMaxRangeValue(_maxRangeValue);
             }
-        }, 5000);
-
-        return () => clearTimeout(timeout);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lucid, txHashWithdraw, maxOfSellingStrategies]);
+        }
+    }, [sellingStrategies, currentWithdrawMode]);
 
     const historyPrices: ChartDataType = useMemo(() => {
         if (isGetChartRecordsSuccess && chartDataRecords.data) {
@@ -221,7 +143,7 @@ const Withdraw = function () {
         return [];
     }, [chartDataRecords, isGetChartRecordsSuccess]);
 
-    const previewSellingStrategies = function () {
+    const previewSellingStrategies = async function () {
         if (lucid) {
             if (claimableUtxos.length > COUNTER_UTXO) {
                 toast.warn({
@@ -230,16 +152,81 @@ const Withdraw = function () {
                     } ${t("layout.toast.warn.divide_transactions.2")}`,
                 });
             }
-            previewWithdraw({
+
+            const _withdrawableProfit =
+                currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1
+                    ? ([0, 0] as [number, number])
+                    : (withdrawableProfit as [number, number]);
+
+            const _caculateSellingStrategy: CalculateSellingStrategy[] = await previewWithdraw({
                 lucid,
-                range:
-                    withdrawableProfit.length === 0
-                        ? [0, maxOfSellingStrategies]
-                        : (withdrawableProfit as [number, number]),
-            }).then((response) => {
-                setWithdrawableProfit([0, maxOfSellingStrategies]);
-                setSellingStrategies(response);
+                range: _withdrawableProfit,
             });
+
+            const uniqueCaculateSellingStrategy = Array.from(
+                new Map(_caculateSellingStrategy.map((res, index) => [index, res])).values(),
+            ).reverse();
+
+            setSellingStrategies(uniqueCaculateSellingStrategy);
+
+            const [min, max] = withdrawableProfit;
+
+            const claimEUTxO = await calculateClaimEUTxO({
+                lucid,
+                mode: currentWithdrawMode.id,
+                min,
+                max,
+            });
+
+            setClaimableUtxos(claimEUTxO);
+            const amountADA = (claimEUTxO as ClaimableUTxO[]).reduce(
+                (acc, claim) => acc + Number(claim.utxo.assets.lovelace),
+                0,
+            );
+
+            const amountDJED: number = (claimEUTxO as ClaimableUTxO[]).reduce(function (
+                acc,
+                claim,
+            ) {
+                if (claim.isLimitOrder == 2) {
+                    const amount: number = isNaN(
+                        Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]),
+                    )
+                        ? 0
+                        : Number(Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]));
+                    return acc + amount;
+                }
+
+                return acc;
+            },
+            0);
+
+            const amountProfit: number = (claimEUTxO as Array<ClaimableUTxO>).reduce(function (
+                acc,
+                claim,
+            ) {
+                if (claim.isLimitOrder == 0) {
+                    const amount: number = isNaN(
+                        Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]),
+                    )
+                        ? 0
+                        : Number(Number(claim.utxo.assets[enviroment.DJED_TOKEN_ASSET]));
+                    return acc + amount;
+                }
+                return acc;
+            },
+            0);
+
+            setFees(function (previous) {
+                return {
+                    ...previous,
+                    amountADA: amountADA / DECIMAL_PLACES,
+                    amountDJED: amountDJED / DECIMAL_PLACES,
+                    amountProfit: amountProfit / DECIMAL_PLACES,
+                };
+            });
+
+            setValue("amount", amountADA / 1000000);
         }
     };
 
@@ -255,8 +242,8 @@ const Withdraw = function () {
         }
     });
 
-    const onRangeChange = function (value: number[]) {
-        setWithdrawableProfit(value);
+    const onRangeChange = function (withdrawableProfit: number[]) {
+        setWithdrawableProfit(withdrawableProfit);
     };
 
     return (
@@ -326,13 +313,13 @@ const Withdraw = function () {
                                             />
 
                                             <InputRange
+                                                currentValue={withdrawableProfit}
                                                 onChange={onRangeChange}
                                                 min={0}
-                                                max={Number(maxOfSellingStrategies.toFixed(4))}
+                                                max={Number(maxRangeValue.toFixed(4))}
                                                 disabled={
                                                     currentWithdrawMode.id === 0 ||
-                                                    currentWithdrawMode.id === 1 ||
-                                                    maxOfSellingStrategies === 0
+                                                    currentWithdrawMode.id === 1
                                                 }
                                             />
                                         </div>
@@ -407,7 +394,7 @@ const Withdraw = function () {
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
-                                                        ) : sellingStrategies.length > 0 ? (
+                                                        ) : fees.amountADA > 0 ? (
                                                             <span className={cx("fee-currency")}>
                                                                 {fees.amountADA.toFixed(5)}&nbsp;₳
                                                             </span>
@@ -419,7 +406,7 @@ const Withdraw = function () {
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
-                                                        ) : sellingStrategies.length > 0 ? (
+                                                        ) : fees.amountDJED > 0 ? (
                                                             <span className={cx("fee-currency")}>
                                                                 &nbsp;{fees.amountDJED}
                                                                 &nbsp;DJED
@@ -460,7 +447,7 @@ const Withdraw = function () {
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
-                                                        ) : sellingStrategies.length > 0 ? (
+                                                        ) : fees.amountProfit > 0 ? (
                                                             <span className={cx("fee-currency")}>
                                                                 {fees.amountProfit.toFixed(5)}
                                                                 &nbsp;DJED
@@ -478,7 +465,11 @@ const Withdraw = function () {
                                                 disabled={
                                                     !lucid ||
                                                     waitingWithdraw ||
-                                                    waitingCalculateEUTxO
+                                                    waitingCalculateEUTxO ||
+                                                    sellingStrategies.length > 16 ||
+                                                    (fees.amountProfit === 0 &&
+                                                        fees.amountDJED === 0 &&
+                                                        fees.amountADA === 0)
                                                 }
                                                 loading={waitingWithdraw || waitingCalculateEUTxO}
                                                 onClick={onWithdraw}
