@@ -157,10 +157,12 @@ const Withdraw = function () {
                 currentWithdrawMode.id === 0 || currentWithdrawMode.id === 1
                     ? ([0, 0] as [number, number])
                     : (withdrawableProfit as [number, number]);
+
             const response = await previewWithdraw({
                 lucid,
                 range: _withdrawableProfit,
             });
+
             setSellingStrategies(response);
 
             const [min, max] = withdrawableProfit;
@@ -388,7 +390,7 @@ const Withdraw = function () {
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
-                                                        ) : sellingStrategies.length > 0 ? (
+                                                        ) : fees.amountADA > 0 ? (
                                                             <span className={cx("fee-currency")}>
                                                                 {fees.amountADA.toFixed(5)}&nbsp;₳
                                                             </span>
@@ -400,7 +402,7 @@ const Withdraw = function () {
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
-                                                        ) : sellingStrategies.length > 0 ? (
+                                                        ) : fees.amountDJED > 0 ? (
                                                             <span className={cx("fee-currency")}>
                                                                 &nbsp;{fees.amountDJED}
                                                                 &nbsp;DJED
@@ -441,7 +443,7 @@ const Withdraw = function () {
                                                     <span className={cx("fee-wrapper")}>
                                                         {waitingCalculateEUTxO ? (
                                                             <Loading />
-                                                        ) : sellingStrategies.length > 0 ? (
+                                                        ) : fees.amountProfit > 0 ? (
                                                             <span className={cx("fee-currency")}>
                                                                 {fees.amountProfit.toFixed(5)}
                                                                 &nbsp;DJED
@@ -459,7 +461,11 @@ const Withdraw = function () {
                                                 disabled={
                                                     !lucid ||
                                                     waitingWithdraw ||
-                                                    waitingCalculateEUTxO
+                                                    waitingCalculateEUTxO ||
+                                                    sellingStrategies.length > 16 ||
+                                                    (fees.amountProfit === 0 &&
+                                                        fees.amountDJED === 0 &&
+                                                        fees.amountADA === 0)
                                                 }
                                                 loading={waitingWithdraw || waitingCalculateEUTxO}
                                                 onClick={onWithdraw}

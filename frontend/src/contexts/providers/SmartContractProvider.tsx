@@ -331,8 +331,6 @@ const SmartContractProvider = function ({ children }: Props) {
             .paymentCredential?.hash as string;
         const contractAddress: string = enviroment.DUALTARGET_CONTRACT_ADDRESS! as string;
         const scriptUtxos: UTxO[] = await lucid.utxosAt(contractAddress);
-
-        console.log(min, max);
         const sellingStrategies: CalculateSellingStrategy[] = [];
 
         for (const scriptUtxo of scriptUtxos) {
