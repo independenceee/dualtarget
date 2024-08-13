@@ -164,7 +164,7 @@ const Withdraw = function () {
             });
 
             const uniqueCaculateSellingStrategy = Array.from(
-                new Map(_caculateSellingStrategy.map((res, index) => [index, res])).values(),
+                new Map(_caculateSellingStrategy.map((res) => [res, res])).values(),
             ).reverse();
 
             setSellingStrategies(uniqueCaculateSellingStrategy);
@@ -232,11 +232,13 @@ const Withdraw = function () {
 
     const onWithdraw = handleSubmit(async (data) => {
         try {
-            lucid &&
-                withdraw({
-                    lucid,
-                    claimableUtxos,
-                }).then(() => {});
+            if (lucid) {
+                await withdraw({ lucid, claimableUtxos });
+                toast.success({
+                    message: t("layout.toast.success.withdraw"),
+                });
+                await previewSellingStrategies();
+            }
         } catch (error) {
             console.warn("Error: ", error);
         }
