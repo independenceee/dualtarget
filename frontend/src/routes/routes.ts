@@ -1,4 +1,5 @@
 import configs from "~/configs";
+import { HomeIcon, TransactionIcon } from "~/components/Icons";
 
 const publicRoutes = [
     { name: "home", redirect: configs.routes.home },
@@ -9,4 +10,8 @@ const publicRoutes = [
     { name: "faq", redirect: configs.routes.faq },
 ];
 
-export { publicRoutes };
+const privateRoutes = [
+    { name: "Home", redirect: configs.routes.private.home, Icon: HomeIcon },
+    { name: "Manager", redirect: configs.routes.private.manager, Icon: TransactionIcon },
+];
+export { publicRoutes, privateRoutes };

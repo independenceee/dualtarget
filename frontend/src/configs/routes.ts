@@ -6,6 +6,11 @@ const routes = {
     faq: "/faq",
     about: "/about",
     term: "/term",
+
+    private: {
+        home: "/admin",
+        manager: "/admin/manager",
+    },
 } as const;
 
 export default routes;

@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames/bind";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./Manager.module.scss";
 import Tippy from "~/components/Tippy";
@@ -9,42 +9,73 @@ import Image from "next/image";
 import icons from "~/assets/icons";
 import Table from "~/components/Table";
 import Pagination from "~/components/Pagination";
-import { historyRewards } from "~/constants/header-table";
-import { useQuery } from "@tanstack/react-query";
+import { calculateTableType } from "~/constants/header-table";
 import axios from "axios";
-import { DelegationRewardResponseType, DelegationRewardType } from "~/types/GenericsType";
 import Loading from "~/components/Loading";
 import { useDebounce } from "~/hooks";
-import Reward from "~/components/Reward";
 import TranslateContext from "~/contexts/components/TranslateContext";
 import Button from "~/components/Button";
 import { NetworkContextType } from "~/types/contexts/NetworkContextType";
 import NetworkContext from "~/contexts/components/NetworkContext";
 import jsonToCsvExport from "json-to-csv-export";
+import { Credential } from "lucid-cardano";
+import { LucidContextType } from "~/types/contexts/LucidContextType";
+import LucidContext from "~/contexts/components/LucidContext";
+import Reward from "~/components/Reward";
+import { CalculateRewardType } from "~/types/GenericsType";
 const cx = classNames.bind(styles);
 
-const DelegationRewards = function () {
+const DelegationRewardsManager = function () {
     const [page, setPage] = useState<number>(1);
     const { t } = useContext(TranslateContext);
-    const [epoch, setEpoch] = useState<string>("");
+    const { lucidPlatform } = useContext<LucidContextType>(LucidContext);
     const { network } = useContext<NetworkContextType>(NetworkContext);
+
+    const [epoch, setEpoch] = useState<string>("");
+    const [endTime, setEndTime] = useState<string>("");
+    const [startTime, setStartTime] = useState<string>("");
+    const [rewards, setReward] = useState<CalculateRewardType[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const debouncedValue = useDebounce(epoch);
 
-    const {
-        data: rewards,
-        isSuccess,
-        isLoading,
-        isError,
-    } = useQuery({
-        queryKey: ["Manager", debouncedValue, page],
-        queryFn: () =>
-            axios.get<DelegationRewardResponseType>(
-                `${
-                    window.location.origin
-                }/api/manager?wallet_address=${debouncedValue}&page=${page}&page_size=5&network=${network.toLowerCase()}&epoch=${epoch}`,
-            ),
-        enabled: !!debouncedValue,
-    });
+    useEffect(() => {
+        if (debouncedValue) {
+            (async function () {
+                try {
+                    setIsLoading(true);
+                    const { data } = await axios.get(
+                        `${
+                            window.location.origin
+                        }/api/manager?network=${network.toLowerCase()}&epoch=${epoch}`,
+                    );
+                    setEndTime(data?.endTime);
+                    setStartTime(data?.startTime);
+                    console.log(data);
+                    const response = data?.results.map(function (result: any, index: number) {
+                        let credential: Credential = {
+                            type: "Key",
+                            hash: result?.paymentAddress,
+                        };
+                        const address = lucidPlatform.utils.credentialToAddress(credential);
+                        return {
+                            index: index,
+                            epoch: result?.epoch,
+                            address: address,
+                            amount: result?.amount,
+                            reward: result?.rewards,
+                            status: "Distributed",
+                        };
+                    });
+                    console.log(response);
+                    setReward(response);
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    setIsLoading(false);
+                }
+            })();
+        }
+    }, [debouncedValue]);
 
     const handleChangeEpoch = function (e: React.ChangeEvent<HTMLInputElement>) {
         setEpoch(e.target.value);
@@ -56,10 +87,10 @@ const DelegationRewards = function () {
 
     const handleDelegateRewards = function () {
         jsonToCsvExport({
-            data: [],
-            filename: "",
+            data: rewards,
+            filename: `dualtarget-reward-${epoch} `,
             delimiter: ",",
-            headers: ["STT", " Wallet Address", "Private Key"],
+            headers: ["STT", "Epoch", " Wallet Address", "Amount", "Reward", "Status"],
         });
     };
 
@@ -129,17 +160,13 @@ const DelegationRewards = function () {
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <div>
-                                    {isSuccess && rewards?.data?.histories?.length > 0 ? (
+                                    {rewards.length > 0 ? (
                                         <Link
                                             className={cx("summary-link")}
                                             href={""}
                                             target="_blank"
                                         >
-                                            {Math.max(
-                                                ...rewards?.data?.histories.map(
-                                                    ({ epoch }) => epoch,
-                                                ),
-                                            )}
+                                            {epoch}
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -149,26 +176,19 @@ const DelegationRewards = function () {
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>
-                            {t("delegation rewards.card.total distributed rewards")}
-                        </h2>
+                        <h2 className={cx("summary-title")}>Start time</h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards?.data?.histories?.length > 0 ? (
+                                    {startTime ? (
                                         <Link
                                             className={cx("summary-link")}
                                             href={""}
                                             target="_blank"
                                         >
-                                            {rewards?.data?.histories?.reduce(
-                                                (acc, history) =>
-                                                    Number(acc) + Number(history.rewards),
-                                                0,
-                                            )}{" "}
-                                            ₳
+                                            {startTime}
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -178,21 +198,19 @@ const DelegationRewards = function () {
                         </p>
                     </div>
                     <div className={cx("summary-item")}>
-                        <h2 className={cx("summary-title")}>
-                            {t("delegation rewards.card.total pending rewards")}
-                        </h2>
+                        <h2 className={cx("summary-title")}>End time</h2>
                         <p className={cx("summary-description")}>
                             {isLoading ? (
                                 <Loading className={cx("small-loading")} />
                             ) : (
                                 <>
-                                    {isSuccess && rewards?.data?.histories?.length > 0 ? (
+                                    {endTime ? (
                                         <Link
                                             className={cx("summary-link")}
                                             href={""}
                                             target="_blank"
                                         >
-                                            0 ₳
+                                            {endTime}
                                         </Link>
                                     ) : (
                                         <span className={cx("no-data-hyphen")}>-</span>
@@ -209,9 +227,9 @@ const DelegationRewards = function () {
                     </div>
                 ) : (
                     <div>
-                        {isSuccess && (
+                        {rewards.length && (
                             <div>
-                                {rewards?.data?.histories?.length === 0 ? (
+                                {rewards.length === 0 ? (
                                     <section className={cx("status")}>
                                         <div className={cx("no-data")} />
                                         <span>{t("layout.notification.no data")}</span>
@@ -220,21 +238,21 @@ const DelegationRewards = function () {
                                     <div>
                                         <Table
                                             center
-                                            titles={historyRewards}
-                                            data={rewards?.data?.histories}
+                                            titles={calculateTableType}
+                                            data={rewards}
                                             className={cx("desktop-tx-history")}
                                         />
                                         <div className={cx("reponsive-tx-history")}>
-                                            {rewards?.data?.histories?.map(function (item, index) {
+                                            {rewards?.map(function (item: any, index: number) {
                                                 return <Reward data={item} key={index} />;
                                             })}
                                         </div>
-                                        {rewards?.data?.histories?.length > 0 && (
+                                        {rewards.length > 0 && (
                                             <Pagination
-                                                totalPages={rewards.data.totalPage}
+                                                totalPages={page}
                                                 page={page}
                                                 setPage={setPage}
-                                                totalItems={rewards?.data.totalItems}
+                                                totalItems={rewards.length}
                                             />
                                         )}
 
@@ -249,7 +267,7 @@ const DelegationRewards = function () {
                             </div>
                         )}
 
-                        {isError && (
+                        {rewards.length == 0 && (
                             <section className={cx("status")}>
                                 <div className={cx("no-data")} />
                                 <span>{t("layout.notification.error to fetch data")}</span>
@@ -262,4 +280,4 @@ const DelegationRewards = function () {
     );
 };
 
-export default DelegationRewards;
+export default DelegationRewardsManager;
